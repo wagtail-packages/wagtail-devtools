@@ -41,14 +41,10 @@ class Command(BaseCommand):
 
     help = "Checks the admin and frontend responses for models including pages, snippets, settings and modeladmin."
 
-    checked_url = None
-    report_url = None
-    report_lines = []
-
-    registered_modeladmin = [
-        # add model admin models as they cannot be auto detected. For example ...
-        # "events.EventType",
-    ]
+    if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
+        registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
+    else:
+        registered_modeladmin = []
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -70,13 +66,14 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        # Check if the command is enabled in settings
+        # Disabled if not running in DEBUG mode
         if not settings.DEBUG:
             self.out_message_error(
                 "Command is only available in DEBUG mode. Set DEBUG=True in your settings to enable it."
             )
             return
 
+        self.report_lines = []
         self.checked_url = options["host"]
         self.report_url = (
             options["report_url"].strip("/") if options["report_url"] else None

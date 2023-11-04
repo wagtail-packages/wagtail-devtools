@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+from wagtail import VERSION as WAGTAIL_VERSION
+
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -29,6 +31,8 @@ INSTALLED_APPS = [
     "sandbox.search",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.modeladmin",
+    "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -48,6 +52,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "wagtail_devtools",
 ]
+
+if WAGTAIL_VERSION >= (5, 2):
+    INSTALLED_APPS.pop(INSTALLED_APPS.index("wagtail.contrib.modeladmin"))
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -166,3 +173,5 @@ WAGTAILSEARCH_BACKENDS = {
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

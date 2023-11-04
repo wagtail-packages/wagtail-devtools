@@ -14,6 +14,9 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Wagtail Devtools
 DEVTOOLS_APPS_PREFIX = "sandbox"
+DEVTOOLS_REGISTERED_MODELADMIN = [
+    "home.TestModelAdmin",
+]
 
 
 try:
