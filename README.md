@@ -5,29 +5,26 @@
 A set of developer tools in the form of management commands
 
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![PyPI version](https://badge.fury.io/py/wagtail-devtools.svg)](https://badge.fury.io/py/wagtail-devtools)
-[![devtools CI](https://github.com/nickmoreton/wagtail-devtools/actions/workflows/test.yml/badge.svg)](https://github.com/nickmoreton/wagtail-devtools/actions/workflows/test.yml)
 
-## Links
+## Supported versions
+
+- Python 3.8+
+- Django 3.2+
+- Wagtail 4.1+
+
+## Installation
+
+- `python -m pip install wagtail-devtools`
+
+<!-- ## Contributing -->
+
+<!-- ## Links
 
 - [Documentation](https://github.com/nickmoreton/wagtail-devtools/blob/main/README.md)
 - [Changelog](https://github.com/nickmoreton/wagtail-devtools/blob/main/CHANGELOG.md)
 - [Contributing](https://github.com/nickmoreton/wagtail-devtools/blob/main/CONTRIBUTING.md)
 - [Discussions](https://github.com/nickmoreton/wagtail-devtools/discussions)
-- [Security](https://github.com/nickmoreton/wagtail-devtools/security)
-
-## Supported versions
-
-- Python ...
-- Django ...
-- Wagtail ...
-
-## Installation
-
-- `python -m pip install wagtail-devtools`
-- ...
-
-## Contributing
+- [Security](https://github.com/nickmoreton/wagtail-devtools/security) -->
 
 ### Install
 
@@ -44,7 +41,7 @@ With your preferred virtualenv activated, install testing dependencies:
 
 ```sh
 python -m pip install --upgrade pip>=21.3
-python -m pip install -e '.[testing]' -U
+python -m pip install -e '.[testing,dev]' -U
 ```
 
 #### Using flit
