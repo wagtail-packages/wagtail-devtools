@@ -12,6 +12,8 @@ import os
 
 import dj_database_url
 
+from wagtail import VERSION as WAGTAIL_VERSION
+
 
 # Build paths inside the project like this: os.path.join(PROJECT_DIR, ...)
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.users",
     "wagtail.snippets",
@@ -60,6 +63,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
 ]
+
+if WAGTAIL_VERSION >= (5, 2):
+    INSTALLED_APPS.pop(INSTALLED_APPS.index("wagtail.contrib.modeladmin"))
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -161,4 +167,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 
 WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 
-WAGTAILADMIN_BASE_URL = "/not-a-real-admin-url/"
+WAGTAILADMIN_BASE_URL = "http://localhost:8000"
