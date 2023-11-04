@@ -27,7 +27,10 @@ class Command(BaseCommand):
 
     excluded_apps = []
 
-    apps_prefix = ""  # optional [your-project-directory]
+    if hasattr(settings, "DEVTOOLS_APPS_PREFIX"):
+        apps_prefix = settings.DEVTOOLS_APPS_PREFIX
+    else:
+        apps_prefix = None  # optional [your-project-directory]
 
     registered_modeladmin = [
         # add model admin models as they cannot be auto detected. For example ...
