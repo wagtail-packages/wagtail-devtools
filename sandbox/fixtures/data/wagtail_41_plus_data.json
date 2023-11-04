@@ -1,0 +1,266 @@
+[
+  {
+    "model": "home.testsnippet",
+    "pk": 1,
+    "fields": {
+      "title": "Test snippet 1"
+    }
+  },
+  {
+    "model": "home.testsnippet",
+    "pk": 2,
+    "fields": {
+      "title": "Test snippet 2"
+    }
+  },
+  {
+    "model": "home.testsnippet",
+    "pk": 3,
+    "fields": {
+      "title": "Test snippet 3"
+    }
+  },
+  {
+    "model": "home.testmodeladmin",
+    "pk": 1,
+    "fields": {
+      "title": "Test modeladmin 1"
+    }
+  },
+  {
+    "model": "home.testmodeladmin",
+    "pk": 2,
+    "fields": {
+      "title": "Test modeladmin 2"
+    }
+  },
+  {
+    "model": "home.testmodeladmin",
+    "pk": 3,
+    "fields": {
+      "title": "Test modaleadmin 3"
+    }
+  },
+  {
+    "model": "home.genericsetting",
+    "pk": 1,
+    "fields": {
+      "name": "A generic setting"
+    }
+  },
+  {
+    "model": "wagtailcore.site",
+    "fields": {
+      "hostname": "localhost",
+      "port": 80,
+      "site_name": "",
+      "root_page": 3,
+      "is_default_site": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "fields": {
+      "password": "pbkdf2_sha256$600000$REYX7urq9gkEyhIC9y1T4N$qO9b/4RYPkUHy4m2BvZIco0bx+veQuul3YKeY1pZhro=",
+      "last_login": "2023-11-05T14:21:43.889Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@admin.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2023-11-04T15:39:09.613Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "wagtailcore.page",
+    "pk": 1,
+    "fields": {
+      "path": "0001",
+      "depth": 1,
+      "numchild": 1,
+      "translation_key": "2cfff098-3021-4796-9fdf-0bfbe9ab6ead",
+      "locale": 1,
+      "latest_revision": null,
+      "live": true,
+      "has_unpublished_changes": false,
+      "first_published_at": null,
+      "last_published_at": null,
+      "live_revision": null,
+      "go_live_at": null,
+      "expire_at": null,
+      "expired": false,
+      "locked": false,
+      "locked_at": null,
+      "locked_by": null,
+      "title": "Root",
+      "draft_title": "Root",
+      "slug": "root",
+      "content_type": ["wagtailcore", "page"],
+      "url_path": "/",
+      "owner": null,
+      "seo_title": "",
+      "show_in_menus": false,
+      "search_description": "",
+      "latest_revision_created_at": null,
+      "alias_of": null
+    }
+  },
+  {
+    "model": "wagtailcore.page",
+    "pk": 3,
+    "fields": {
+      "path": "00010001",
+      "depth": 2,
+      "numchild": 0,
+      "translation_key": "3cfe4a9e-9da0-4b9a-b806-208e815cbad8",
+      "locale": 1,
+      "latest_revision": null,
+      "live": true,
+      "has_unpublished_changes": false,
+      "first_published_at": null,
+      "last_published_at": null,
+      "live_revision": null,
+      "go_live_at": null,
+      "expire_at": null,
+      "expired": false,
+      "locked": false,
+      "locked_at": null,
+      "locked_by": null,
+      "title": "Home",
+      "draft_title": "Home",
+      "slug": "home",
+      "content_type": ["home", "homepage"],
+      "url_path": "/home/",
+      "owner": null,
+      "seo_title": "",
+      "show_in_menus": false,
+      "search_description": "",
+      "latest_revision_created_at": null,
+      "alias_of": null
+    }
+  },
+  {
+    "model": "wagtailimages.image",
+    "pk": 1,
+    "fields": {
+      "collection": 1,
+      "title": "Image one",
+      "file": "original_images/one.jpg",
+      "width": 1920,
+      "height": 1080,
+      "created_at": "2023-11-04T16:42:55.525Z",
+      "uploaded_by_user": ["admin"],
+      "focal_point_x": null,
+      "focal_point_y": null,
+      "focal_point_width": null,
+      "focal_point_height": null,
+      "file_size": 1463326,
+      "file_hash": "ae4a8dd31d4f2d52f2a4770837d5a2b3a266cb43"
+    }
+  },
+  {
+    "model": "wagtailimages.image",
+    "pk": 2,
+    "fields": {
+      "collection": 1,
+      "title": "Image two",
+      "file": "original_images/two.jpg",
+      "width": 1920,
+      "height": 1080,
+      "created_at": "2023-11-04T16:45:19.532Z",
+      "uploaded_by_user": ["admin"],
+      "focal_point_x": null,
+      "focal_point_y": null,
+      "focal_point_width": null,
+      "focal_point_height": null,
+      "file_size": 1453767,
+      "file_hash": "c4e7f1710b07b7d2552f5efe9160f274bffda478"
+    }
+  },
+  {
+    "model": "wagtailimages.image",
+    "pk": 3,
+    "fields": {
+      "collection": 1,
+      "title": "Image three",
+      "file": "original_images/three.jpg",
+      "width": 1920,
+      "height": 1080,
+      "created_at": "2023-11-04T16:45:19.662Z",
+      "uploaded_by_user": ["admin"],
+      "focal_point_x": null,
+      "focal_point_y": null,
+      "focal_point_width": null,
+      "focal_point_height": null,
+      "file_size": 1338268,
+      "file_hash": "a3d4529da8e5134bf071b75a199dde19114ac1e1"
+    }
+  },
+  {
+    "model": "wagtailimages.image",
+    "pk": 4,
+    "fields": {
+      "collection": 1,
+      "title": "Image four",
+      "file": "original_images/four.jpg",
+      "width": 1920,
+      "height": 1080,
+      "created_at": "2023-11-04T16:45:19.793Z",
+      "uploaded_by_user": ["admin"],
+      "focal_point_x": null,
+      "focal_point_y": null,
+      "focal_point_width": null,
+      "focal_point_height": null,
+      "file_size": 1423506,
+      "file_hash": "3538892ffe9bf8b11b59c7e2bad2bd6e0d3f8dba"
+    }
+  },
+  {
+    "model": "wagtaildocs.document",
+    "pk": 2,
+    "fields": {
+      "collection": 1,
+      "title": "sample PDF",
+      "file": "documents/sample.pdf",
+      "created_at": "2023-11-04T16:44:48.158Z",
+      "uploaded_by_user": ["admin"],
+      "file_size": 3028,
+      "file_hash": "bfd009f500c057195ffde66fae64f92fa5f59b72"
+    }
+  },
+  {
+    "model": "wagtailusers.userprofile",
+    "pk": 1,
+    "fields": {
+      "user": ["admin"],
+      "submitted_notifications": true,
+      "approved_notifications": true,
+      "rejected_notifications": true,
+      "updated_comments_notifications": true,
+      "preferred_language": "",
+      "current_time_zone": "",
+      "avatar": "",
+      "dismissibles": {},
+      "theme": "system"
+    }
+  },
+  {
+    "model": "home.sitesetting",
+    "pk": 1,
+    "fields": {
+      "site": ["localhost", 80],
+      "name": "A site setting"
+    }
+  },
+  {
+    "model": "home.homepage",
+    "pk": 3,
+    "fields": {
+      "page_ptr": 3
+    }
+  }
+]
