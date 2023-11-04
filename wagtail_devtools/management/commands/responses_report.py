@@ -1,5 +1,3 @@
-# app-name/management/commands/report_responses.py
-
 import requests
 
 from django.apps import apps
@@ -118,7 +116,7 @@ class Command(BaseCommand):
                 )
                 return
 
-            # Reports
+            # Reports models
             self.report_admin_home(session, options)
             self.report_page(session, options)
             self.report_snippets(session, options)
@@ -126,6 +124,14 @@ class Command(BaseCommand):
             self.report_settings_models(session, options)
             self.report_documents(session, options)
             self.report_images(session, options)
+
+            # Reports admin pages
+            self.report_search_page(session, options)
+            self.report_locked_pages(session, options)
+            self.report_workflows(session, options)
+            self.report_workflow_tasks(session, options)
+            self.report_site_history(session, options)
+            self.report_aging_pages(session, options)
 
     def report_admin_home(self, session, options):
         self.out_message_info("\nChecking the admin home page (Dashboard) ...")
@@ -232,6 +238,78 @@ class Command(BaseCommand):
 
         image_model = get_image_model()
         self.out_models(session, options, [image_model])
+
+    def report_search_page(self, session, options):
+        self.out_message_info("\nChecking the Admin SEARCH page ...")
+
+        url = f"{options['host']}/admin/pages/search/"
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message_success(f"{url} ← 200")
+        else:
+            self.out_message_error(f"{url} ← {response.status_code}")
+
+    def report_locked_pages(self, session, options):
+        self.out_message_info("\nChecking the LOCKED PAGES page ...")
+
+        url = f"{options['host']}/admin/reports/locked/"
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message_success(f"{url} ← 200")
+        else:
+            self.out_message_error(f"{url} ← {response.status_code}")
+
+    def report_workflows(self, session, options):
+        self.out_message_info("\nChecking the WORKFLOWS page ...")
+
+        url = f"{options['host']}/admin/reports/workflow/"
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message_success(f"{url} ← 200")
+        else:
+            self.out_message_error(f"{url} ← {response.status_code}")
+
+    def report_workflow_tasks(self, session, options):
+        self.out_message_info("\nChecking the WORKFLOW TASKS page ...")
+
+        url = f"{options['host']}/admin/reports/workflow_tasks/"
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message_success(f"{url} ← 200")
+        else:
+            self.out_message_error(f"{url} ← {response.status_code}")
+
+    def report_site_history(self, session, options):
+        self.out_message_info("\nChecking the SITE HISTORY page ...")
+
+        url = f"{options['host']}/admin/reports/site-history/"
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message_success(f"{url} ← 200")
+        else:
+            self.out_message_error(f"{url} ← {response.status_code}")
+
+    def report_aging_pages(self, session, options):
+        self.out_message_info("\nChecking the AGING PAGES page ...")
+
+        url = f"{options['host']}/admin/reports/aging-pages/"
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message_success(f"{url} ← 200")
+        else:
+            self.out_message_error(f"{url} ← {response.status_code}")
 
     def out_models(self, session, options, models):
         for model in models:
