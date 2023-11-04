@@ -6,11 +6,15 @@ from wagtail.images.models import Rendition
 
 
 class Command(BaseCommand):
-    help = "Create fixtures for Wagtail >= 4.1, < 5.2"
+    help = "Create or load fixtures for Wagtail >= 4.1, < 5.2"
 
     def add_arguments(self, parser):
-        parser.add_argument("--load", action="store_true", help="Load test fixtures.")
-        parser.add_argument("--dump", action="store_true", help="Dump test fixtures.")
+        parser.add_argument(
+            "-l", "--load", action="store_true", help="Load test fixtures."
+        )
+        parser.add_argument(
+            "-d", "--dump", action="store_true", help="Dump test fixtures."
+        )
 
     def handle(self, *args, **options):
         self.load_fixtures() if options["load"] else None
@@ -25,6 +29,7 @@ class Command(BaseCommand):
             "wagtail_devtools_test.GenericSetting",
             "wagtail_devtools_test.SiteSetting",
             "wagtailimages.image",
+            "auth.User",
         ]
 
         if not WAGTAIL_VERSION >= (5, 2):
@@ -51,7 +56,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Successfully dumped data"))
 
     def load_fixtures(self):
-        if WAGTAIL_VERSION >= (5, 2):
+        if not WAGTAIL_VERSION >= (5, 2):
             file_name = "wagtail_devtools/test/fixtures/data/wagtail_less_52_data.json"
             out = "Loading data for Wagtail>=5.2"
         else:
