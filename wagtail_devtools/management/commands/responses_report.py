@@ -2,7 +2,7 @@ import requests
 
 from django.apps import apps
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.admin.utils import get_admin_base_url
 from wagtail.contrib.settings.registry import registry as settings_registry
@@ -39,11 +39,6 @@ class Command(BaseCommand):
 
     help = "Checks the admin and frontend responses for models including pages, snippets, settings and modeladmin."
 
-    if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
-        registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
-    else:
-        registered_modeladmin = []
-
     def add_arguments(self, parser):
         parser.add_argument(
             "username",
@@ -66,16 +61,20 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Disabled if not running in DEBUG mode
         if not settings.DEBUG:
-            self.out_message_error(
-                "Command is only available in DEBUG mode. Set DEBUG=True in your settings to enable it."
+            raise CommandError(
+                "This command is only available in DEBUG mode. Set DEBUG=True in your settings to enable it."
             )
-            return
 
         self.report_lines = []
         self.checked_url = options["host"]
         self.report_url = (
             options["report_url"].strip("/") if options["report_url"] else None
         )
+
+        if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
+            self.registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
+        else:
+            self.registered_modeladmin = []
 
         with requests.Session() as session:
             url = f"{options['host']}/admin/login/"
