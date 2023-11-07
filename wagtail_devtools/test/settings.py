@@ -12,8 +12,6 @@ import os
 
 import dj_database_url
 
-from wagtail import VERSION as WAGTAIL_VERSION
-
 
 # Build paths inside the project like this: os.path.join(PROJECT_DIR, ...)
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +26,7 @@ SECRET_KEY = "c6u0-9c!7nilj_ysatsda0(f@e_2mws2f!6m0n^o*4#*q#kzp)"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "testserver"]
+ALLOWED_HOSTS = ["localhost", "testserver", "127.0.0.1"]
 
 
 # Application definition
@@ -36,6 +34,7 @@ ALLOWED_HOSTS = ["localhost", "testserver"]
 INSTALLED_APPS = [
     "wagtail_devtools",
     "wagtail_devtools.test",
+    # "wagtail_devtools.search",
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -63,9 +62,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
 ]
-
-if WAGTAIL_VERSION >= (5, 2):
-    INSTALLED_APPS.pop(INSTALLED_APPS.index("wagtail.contrib.modeladmin"))
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -97,17 +93,6 @@ TEMPLATES = [
 ]
 
 
-# Using DatabaseCache to make sure that the cache is cleared between tests.
-# This prevents false-positives in some wagtail core tests where we are
-# changing the 'wagtail_root_paths' key which may cause future tests to fail.
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "cache",
-    }
-}
-
-
 # don't use the intentionally slow default password hasher
 PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
 
@@ -136,13 +121,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/stable/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/London"
 
 USE_I18N = True
 
-# USE_L10N = True # this isn't required here, removed in Django 5.0
+# USE_L10N = True # this isn't required here and removed in Django 5.0
 
 USE_TZ = True
 
@@ -168,3 +153,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
+
+DEVTOOLS_REGISTERED_MODELADMIN = [
+    "wagtail_devtools_test.TestModelAdmin",
+]

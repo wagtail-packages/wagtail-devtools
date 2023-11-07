@@ -2,7 +2,6 @@
 
 import argparse
 import os
-import shutil
 import sys
 import warnings
 
@@ -56,10 +55,11 @@ def runtests():
     try:
         execute_from_command_line(argv)
     finally:
-        from wagtail.test.settings import MEDIA_ROOT, STATIC_ROOT
+        pass
+        # from wagtail.test.settings import MEDIA_ROOT, STATIC_ROOT
 
-        shutil.rmtree(STATIC_ROOT, ignore_errors=True)
-        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        # shutil.rmtree(STATIC_ROOT, ignore_errors=True)
+        # shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 from django.db import models  # noqa: F401
-from wagtail import VERSION as WAGTAIL_VERSION
 from wagtail.contrib.settings.models import (
     BaseGenericSetting,
     BaseSiteSetting,
@@ -21,13 +20,11 @@ class TestSnippet(models.Model):
         return self.title
 
 
-if not WAGTAIL_VERSION >= (5, 2):
+class TestModelAdmin(models.Model):
+    title = models.CharField(max_length=255)
 
-    class TestModelAdmin(models.Model):
-        title = models.CharField(max_length=255)
-
-        def __str__(self):
-            return self.title
+    def __str__(self):
+        return self.title
 
 
 @register_setting
