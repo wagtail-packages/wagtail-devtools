@@ -214,13 +214,18 @@ class Command(BaseCommand):
         self.out_models(session, options, snippet_models)
 
     def report_modeladmin(self, session, options):
+        if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
+            registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
+        else:
+            registered_modeladmin = []
+
         self.out_message("\nChecking all MODELADMIN edit pages ...", "HTTP_INFO")
 
         modeladmin_models = []
         for model in apps.get_models():
             app = model._meta.app_label
             name = model.__name__
-            if f"{app}.{name}" in self.registered_modeladmin:
+            if f"{app}.{name}" in registered_modeladmin:
                 modeladmin_models.append(apps.get_model(app, name))
 
         self.out_models(session, options, modeladmin_models)
