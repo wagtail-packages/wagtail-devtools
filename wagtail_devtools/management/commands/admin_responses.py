@@ -133,19 +133,20 @@ class Command(BaseCommand):
             self.report_aging_pages(session, options)
 
     def report_admin_home(self, session, options):
-        self.out_message_info("\nChecking the admin home page (Dashboard) ...")
+        self.out_message("\nChecking the admin home page (Dashboard) ...", "HTTP_INFO")
 
         admin_home_resp = session.get(f"{options['host']}/admin/")
 
         if admin_home_resp.status_code == 200:
             message = "\nAdmin home page ↓"
             self.out_message(message)
-            self.out_message_success(f"{options['host']}/admin/ ← 200")
+            self.out_message(f"{options['host']}/admin/ ← 200", "SUCCESS")
         else:
             message = "\nAdmin home page ↓"
             self.out_message(message)
-            self.out_message_error(
-                f"{options['host']}/admin/ ← {admin_home_resp.status_code}"
+            self.out_message(
+                f"{options['host']}/admin/ ← {admin_home_resp.status_code}",
+                "ERROR",
             )
 
     def report_page(self, session, options):
@@ -169,7 +170,7 @@ class Command(BaseCommand):
 
         # Print the index
         message = f"\nChecking the admin and frontend responses of {len(results)} page types ..."
-        self.out_message_info(message)
+        self.out_message(message, "HTTP_INFO")
 
         for count, content_type in enumerate(sorted(model_index)):
             message = (
@@ -187,31 +188,33 @@ class Command(BaseCommand):
             # Check the admin response
             response = session.get(page["editor_url"])
             if response.status_code != 200:
-                self.out_message_error(f"{page['editor_url']} ← {response.status_code}")
+                self.out_message(
+                    f"{page['editor_url']} ← {response.status_code}", "ERROR"
+                )
             else:
-                self.out_message_success(f"{page['editor_url']} ← 200")
+                self.out_message(f"{page['editor_url']} ← 200", "SUCCESS")
 
             # Check the frontend response
             response = session.get(page["url"])
             if response.status_code == 200:
-                self.out_message_success(f"{page['url']} ← 200")
+                self.out_message(f"{page['url']} ← 200", "SUCCESS")
             else:
                 if response.status_code == 404:
                     message = (
                         f"{page['url']} ← {response.status_code} probably a draft page"
                     )
-                    self.out_message_warning(message)
+                    self.out_message(message, "WARNING")
                 else:
-                    self.out_message_error(f"{page['url']} ← {response.status_code}")
+                    self.out_message(f"{page['url']} ← {response.status_code}", "ERROR")
 
     def report_snippets(self, session, options):
-        self.out_message_info("\nChecking all SNIPPETS models edit pages ...")
+        self.out_message("\nChecking all SNIPPETS models edit pages ...", "HTTP_INFO")
 
         snippet_models = get_snippet_models()
         self.out_models(session, options, snippet_models)
 
     def report_modeladmin(self, session, options):
-        self.out_message_info("\nChecking all MODELADMIN edit pages ...")
+        self.out_message("\nChecking all MODELADMIN edit pages ...", "HTTP_INFO")
 
         modeladmin_models = []
         for model in apps.get_models():
@@ -223,92 +226,92 @@ class Command(BaseCommand):
         self.out_models(session, options, modeladmin_models)
 
     def report_settings_models(self, session, options):
-        self.out_message_info("\nChecking all SETTINGS edit pages ...")
+        self.out_message("\nChecking all SETTINGS edit pages ...", "HTTP_INFO")
         self.out_models(session, options, settings_registry)
 
     def report_documents(self, session, options):
-        self.out_message_info("\nChecking the DOCUMENTS edit page ...")
+        self.out_message("\nChecking the DOCUMENTS edit page ...", "HTTP_INFO")
 
         document_model = get_document_model()
         self.out_models(session, options, [document_model])
 
     def report_images(self, session, options):
-        self.out_message_info("\nChecking the IMAGES edit page ...")
+        self.out_message("\nChecking the IMAGES edit page ...", "HTTP_INFO")
 
         image_model = get_image_model()
         self.out_models(session, options, [image_model])
 
     def report_search_page(self, session, options):
-        self.out_message_info("\nChecking the Admin SEARCH page ...")
+        self.out_message("\nChecking the Admin SEARCH page ...", "HTTP_INFO")
 
         url = f"{options['host']}/admin/pages/search/"
 
         response = session.get(url)
 
         if response.status_code == 200:
-            self.out_message_success(f"{url} ← 200")
+            self.out_message(f"{url} ← 200", "SUCCESS")
         else:
-            self.out_message_error(f"{url} ← {response.status_code}")
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_locked_pages(self, session, options):
-        self.out_message_info("\nChecking the LOCKED PAGES page ...")
+        self.out_message("\nChecking the LOCKED PAGES page ...", "HTTP_INFO")
 
         url = f"{options['host']}/admin/reports/locked/"
 
         response = session.get(url)
 
         if response.status_code == 200:
-            self.out_message_success(f"{url} ← 200")
+            self.out_message(f"{url} ← 200", "SUCCESS")
         else:
-            self.out_message_error(f"{url} ← {response.status_code}")
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_workflows(self, session, options):
-        self.out_message_info("\nChecking the WORKFLOWS page ...")
+        self.out_message("\nChecking the WORKFLOWS page ...", "HTTP_INFO")
 
         url = f"{options['host']}/admin/reports/workflow/"
 
         response = session.get(url)
 
         if response.status_code == 200:
-            self.out_message_success(f"{url} ← 200")
+            self.out_message(f"{url} ← 200", "SUCCESS")
         else:
-            self.out_message_error(f"{url} ← {response.status_code}")
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_workflow_tasks(self, session, options):
-        self.out_message_info("\nChecking the WORKFLOW TASKS page ...")
+        self.out_message("\nChecking the WORKFLOW TASKS page ...", "HTTP_INFO")
 
         url = f"{options['host']}/admin/reports/workflow_tasks/"
 
         response = session.get(url)
 
         if response.status_code == 200:
-            self.out_message_success(f"{url} ← 200")
+            self.out_message(f"{url} ← 200", "SUCCESS")
         else:
-            self.out_message_error(f"{url} ← {response.status_code}")
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_site_history(self, session, options):
-        self.out_message_info("\nChecking the SITE HISTORY page ...")
+        self.out_message("\nChecking the SITE HISTORY page ...", "HTTP_INFO")
 
         url = f"{options['host']}/admin/reports/site-history/"
 
         response = session.get(url)
 
         if response.status_code == 200:
-            self.out_message_success(f"{url} ← 200")
+            self.out_message(f"{url} ← 200", "SUCCESS")
         else:
-            self.out_message_error(f"{url} ← {response.status_code}")
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_aging_pages(self, session, options):
-        self.out_message_info("\nChecking the AGING PAGES page ...")
+        self.out_message("\nChecking the AGING PAGES page ...", "HTTP_INFO")
 
         url = f"{options['host']}/admin/reports/aging-pages/"
 
         response = session.get(url)
 
         if response.status_code == 200:
-            self.out_message_success(f"{url} ← 200")
+            self.out_message(f"{url} ← 200", "SUCCESS")
         else:
-            self.out_message_error(f"{url} ← {response.status_code}")
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def out_models(self, session, options, models):
         for model in models:
@@ -325,45 +328,26 @@ class Command(BaseCommand):
             response = session.get(url)
 
             if response.status_code == 200:
-                self.out_message_success(f"{url} ← 200")
+                self.out_message(f"{url} ← 200", "SUCCESS")
             else:
-                self.out_message_error(f"{url} ← {response.status_code}")
+                self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
-    def out_message(self, message):
+    def out_message(self, message, style=None):
         if self.report_url:
             message = message.replace(self.checked_url, self.report_url)
         if message not in self.report_lines:
             self.report_lines.append(message)
-        self.stdout.write(message)
-
-    def out_message_info(self, message):
-        if self.report_url:
-            message = message.replace(self.checked_url, self.report_url)
-        if message not in self.report_lines:
-            self.report_lines.append(message)
-        self.stdout.write(self.style.HTTP_INFO(message))
-        self.stdout.write("=" * len(message))
-
-    def out_message_error(self, message):
-        if self.report_url:
-            message = message.replace(self.checked_url, self.report_url)
-        if message not in self.report_lines:
-            self.report_lines.append(message)
-        self.stderr.write(self.style.ERROR(message))
-
-    def out_message_success(self, message):
-        if self.report_url:
-            message = message.replace(self.checked_url, self.report_url)
-        if message not in self.report_lines:
-            self.report_lines.append(message)
-        self.stdout.write(self.style.SUCCESS(message))
-
-    def out_message_warning(self, message):
-        if self.report_url:
-            message = message.replace(self.checked_url, self.report_url)
-        if message not in self.report_lines:
-            self.report_lines.append(message)
-        self.stdout.write(self.style.WARNING(message))
+        if style and style == "HTTP_INFO":
+            self.stdout.write(self.style.HTTP_INFO(message))
+            self.stdout.write("=" * len(message))
+        elif style and style == "ERROR":
+            self.stderr.write(self.style.ERROR(message))
+        elif style and style == "SUCCESS":
+            self.stdout.write(self.style.SUCCESS(message))
+        elif style and style == "WARNING":
+            self.stdout.write(self.style.WARNING(message))
+        else:
+            self.stdout.write(message)
 
     @staticmethod
     def filter_page_models(page_models):
