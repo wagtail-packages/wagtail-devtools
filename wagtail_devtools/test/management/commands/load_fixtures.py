@@ -10,6 +10,7 @@ from wagtail.images.models import Image as WagtailImage
 
 from wagtail_devtools.test.models import (
     GenericSetting,
+    HomePage,
     SiteSetting,
     TestModelAdmin,
     TestSnippet,
@@ -39,6 +40,12 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING("Superuser already exists. Skipping creation.")
             )
+
+    def update_home_page(self):
+        self.stdout.write("Updating home page.")
+
+        home_page = HomePage.objects.first()
+        home_page.title = "Home Page"
 
     def create_snippets(self):
         self.stdout.write("Creating snippets.")
