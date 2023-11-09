@@ -14,44 +14,30 @@ from wagtail.snippets.models import get_snippet_models
 
 class Command(BaseCommand):
     """
-    Checks the admin and frontend responses for models incl pages, snippets, settings and modeladmin.
-
     The command is only available in DEBUG mode. Set DEBUG=True in your settings to enable it.
 
     Basic usage:
-        python manage.py report_responses <username> <password>
+        python manage.py admin_responses <username> <password>
 
     Options:
-
         --host
             The URL to check. Defaults to the value of ADMIN_BASE_URL in settings.
-
         --report-url
             The URL to use for the report. e.g. http://staging.example.com
 
-    Example:
-        python manage.py report_responses <username> <password> \
-            --report-url http://staging.example.com
+    When using the --report-url option the displayed URLs in the report will be altered.
+    This tested url will still use --host option.
 
-        This will alter the displayed URLs in the report but the tested URL will still
-        use the --host option.
+    E.G. python manage.py admin_responses <username> <password> --report-url http://staging.example.com
     """
 
-    help = "Checks the admin and frontend responses for models including pages, snippets, settings and modeladmin."
+    help = "Checks the admin and frontend responses for models including pages, snippets, settings and modeladmin and more."
 
     def add_arguments(self, parser):
+        parser.add_argument("username", help="The username to use for login")
+        parser.add_argument("password", help="The password to use for login")
         parser.add_argument(
-            "username",
-            help="The username to use for login",
-        )
-        parser.add_argument(
-            "password",
-            help="The password to use for login",
-        )
-        parser.add_argument(
-            "--host",
-            default=get_admin_base_url(),
-            help="The URL to check",
+            "--host", default=get_admin_base_url(), help="The URL to check"
         )
         parser.add_argument(
             "--report-url",
@@ -70,11 +56,6 @@ class Command(BaseCommand):
         self.report_url = (
             options["report_url"].strip("/") if options["report_url"] else None
         )
-
-        if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
-            self.registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
-        else:
-            self.registered_modeladmin = []
 
         with requests.Session() as session:
             url = f"{options['host']}/admin/login/"
@@ -115,41 +96,92 @@ class Command(BaseCommand):
                 )
                 return
 
-            # Reports models
-            self.report_admin_home(session, options)
-            self.report_page(session, options)
-            self.report_snippets(session, options)
-            self.report_modeladmin(session, options)
-            self.report_settings_models(session, options)
-            self.report_documents(session, options)
-            self.report_images(session, options)
-
-            # Reports admin pages
-            self.report_search_page(session, options)
-            self.report_locked_pages(session, options)
-            self.report_workflows(session, options)
-            self.report_workflow_tasks(session, options)
-            self.report_site_history(session, options)
-            self.report_aging_pages(session, options)
-
-    def report_admin_home(self, session, options):
-        self.out_message("\nChecking the admin home page (Dashboard) ...", "HTTP_INFO")
-
-        admin_home_resp = session.get(f"{options['host']}/admin/")
-
-        if admin_home_resp.status_code == 200:
-            message = "\nAdmin home page ↓"
-            self.out_message(message)
-            self.out_message(f"{options['host']}/admin/ ← 200", "SUCCESS")
-        else:
-            message = "\nAdmin home page ↓"
-            self.out_message(message)
-            self.out_message(
-                f"{options['host']}/admin/ ← {admin_home_resp.status_code}",
-                "ERROR",
+            # Reports admin list pages
+            self.report_admin_list_pages(
+                session, "admin home page (Dashboard)", f"{options['host']}/admin/"
+            )
+            self.report_admin_list_pages(
+                session, "SEARCH", f"{options['host']}/admin/pages/search/"
+            )
+            self.report_admin_list_pages(
+                session, "LOCKED PAGES", f"{options['host']}/admin/reports/locked/"
+            )
+            self.report_admin_list_pages(
+                session, "WORKFLOWS", f"{options['host']}/admin/reports/workflow/"
+            )
+            self.report_admin_list_pages(
+                session,
+                "WORKFLOW TASKS",
+                f"{options['host']}/admin/reports/workflow_tasks/",
+            )
+            self.report_admin_list_pages(
+                session,
+                "SITE HISTORY",
+                f"{options['host']}/admin/reports/site-history/",
+            )
+            self.report_admin_list_pages(
+                session, "AGING PAGES", f"{options['host']}/admin/reports/aging-pages/"
             )
 
+            # Reports models
+            self.report_documents(session, options)
+            self.report_images(session, options)
+            self.report_settings_models(session, options)
+            self.report_snippets(session, options)
+            self.report_modeladmin(session, options)
+            self.report_page(session, options)
+
+    def report_admin_list_pages(self, session, title, url):
+        self.out_message(f"\nChecking the {title} page ...", "HTTP_INFO")
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message(f"{url} ← 200", "SUCCESS")
+        else:
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
+
+    def report_documents(self, session, options):
+        self.out_message("\nChecking the DOCUMENTS edit page ...", "HTTP_INFO")
+
+        document_model = get_document_model()
+        self.out_models(session, options, [document_model])
+
+    def report_images(self, session, options):
+        self.out_message("\nChecking the IMAGES edit page ...", "HTTP_INFO")
+
+        image_model = get_image_model()
+        self.out_models(session, options, [image_model])
+
+    def report_settings_models(self, session, options):
+        self.out_message("\nChecking all SETTINGS edit pages ...", "HTTP_INFO")
+        self.out_models(session, options, settings_registry)
+
+    def report_snippets(self, session, options):
+        self.out_message("\nChecking all SNIPPETS models edit pages ...", "HTTP_INFO")
+
+        snippet_models = get_snippet_models()
+        self.out_models(session, options, snippet_models)
+
+    def report_modeladmin(self, session, options):
+        if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
+            registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
+        else:
+            registered_modeladmin = []
+
+        self.out_message("\nChecking all MODELADMIN edit pages ...", "HTTP_INFO")
+
+        modeladmin_models = []
+        for model in apps.get_models():
+            app = model._meta.app_label
+            name = model.__name__
+            if f"{app}.{name}" in registered_modeladmin:
+                modeladmin_models.append(apps.get_model(app, name))
+
+        self.out_models(session, options, modeladmin_models)
+
     def report_page(self, session, options):
+        """Check and report the admin and frontend responses for all page model types."""
         page_models = self.filter_page_models(get_page_models())
 
         model_index = []
@@ -168,14 +200,14 @@ class Command(BaseCommand):
                     }
                 )
 
-        # Print the index
         message = f"\nChecking the admin and frontend responses of {len(results)} page types ..."
         self.out_message(message, "HTTP_INFO")
 
         for count, content_type in enumerate(sorted(model_index)):
+            # Also add padding for the single digit numbers
             message = (
                 f" {count + 1}. {content_type}"
-                if count <= 8  # Fixup the index number alignment
+                if count <= 8
                 else f"{count + 1}. {content_type}"
             )
             self.out_message(message)
@@ -206,117 +238,6 @@ class Command(BaseCommand):
                     self.out_message(message, "WARNING")
                 else:
                     self.out_message(f"{page['url']} ← {response.status_code}", "ERROR")
-
-    def report_snippets(self, session, options):
-        self.out_message("\nChecking all SNIPPETS models edit pages ...", "HTTP_INFO")
-
-        snippet_models = get_snippet_models()
-        self.out_models(session, options, snippet_models)
-
-    def report_modeladmin(self, session, options):
-        if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
-            registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
-        else:
-            registered_modeladmin = []
-
-        self.out_message("\nChecking all MODELADMIN edit pages ...", "HTTP_INFO")
-
-        modeladmin_models = []
-        for model in apps.get_models():
-            app = model._meta.app_label
-            name = model.__name__
-            if f"{app}.{name}" in registered_modeladmin:
-                modeladmin_models.append(apps.get_model(app, name))
-
-        self.out_models(session, options, modeladmin_models)
-
-    def report_settings_models(self, session, options):
-        self.out_message("\nChecking all SETTINGS edit pages ...", "HTTP_INFO")
-        self.out_models(session, options, settings_registry)
-
-    def report_documents(self, session, options):
-        self.out_message("\nChecking the DOCUMENTS edit page ...", "HTTP_INFO")
-
-        document_model = get_document_model()
-        self.out_models(session, options, [document_model])
-
-    def report_images(self, session, options):
-        self.out_message("\nChecking the IMAGES edit page ...", "HTTP_INFO")
-
-        image_model = get_image_model()
-        self.out_models(session, options, [image_model])
-
-    def report_search_page(self, session, options):
-        self.out_message("\nChecking the Admin SEARCH page ...", "HTTP_INFO")
-
-        url = f"{options['host']}/admin/pages/search/"
-
-        response = session.get(url)
-
-        if response.status_code == 200:
-            self.out_message(f"{url} ← 200", "SUCCESS")
-        else:
-            self.out_message(f"{url} ← {response.status_code}", "ERROR")
-
-    def report_locked_pages(self, session, options):
-        self.out_message("\nChecking the LOCKED PAGES page ...", "HTTP_INFO")
-
-        url = f"{options['host']}/admin/reports/locked/"
-
-        response = session.get(url)
-
-        if response.status_code == 200:
-            self.out_message(f"{url} ← 200", "SUCCESS")
-        else:
-            self.out_message(f"{url} ← {response.status_code}", "ERROR")
-
-    def report_workflows(self, session, options):
-        self.out_message("\nChecking the WORKFLOWS page ...", "HTTP_INFO")
-
-        url = f"{options['host']}/admin/reports/workflow/"
-
-        response = session.get(url)
-
-        if response.status_code == 200:
-            self.out_message(f"{url} ← 200", "SUCCESS")
-        else:
-            self.out_message(f"{url} ← {response.status_code}", "ERROR")
-
-    def report_workflow_tasks(self, session, options):
-        self.out_message("\nChecking the WORKFLOW TASKS page ...", "HTTP_INFO")
-
-        url = f"{options['host']}/admin/reports/workflow_tasks/"
-
-        response = session.get(url)
-
-        if response.status_code == 200:
-            self.out_message(f"{url} ← 200", "SUCCESS")
-        else:
-            self.out_message(f"{url} ← {response.status_code}", "ERROR")
-
-    def report_site_history(self, session, options):
-        self.out_message("\nChecking the SITE HISTORY page ...", "HTTP_INFO")
-
-        url = f"{options['host']}/admin/reports/site-history/"
-
-        response = session.get(url)
-
-        if response.status_code == 200:
-            self.out_message(f"{url} ← 200", "SUCCESS")
-        else:
-            self.out_message(f"{url} ← {response.status_code}", "ERROR")
-
-    def report_aging_pages(self, session, options):
-        self.out_message("\nChecking the AGING PAGES page ...", "HTTP_INFO")
-
-        url = f"{options['host']}/admin/reports/aging-pages/"
-
-        response = session.get(url)
-
-        if response.status_code == 200:
-            self.out_message(f"{url} ← 200", "SUCCESS")
-        else:
-            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def out_models(self, session, options, models):
         for model in models:
