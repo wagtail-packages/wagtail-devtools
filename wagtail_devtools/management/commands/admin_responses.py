@@ -2,6 +2,7 @@ import requests
 
 from django.apps import apps
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.admin.utils import get_admin_base_url
@@ -90,7 +91,7 @@ class Command(BaseCommand):
             ).content
 
             if "Forgotten password?" in logged_in.decode("utf-8"):
-                # Login failed because the response isn't the Dashboard page
+                # Login failed because the response is the forgotten password page
                 self.out_message_error(
                     f"Could not log in to {options['host']}. Is the username and password correct?"
                 )
@@ -107,12 +108,26 @@ class Command(BaseCommand):
                 session, "LOCKED PAGES", f"{options['host']}/admin/reports/locked/"
             )
             self.report_admin_list_pages(
-                session, "WORKFLOWS", f"{options['host']}/admin/reports/workflow/"
+                session, "WORKFLOWS LIST", f"{options['host']}/admin/reports/workflow/"
+            )
+            self.report_admin_app_model(
+                session,
+                options,
+                "WORKFLOWS EDIT",
+                app_label="wagtailcore",
+                model_name="Workflow",
             )
             self.report_admin_list_pages(
                 session,
-                "WORKFLOW TASKS",
+                "WORKFLOWS TASKS",
                 f"{options['host']}/admin/reports/workflow_tasks/",
+            )
+            self.report_admin_app_model(
+                session,
+                options,
+                "WORKFLOWS TASK EDIT",
+                app_label="wagtailcore",
+                model_name="Task",
             )
             self.report_admin_list_pages(
                 session,
@@ -124,6 +139,22 @@ class Command(BaseCommand):
             )
 
             # Reports models
+            self.report_admin_list_pages(
+                session, "USERS", f"{options['host']}/admin/users/"
+            )
+            self.report_users(session, options)
+            self.report_admin_list_pages(
+                session, "GROUPS", f"{options['host']}/admin/groups/"
+            )
+            self.report_groups(session, options)
+            self.report_admin_list_pages(
+                session, "SITES", f"{options['host']}/admin/sites/"
+            )
+            self.report_sites(session, options)
+            self.report_admin_list_pages(
+                session, "COLLECTIONS", f"{options['host']}/admin/collections/"
+            )
+            self.report_collections(session, options)
             self.report_documents(session, options)
             self.report_images(session, options)
             self.report_settings_models(session, options)
@@ -140,6 +171,36 @@ class Command(BaseCommand):
             self.out_message(f"{url} ← 200", "SUCCESS")
         else:
             self.out_message(f"{url} ← {response.status_code}", "ERROR")
+
+    def report_admin_app_model(self, session, options, title, app_label, model_name):
+        self.out_message(f"\nChecking the {title} page ...", "HTTP_INFO")
+
+        model = apps.get_model(app_label, model_name)
+        self.out_models(session, options, [model])
+
+    def report_users(self, session, options):
+        self.out_message("\nChecking the USERS EDIT page ...", "HTTP_INFO")
+
+        user_model = get_user_model()
+        self.out_models(session, options, [user_model])
+
+    def report_groups(self, session, options):
+        self.out_message("\nChecking the GROUPS EDIT page ...", "HTTP_INFO")
+
+        group_model = apps.get_model("auth", "Group")
+        self.out_models(session, options, [group_model])
+
+    def report_sites(self, session, options):
+        self.out_message("\nChecking the SITES EDIT page ...", "HTTP_INFO")
+
+        site_model = apps.get_model("wagtailcore", "Site")
+        self.out_models(session, options, [site_model])
+
+    def report_collections(self, session, options):
+        self.out_message("\nChecking the COLLECTIONS EDIT page ...", "HTTP_INFO")
+
+        collection_model = apps.get_model("wagtailcore", "Collection")
+        self.out_models(session, options, [collection_model])
 
     def report_documents(self, session, options):
         self.out_message("\nChecking the DOCUMENTS edit page ...", "HTTP_INFO")
