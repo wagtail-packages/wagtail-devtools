@@ -7,6 +7,7 @@ from django.core.management import BaseCommand
 from django.db import IntegrityError
 from wagtail.documents.models import Document as WagtailDocument
 from wagtail.images.models import Image as WagtailImage
+from wagtail.models import Collection as WagtailCollection
 
 from wagtail_devtools.test.models import (
     GenericSetting,
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         self.create_snippets()
         self.create_modeladmins()
         self.create_settings()
+        self.create_collections()
         self.import_media()
 
     def create_superuser(self):
@@ -69,6 +71,13 @@ class Command(BaseCommand):
         generic_setting = GenericSetting.objects.first()
         generic_setting.name = "Generic Setting"
         generic_setting.save()
+
+    def create_collections(self):
+        self.stdout.write("Creating collections.")
+        root_collection = WagtailCollection.objects.get(depth=1)
+
+        for x in range(1, 5):
+            root_collection.add_child(name=f"Test Collection {x}")
 
     def import_media(self):
         self.stdout.write("Importing media files.")
