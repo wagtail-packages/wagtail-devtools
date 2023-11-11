@@ -1,10 +1,41 @@
 # Wagtail devtools
 
-## Work In Progress
-
-A set of developer tools in the form of management commands
-
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+A set of developer tools in the form of management commands.
+
+## Features
+
+### Admin Responses
+
+The `admin_responses` command will make a request to the admin interface using get requests for all the wagtail core admin page. It will right a response result to the console.
+
+Optionally you can specify your ModelAdmin models in settings a include them in the results.
+
+```bash
+python manage.py admin_responses
+```
+
+The command is only available in debug mode `DEBUG=True`
+
+Your site will need data in place, either from fixtures or a sample of a live sites data to get meaningful results.
+
+### Model Admin Reporting
+
+Add the models you want to report on to your settings
+
+```python
+DEVTOOLS_REGISTERED_MODELADMIN = [
+    "app_name_one.ModelNameOne",
+    "app_name_one.ModelNameTwo",
+    "app_name_tow.ModelNameOne",
+    ...,
+]
+```
+
+### Content Types report
+
+This is a Work in progress.
 
 ## Supported versions
 
@@ -12,69 +43,16 @@ A set of developer tools in the form of management commands
 - Django 3.2+
 - Wagtail 4.1+
 
-## Installation
+## Usage
 
-- `python -m pip install wagtail-devtools`
+Install the package
 
-<!-- ## Contributing -->
-
-<!-- ## Links
-
-- [Documentation](https://github.com/nickmoreton/wagtail-devtools/blob/main/README.md)
-- [Changelog](https://github.com/nickmoreton/wagtail-devtools/blob/main/CHANGELOG.md)
-- [Contributing](https://github.com/nickmoreton/wagtail-devtools/blob/main/CONTRIBUTING.md)
-- [Discussions](https://github.com/nickmoreton/wagtail-devtools/discussions)
-- [Security](https://github.com/nickmoreton/wagtail-devtools/security) -->
-
-### Install
-
-To make changes to this project, first clone this repository:
-
-```sh
-git clone https://github.com/nickmoreton/wagtail-devtools.git
-cd wagtail-devtools
+```bash
+python -m pip install wagtail-devtools
 ```
 
-With your preferred virtualenv activated, install testing dependencies:
+Add the package to your installed apps
 
-#### Using pip
-
-```sh
-python -m pip install --upgrade pip>=21.3
-python -m pip install -e '.[testing,dev]' -U
+```python
+INSTALLED_APPS = ["wagtail_devtools"]
 ```
-
-#### Using flit
-
-```sh
-python -m pip install flit
-flit install
-```
-
-### pre-commit
-
-Note that this project uses [pre-commit](https://github.com/pre-commit/pre-commit).
-It is included in the project testing requirements. To set up locally:
-
-```shell
-# go to the project directory
-$ cd wagtail-devtools
-# initialize pre-commit
-$ pre-commit install
-
-# Optional, run all checks once for this, then the checks will run only on the changed files
-$ git ls-files --others --cached --exclude-standard | xargs pre-commit run --files
-```
-
-### How to run tests
-
-Now you can run tests as shown below:
-
-```sh
-tox
-```
-
-or, you can run them for a specific environment `tox -e python3.11-django4.2-wagtail5.1` or specific test
-`tox -e python3.11-django4.2-wagtail5.1-sqlite wagtail-devtools.tests.test_file.TestClass.test_method`
-
-To run the test app interactively, use `tox -e interactive`, visit `http://127.0.0.1:8020/admin/` and log in with `admin`/`changeme`.
