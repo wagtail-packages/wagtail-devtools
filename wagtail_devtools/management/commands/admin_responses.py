@@ -65,18 +65,21 @@ class Command(BaseCommand):
             try:
                 session.get(url)
             except requests.exceptions.ConnectionError:
-                self.out_message_error(
-                    f"Could not connect to {options['host']}. Is the server running?"
+                self.out_message(
+                    f"Could not connect to {options['host']}. Is the server running?",
+                    "ERROR",
                 )
                 return
             except requests.exceptions.InvalidSchema:
-                self.out_message_error(
-                    f"Could not connect to {options['host']}. Invalid schema"
+                self.out_message(
+                    f"Could not connect to {options['host']}. Invalid schema",
+                    "ERROR",
                 )
                 return
             except requests.exceptions.MissingSchema:
-                self.out_message_error(
-                    f"Could not connect to {options['host']}. Missing schema"
+                self.out_message(
+                    f"Could not connect to {options['host']}. Missing schema",
+                    "ERROR",
                 )
                 return
 
