@@ -5,9 +5,10 @@ from django.contrib.auth.models import User
 from django.core.files.images import ImageFile
 from django.core.management import BaseCommand
 from django.db import IntegrityError
+from wagtail.contrib.redirects.models import Redirect
 from wagtail.documents.models import Document as WagtailDocument
 from wagtail.images.models import Image as WagtailImage
-from wagtail.models import Collection as WagtailCollection
+from wagtail.models.collections import Collection
 
 from wagtail_devtools.test.models import (
     GenericSetting,
@@ -27,6 +28,7 @@ class Command(BaseCommand):
         self.create_modeladmins()
         self.create_settings()
         self.create_collections()
+        self.create_redirects()
         self.import_media()
 
     def create_superuser(self):
@@ -74,10 +76,20 @@ class Command(BaseCommand):
 
     def create_collections(self):
         self.stdout.write("Creating collections.")
-        root_collection = WagtailCollection.objects.get(depth=1)
+        root_collection = Collection.objects.get(depth=1)
 
         for x in range(1, 5):
             root_collection.add_child(name=f"Test Collection {x}")
+
+    def create_redirects(self):
+        self.stdout.write("Creating redirects.")
+
+        for x in range(1, 5):
+            redirect_page = HomePage.objects.first()
+            Redirect.objects.create(
+                old_path=f"/test-redirect-{x}",
+                redirect_page=redirect_page,
+            )
 
     def import_media(self):
         self.stdout.write("Importing media files.")
