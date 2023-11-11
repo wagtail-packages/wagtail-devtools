@@ -4,11 +4,17 @@
 
 A set of developer tools in the form of management commands.
 
+## Supported versions
+
+- Python 3.8+
+- Django 3.2+
+- Wagtail 4.1+
+
 ## Features
 
 ### Admin Responses
 
-The `admin_responses` command will make a request to the admin interface using get requests for all the wagtail core admin page. It will right a response result to the console.
+The `admin_responses` command will make a requests to the admin interface using get requests for all the wagtail core admin pages. It will write a response result to the console.
 
 Optionally you can specify your ModelAdmin models in settings a include them in the results.
 
@@ -20,7 +26,7 @@ The command is only available in debug mode `DEBUG=True`
 
 Your site will need data in place, either from fixtures or a sample of a live sites data to get meaningful results.
 
-### Model Admin Reporting
+#### Model Admin Reporting
 
 Add the models you want to report on to your settings
 
@@ -36,12 +42,6 @@ DEVTOOLS_REGISTERED_MODELADMIN = [
 ### Content Types report
 
 This is a Work in progress.
-
-## Supported versions
-
-- Python 3.8+
-- Django 3.2+
-- Wagtail 4.1+
 
 ## Usage
 
