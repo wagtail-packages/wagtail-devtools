@@ -6,8 +6,10 @@ from django.core.files.images import ImageFile
 from django.core.management import BaseCommand
 from django.db import IntegrityError
 from wagtail.contrib.redirects.models import Redirect
+from wagtail.contrib.search_promotions.models import Query, SearchPromotion
 from wagtail.documents.models import Document as WagtailDocument
 from wagtail.images.models import Image as WagtailImage
+from wagtail.models import Site
 from wagtail.models.collections import Collection
 
 from wagtail_devtools.test.models import (
@@ -29,6 +31,7 @@ class Command(BaseCommand):
         self.create_settings()
         self.create_collections()
         self.create_redirects()
+        self.create_promoted_searches()
         self.import_media()
 
     def create_superuser(self):
@@ -66,11 +69,11 @@ class Command(BaseCommand):
     def create_settings(self):
         self.stdout.write("Creating settings.")
 
-        site_setting = SiteSetting.objects.first()
+        site_setting = SiteSetting.for_site(Site.objects.first())
         site_setting.name = "Site Setting"
         site_setting.save()
 
-        generic_setting = GenericSetting.objects.first()
+        generic_setting = GenericSetting.load(Site.objects.first())
         generic_setting.name = "Generic Setting"
         generic_setting.save()
 
@@ -90,6 +93,24 @@ class Command(BaseCommand):
                 old_path=f"/test-redirect-{x}",
                 redirect_page=redirect_page,
             )
+
+    def create_promoted_searches(self):
+        self.stdout.write("Creating promoted searches.")
+
+        home_page = HomePage.objects.first()
+        for x in range(1, 5):
+            try:
+                SearchPromotion.objects.create(
+                    page=home_page,
+                    query=Query.objects.create(query_string=f"Test Query {x}"),
+                    description=f"Test Search Promotion {x}",
+                )
+            except IntegrityError:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"Search promotion for query 'Test Query {x}' already exists. Skipping creation."
+                    )
+                )
 
     def import_media(self):
         self.stdout.write("Importing media files.")
