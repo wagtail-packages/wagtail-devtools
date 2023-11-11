@@ -10,6 +10,7 @@ from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
 from wagtail.models import get_page_models
+from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
 
@@ -155,6 +156,16 @@ class Command(BaseCommand):
                 session, "COLLECTIONS", f"{options['host']}/admin/collections/"
             )
             self.report_collections(session, options)
+            self.report_admin_list_pages(
+                session, "REDIRECTS", f"{options['host']}/admin/redirects/"
+            )
+            self.report_admin_app_model(
+                session,
+                options,
+                "REDIRECTS EDIT",
+                app_label="wagtailredirects",
+                model_name="Redirect",
+            )
             self.report_documents(session, options)
             self.report_images(session, options)
             self.report_settings_models(session, options)
@@ -199,8 +210,7 @@ class Command(BaseCommand):
     def report_collections(self, session, options):
         self.out_message("\nChecking the COLLECTIONS EDIT page ...", "HTTP_INFO")
 
-        collection_model = apps.get_model("wagtailcore", "Collection")
-        self.out_models(session, options, [collection_model])
+        self.out_model(session, options, Collection.objects.first().get_first_child())
 
     def report_documents(self, session, options):
         self.out_message("\nChecking the DOCUMENTS edit page ...", "HTTP_INFO")
@@ -301,6 +311,8 @@ class Command(BaseCommand):
                     self.out_message(f"{page['url']} ← {response.status_code}", "ERROR")
 
     def out_models(self, session, options, models):
+        """Create a report for the first object of each model.
+        The models have a base_manager that is used to get the first object."""
         for model in models:
             obj = model.objects.first()
             if not obj:
@@ -318,6 +330,21 @@ class Command(BaseCommand):
                 self.out_message(f"{url} ← 200", "SUCCESS")
             else:
                 self.out_message(f"{url} ← {response.status_code}", "ERROR")
+
+    def out_model(self, session, options, model):
+        """Create a report for the first object of a model.
+        The model does not have a base_manager so the object is passed in."""
+        url = self.get_admin_edit_url(options, model)
+
+        message = f"\n{model.name} ↓"
+        self.out_message(message)
+
+        response = session.get(url)
+
+        if response.status_code == 200:
+            self.out_message(f"{url} ← 200", "SUCCESS")
+        else:
+            self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def out_message(self, message, style=None):
         if self.report_url:
