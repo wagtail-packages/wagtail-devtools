@@ -83,8 +83,8 @@ class Command(BaseCommand):
                 )
                 return
 
-            # Attempt to log in
             logged_in = session.post(
+                # session should now be logged in so reporting could begin
                 url,
                 data={
                     "username": options["username"],
@@ -101,80 +101,116 @@ class Command(BaseCommand):
                 )
                 return
 
-            # Reports admin list pages
-            self.report_admin_list_pages(
-                session, "admin home page (Dashboard)", f"{options['host']}/admin/"
-            )
-            self.report_admin_list_pages(
-                session, "SEARCH", f"{options['host']}/admin/pages/search/"
-            )
-            self.report_admin_list_pages(
-                session, "LOCKED PAGES", f"{options['host']}/admin/reports/locked/"
-            )
-            self.report_admin_list_pages(
-                session, "WORKFLOWS LIST", f"{options['host']}/admin/reports/workflow/"
-            )
-            self.report_admin_app_model(
-                session,
-                options,
-                "WORKFLOWS EDIT",
-                app_label="wagtailcore",
-                model_name="Workflow",
-            )
-            self.report_admin_list_pages(
-                session,
-                "WORKFLOWS TASKS",
-                f"{options['host']}/admin/reports/workflow_tasks/",
-            )
-            self.report_admin_app_model(
-                session,
-                options,
-                "WORKFLOWS TASK EDIT",
-                app_label="wagtailcore",
-                model_name="Task",
-            )
-            self.report_admin_list_pages(
-                session,
-                "SITE HISTORY",
-                f"{options['host']}/admin/reports/site-history/",
-            )
-            self.report_admin_list_pages(
-                session, "AGING PAGES", f"{options['host']}/admin/reports/aging-pages/"
-            )
+        # DASHBOARD
+        self.report_admin_list_pages(
+            session,
+            "admin home page (Dashboard)",
+            f"{options['host']}/admin/",
+        )
 
-            # Reports models
-            self.report_admin_list_pages(
-                session, "USERS", f"{options['host']}/admin/users/"
-            )
-            self.report_users(session, options)
-            self.report_admin_list_pages(
-                session, "GROUPS", f"{options['host']}/admin/groups/"
-            )
-            self.report_groups(session, options)
-            self.report_admin_list_pages(
-                session, "SITES", f"{options['host']}/admin/sites/"
-            )
-            self.report_sites(session, options)
-            self.report_admin_list_pages(
-                session, "COLLECTIONS", f"{options['host']}/admin/collections/"
-            )
-            self.report_collections(session, options)
-            self.report_admin_list_pages(
-                session, "REDIRECTS", f"{options['host']}/admin/redirects/"
-            )
-            self.report_admin_app_model(
-                session,
-                options,
-                "REDIRECTS EDIT",
-                app_label="wagtailredirects",
-                model_name="Redirect",
-            )
-            self.report_documents(session, options)
-            self.report_images(session, options)
-            self.report_settings_models(session, options)
-            self.report_snippets(session, options)
-            self.report_modeladmin(session, options)
-            self.report_page(session, options)
+        # SEARCH
+        self.report_admin_list_pages(
+            session,
+            "SEARCH",
+            f"{options['host']}/admin/pages/search/",
+        )
+
+        # LOCKED PAGES
+        self.report_admin_list_pages(
+            session,
+            "LOCKED PAGES",
+            f"{options['host']}/admin/reports/locked/",
+        )
+        # WORKFLOWS
+        self.report_admin_list_pages(
+            session,
+            "WORKFLOWS LIST",
+            f"{options['host']}/admin/reports/workflow/",
+        )
+        self.report_admin_app_model(
+            session,
+            options,
+            "WORKFLOWS EDIT",
+            app_label="wagtailcore",
+            model_name="Workflow",
+        )
+        self.report_admin_list_pages(
+            session,
+            "WORKFLOWS TASKS",
+            f"{options['host']}/admin/reports/workflow_tasks/",
+        )
+        self.report_admin_app_model(
+            session,
+            options,
+            "WORKFLOWS TASK EDIT",
+            app_label="wagtailcore",
+            model_name="Task",
+        )
+
+        # SITE HISTORY
+        self.report_admin_list_pages(
+            session,
+            "SITE HISTORY",
+            f"{options['host']}/admin/reports/site-history/",
+        )
+
+        # AGING PAGES
+        self.report_admin_list_pages(
+            session, "AGING PAGES", f"{options['host']}/admin/reports/aging-pages/"
+        )
+
+        # USERS
+        self.report_admin_list_pages(
+            session, "USERS", f"{options['host']}/admin/users/"
+        )
+        self.report_users(session, options)
+
+        # GROUPS
+        self.report_admin_list_pages(
+            session, "GROUPS", f"{options['host']}/admin/groups/"
+        )
+        self.report_groups(session, options)
+
+        # SITES
+        self.report_admin_list_pages(
+            session, "SITES", f"{options['host']}/admin/sites/"
+        )
+        self.report_sites(session, options)
+
+        # COLLECTIONS
+        self.report_admin_list_pages(
+            session, "COLLECTIONS", f"{options['host']}/admin/collections/"
+        )
+        self.report_collections(session, options)
+
+        # REDIRECTS
+        self.report_admin_list_pages(
+            session, "REDIRECTS", f"{options['host']}/admin/redirects/"
+        )
+        self.report_admin_app_model(
+            session,
+            options,
+            "REDIRECTS EDIT",
+            app_label="wagtailredirects",
+            model_name="Redirect",
+        )
+        # DOCUMENTS
+        self.report_documents(session, options)
+
+        # IMAGES
+        self.report_images(session, options)
+
+        # SETTINGS
+        self.report_settings_models(session, options)
+
+        # SNIPPETS
+        self.report_snippets(session, options)
+
+        # MODELADMIN
+        self.report_modeladmin(session, options)
+
+        # PAGES
+        self.report_page(session, options)
 
     def report_admin_list_pages(self, session, title, url):
         self.out_message(f"\nChecking the {title} page ...", "HTTP_INFO")
