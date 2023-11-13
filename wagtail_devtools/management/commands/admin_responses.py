@@ -96,15 +96,16 @@ class Command(BaseCommand):
 
             if "Forgotten password?" in logged_in.decode("utf-8"):
                 # Login failed because the response is the forgotten password page
-                self.out_message_error(
-                    f"Could not log in to {options['host']}. Is the username and password correct?"
+                self.out_message(
+                    f"Could not log in to {options['host']}. Is the username and password correct?",
+                    "ERROR",
                 )
                 return
 
         # DASHBOARD
         self.report_admin_list_pages(
             session,
-            "admin home page (Dashboard)",
+            "Dashboard",
             f"{options['host']}/admin/",
         )
 
@@ -213,7 +214,7 @@ class Command(BaseCommand):
         self.report_page(session, options)
 
     def report_admin_list_pages(self, session, title, url):
-        self.out_message(f"\nChecking the {title} page ...", "HTTP_INFO")
+        self.out_message(f"\n{title} page ...", "HTTP_INFO")
 
         response = session.get(url)
 
@@ -223,52 +224,57 @@ class Command(BaseCommand):
             self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_admin_app_model(self, session, options, title, app_label, model_name):
-        self.out_message(f"\nChecking the {title} page ...", "HTTP_INFO")
+        self.out_message(f"\n{title} page ...", "HTTP_INFO")
 
         model = apps.get_model(app_label, model_name)
         self.out_models(session, options, [model])
 
     def report_users(self, session, options):
-        self.out_message("\nChecking the USERS EDIT page ...", "HTTP_INFO")
+        self.out_message("\nUSERS EDIT page ...", "HTTP_INFO")
 
         user_model = get_user_model()
         self.out_models(session, options, [user_model])
 
     def report_groups(self, session, options):
-        self.out_message("\nChecking the GROUPS EDIT page ...", "HTTP_INFO")
+        self.out_message("\nGROUPS EDIT page ...", "HTTP_INFO")
 
         group_model = apps.get_model("auth", "Group")
         self.out_models(session, options, [group_model])
 
     def report_sites(self, session, options):
-        self.out_message("\nChecking the SITES EDIT page ...", "HTTP_INFO")
+        self.out_message("\nSITES EDIT page ...", "HTTP_INFO")
 
         site_model = apps.get_model("wagtailcore", "Site")
         self.out_models(session, options, [site_model])
 
     def report_collections(self, session, options):
-        self.out_message("\nChecking the COLLECTIONS EDIT page ...", "HTTP_INFO")
+        self.out_message("\nCOLLECTIONS EDIT page ...", "HTTP_INFO")
 
-        self.out_model(session, options, Collection.objects.first().get_first_child())
+        try:
+            self.out_model(
+                session, options, Collection.objects.first().get_first_child()
+            )
+        except AttributeError:
+            self.out_message("No collections found", "WARNING")
 
     def report_documents(self, session, options):
-        self.out_message("\nChecking the DOCUMENTS edit page ...", "HTTP_INFO")
+        self.out_message("\nDOCUMENTS edit page ...", "HTTP_INFO")
 
         document_model = get_document_model()
         self.out_models(session, options, [document_model])
 
     def report_images(self, session, options):
-        self.out_message("\nChecking the IMAGES edit page ...", "HTTP_INFO")
+        self.out_message("\nIMAGES edit page ...", "HTTP_INFO")
 
         image_model = get_image_model()
         self.out_models(session, options, [image_model])
 
     def report_settings_models(self, session, options):
-        self.out_message("\nChecking all SETTINGS edit pages ...", "HTTP_INFO")
+        self.out_message("\nSETTINGS edit pages ...", "HTTP_INFO")
         self.out_models(session, options, settings_registry)
 
     def report_snippets(self, session, options):
-        self.out_message("\nChecking all SNIPPETS models edit pages ...", "HTTP_INFO")
+        self.out_message("\nSNIPPETS models edit pages ...", "HTTP_INFO")
 
         snippet_models = get_snippet_models()
         self.out_models(session, options, snippet_models)
@@ -279,7 +285,7 @@ class Command(BaseCommand):
         else:
             registered_modeladmin = []
 
-        self.out_message("\nChecking all MODELADMIN edit pages ...", "HTTP_INFO")
+        self.out_message("\nMODELADMIN edit pages ...", "HTTP_INFO")
 
         modeladmin_models = []
         for model in apps.get_models():
@@ -352,10 +358,13 @@ class Command(BaseCommand):
     def out_models(self, session, options, models):
         """Create a report for the first object of each model.
         The models have a base_manager that is used to get the first object."""
+
         for model in models:
             obj = model.objects.first()
             if not obj:
-                # settings model has no objects
+                self.out_message(
+                    f"No {model._meta.verbose_name_plural} found", "WARNING"
+                )
                 continue
 
             url = self.get_admin_edit_url(options, obj)
