@@ -15,22 +15,17 @@ from wagtail.snippets.models import get_snippet_models
 
 
 class BaseAdminResponsesCommand(BaseCommand):
-    """
-    The command is only available in DEBUG mode. Set DEBUG=True in your settings to enable it.
+    """Base command for admin responses commands.
 
-    Basic usage:
-        python manage.py admin_responses <username> <password>
+    This command will perform a get request to the admin edit and frontend page of all pages, snippets, settings and modeladmin and more.
 
-    Options:
-        --host
-            The URL to check. Defaults to the value of ADMIN_BASE_URL in settings.
-        --report-url
-            The URL to use for the report. e.g. http://staging.example.com
+    You can specify the URL to check by passing the --host option.
+    You can specify the URL to use for the report by passing the --report-url option.
 
-    When using the --report-url option the displayed URLs in the report will be altered.
-    This tested url will still use --host option.
+    To implement this command in your project, create a management command that extends this class.
 
-    E.G. python manage.py admin_responses <username> <password> --report-url http://staging.example.com
+    Usage:
+        python manage.py [your_command_name] <username> <password> [--host] [--report-url
     """
 
     help = "Checks the admin and frontend responses for models including pages, snippets, settings and modeladmin and more."
@@ -290,19 +285,19 @@ class BaseAdminResponsesCommand(BaseCommand):
                     f"Could not connect to {options['host']}. Is the server running?",
                     "ERROR",
                 )
-                return
+                exit()
             except requests.exceptions.InvalidSchema:
                 self.out_message(
                     f"Could not connect to {options['host']}. Invalid schema",
                     "ERROR",
                 )
-                return
+                exit()
             except requests.exceptions.MissingSchema:
                 self.out_message(
                     f"Could not connect to {options['host']}. Missing schema",
                     "ERROR",
                 )
-                return
+                exit()
 
             logged_in = session.post(
                 # session should now be logged in so reporting could begin

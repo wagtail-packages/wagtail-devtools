@@ -23,8 +23,8 @@ class BaseContentTypesCommand(BaseCommand):
     To implement this command in your project, create a management command that extends this class.
     Add the following attributes to your command:
 
-    apps_prefix = str() # The prefix of the apps you want to include in the report
-    registered_modeladmin = [] # A list of modeladmin classes you want to include in the report
+    apps_prefix = str() optional # The prefix of the apps you want to include in the report
+    registered_modeladmin = [] # A list of modeladmin models you want to include in the report
     excluded_apps = [] # A list of apps you want to exclude from the report
     """
 
