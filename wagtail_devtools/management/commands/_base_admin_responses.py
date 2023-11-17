@@ -54,9 +54,13 @@ class BaseAdminResponsesCommand(BaseCommand):
             options["report_url"].strip("/") if options["report_url"] else None
         )
 
-        self.run_reports(*args, **options)
+        reports = self.get_reports(*args, **options)
+
+        for report in reports:
+            report["function"](*report["args"])
 
     def report_admin_list_pages(self, session, title, url):
+        """Check and report the admin response for a list of pages."""
         self.out_message(f"\n{title} page ...", "HTTP_INFO")
 
         response = session.get(url)
@@ -67,30 +71,35 @@ class BaseAdminResponsesCommand(BaseCommand):
             self.out_message(f"{url} ← {response.status_code}", "ERROR")
 
     def report_admin_app_model(self, session, options, title, app_label, model_name):
+        """Check and report the admin response for a model."""
         self.out_message(f"\n{title} page ...", "HTTP_INFO")
 
         model = apps.get_model(app_label, model_name)
         self.out_models(session, options, [model])
 
     def report_users(self, session, options):
+        """Check and report the admin response for the users list page."""
         self.out_message("\nUSERS EDIT page ...", "HTTP_INFO")
 
         user_model = get_user_model()
         self.out_models(session, options, [user_model])
 
     def report_groups(self, session, options):
+        """Check and report the admin response for the groups list page."""
         self.out_message("\nGROUPS EDIT page ...", "HTTP_INFO")
 
         group_model = apps.get_model("auth", "Group")
         self.out_models(session, options, [group_model])
 
     def report_sites(self, session, options):
+        """Check and report the admin response for the sites list page."""
         self.out_message("\nSITES EDIT page ...", "HTTP_INFO")
 
         site_model = apps.get_model("wagtailcore", "Site")
         self.out_models(session, options, [site_model])
 
     def report_collections(self, session, options):
+        """Check and report the admin response for the collections list page."""
         self.out_message("\nCOLLECTIONS EDIT page ...", "HTTP_INFO")
 
         try:
@@ -101,18 +110,21 @@ class BaseAdminResponsesCommand(BaseCommand):
             self.out_message("No collections found", "WARNING")
 
     def report_documents(self, session, options):
+        """Check and report the admin response for the documents list page."""
         self.out_message("\nDOCUMENTS edit page ...", "HTTP_INFO")
 
         document_model = get_document_model()
         self.out_models(session, options, [document_model])
 
     def report_images(self, session, options):
+        """Check and report the admin response for the images list page."""
         self.out_message("\nIMAGES edit page ...", "HTTP_INFO")
 
         image_model = get_image_model()
         self.out_models(session, options, [image_model])
 
     def report_settings_models(self, session, options):
+        """Check and report the admin response for the settings edit page."""
         self.out_message("\nSETTINGS edit pages ...", "HTTP_INFO")
         self.out_models(session, options, settings_registry)
 
