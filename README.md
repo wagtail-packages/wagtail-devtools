@@ -14,36 +14,13 @@ A set of developer tools in the form of management commands.
 
 ### Admin Responses
 
-The `admin_responses` command will make a requests to the admin interface using get requests for all the wagtail core admin pages. It will write a response result to the console.
-
-Optionally you can specify your ModelAdmin models in settings a include them in the results.
-
-```bash
-python manage.py admin_responses
-```
-
-The command is only available in debug mode `DEBUG=True`
-
-Your site will need data in place, either from fixtures or a sample of a live sites data to get meaningful results.
-
-#### Model Admin Reporting
-
-Add the models you want to report on to your settings
-
-```python
-DEVTOOLS_REGISTERED_MODELADMIN = [
-    "app_name_one.ModelNameOne",
-    "app_name_one.ModelNameTwo",
-    "app_name_tow.ModelNameOne",
-    ...,
-]
-```
+- [Documentation](docs/admin_responses.md)
 
 ### Content Types report
 
-This is a Work in progress.
+- [Documentation](docs/content_types.md)
 
-## Usage
+## Installation
 
 Install the package
 
@@ -51,8 +28,9 @@ Install the package
 python -m pip install wagtail-devtools
 ```
 
-Add the package to your installed apps
+Add the package to your installed apps in your development settings file. The site will need to be running in `DEBUG` mode.
 
 ```python
-INSTALLED_APPS = ["wagtail_devtools"]
+DEBUG = True
+INSTALLED_APPS += ["wagtail_devtools"]
 ```
