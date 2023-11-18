@@ -47,9 +47,9 @@ jobs:
           python -m pip install .[ci]
       - name: Test
         run: |
-          python test_manage.py migrate
-          python test_manage.py load_fixtures
-          python test_manage.py runserver
+          python testmanage.py migrate
+          python testmanage.py load_fixtures
+          python testmanage.py runserver
           tox
         env:
           DB: sqlite
