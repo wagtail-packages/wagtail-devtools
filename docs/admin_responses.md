@@ -38,6 +38,8 @@ You can use any name for the command file, but it must be in the `management/com
 
 I'll use `report_responses.py` as an example.
 
+**Note:** A full report that uses all available checks can be found in the [test_admin_responses.py](../wagtail_devtools/test/management/commands/test_admin_responses.py) file which you can use as a quick start.
+
 ### Page Models Report
 
 Will generate a report for all admin edit pages for all page type models and corresponding frontend pages.
