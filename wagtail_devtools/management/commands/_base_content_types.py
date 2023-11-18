@@ -48,11 +48,12 @@ class BaseContentTypesCommand(BaseCommand):
         self.out_message("Enter a C-Type ID from the list below")
         self.out_message("to view a report of all the admin edit pages of that type.")
 
-        content_types = ContentType.objects.filter(
-            app_label__in=self.get_apps_for_pages_report(
-                self.apps_prefix, self.excluded_apps
-            )
-        ).order_by("model", "app_label")
+        # content_types = ContentType.objects.filter(
+        #     app_label__in=self.get_apps_for_pages_report(
+        #         self.apps_prefix, self.excluded_apps
+        #     )
+        # ).order_by("model", "app_label")
+        content_types = ContentType.objects.all().order_by("model", "app_label")
 
         if not content_types:
             self.out_message_warning("No content types found.")

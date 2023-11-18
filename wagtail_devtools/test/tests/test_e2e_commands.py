@@ -1,5 +1,6 @@
 from io import StringIO
 from sys import stderr
+from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -35,6 +36,78 @@ class TestE2ELoadFixtures(TestCase):
 
 
 @override_settings(DEBUG=True)
+class TestE2EAdminContentTypes(TestCase):
+    def setUp(self):
+        with StringIO() as out:
+            call_command("load_fixtures", stdout=out, stderr=stderr)
+
+    @patch(
+        "wagtail_devtools.management.commands._base_content_types.input",
+        return_value="28",
+    )
+    def test_console_out(self, return_value):
+        args = []
+        opts = {}
+
+        with StringIO() as out:
+            call_command(
+                "cmd_test_content_types", *args, **opts, stdout=out, stderr=out
+            )
+            output = out.getvalue().strip()
+            print(output)
+
+        expected = [
+            "Using this command:",
+            "Enter a C-Type ID from the list below",
+            "to view a report of all the admin edit pages of that type.",
+            "Index of Page Types",
+            "---------------------------------------------------------------------------------",
+            "Model                       App                         C-Type ID",
+            "---------------------------------------------------------------------------------",
+            "HomePage                    wagtail_devtools_test       3",
+            "Page                        wagtailcore                 1",
+            "StandardPageOne             wagtail_devtools_test       28",
+            "StandardPageThree           wagtail_devtools_test       29",
+            "StandardPageTwo             wagtail_devtools_test       30",
+            "---------------------------------------------------------------------------------",
+            "Index of Snippet Types",
+            "---------------------------------------------------------------------------------",
+            "Model                       App                         C-Type ID",
+            "---------------------------------------------------------------------------------",
+            "TestSnippetOne              wagtail_devtools_test       42",
+            "TestSnippetThree            wagtail_devtools_test       40",
+            "TestSnippetTwo              wagtail_devtools_test       41",
+            "---------------------------------------------------------------------------------",
+            "Index of ModelAdmin Types",
+            "------------------",
+            "Model  App    C-Type ID",
+            "------------------",
+            "------------------",
+            "Index of Settings Types",
+            "---------------------------------------------------------------------------------",
+            "Model                       App                         C-Type ID",
+            "---------------------------------------------------------------------------------",
+            "GenericSettingOne           wagtail_devtools_test       38",
+            "GenericSettingThree         wagtail_devtools_test       34",
+            "GenericSettingTwo           wagtail_devtools_test       35",
+            "SiteSettingOne              wagtail_devtools_test       39",
+            "SiteSettingThree            wagtail_devtools_test       37",
+            "SiteSettingTwo              wagtail_devtools_test       36",
+            "---------------------------------------------------------------------------------",
+            "Edit Links for StandardPageOne",
+            "----------------------------------------------------------------------",
+            "Standard Page One",
+            "http://localhost:8000/admin/pages/4/edit/",
+        ]
+
+        for line in expected:
+            if line not in output:
+                # Just for debugging
+                print(f"Missing this line: {line}")
+            self.assertIn(line, output)
+
+
+@override_settings(DEBUG=True)
 class TestE2EAdminResponses(TestCase):
     def setUp(self):
         with StringIO() as out:
@@ -48,7 +121,9 @@ class TestE2EAdminResponses(TestCase):
         opts = {}
 
         with StringIO() as out:
-            call_command("test_admin_responses", *args, **opts, stdout=out, stderr=out)
+            call_command(
+                "cmd_test_admin_responses", *args, **opts, stdout=out, stderr=out
+            )
             output = out.getvalue().strip()
 
         expected = [
