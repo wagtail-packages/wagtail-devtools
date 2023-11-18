@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("wagtailcore", "0089_log_entry_data_json_null_to_object"),
+        ("wagtailcore", "0078_referenceindex"),
         ("wagtail_devtools_test", "0006_rename_testmodeladmin_testmodeladminone"),
     ]
 
