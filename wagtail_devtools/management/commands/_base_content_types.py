@@ -147,7 +147,8 @@ class BaseContentTypesCommand(BaseCommand):
         content_type_pages = {}
 
         for content_type in content_types:
-            if issubclass(content_type.model_class(), Page):
+            cls = apps.get_model(content_type.app_label, content_type.model)
+            if issubclass(cls, Page):
                 content_type_pages[content_type.id] = [
                     content_type.model_class().__name__,
                     content_type.app_label,
