@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.admin.utils import get_admin_base_url
+from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
@@ -134,20 +135,23 @@ class BaseAdminResponsesCommand(BaseCommand):
         snippet_models = get_snippet_models()
         self.out_models(session, options, snippet_models)
 
-    def report_modeladmin(self, session, options):
-        if hasattr(settings, "DEVTOOLS_REGISTERED_MODELADMIN"):
-            registered_modeladmin = settings.DEVTOOLS_REGISTERED_MODELADMIN
+    def report_model_admin(self, session, options, registered_modeladmin):
+        modeladmin_models = []
 
-            self.out_message("\nMODELADMIN edit pages ...", "HTTP_INFO")
+        for model in apps.get_models():
+            app = model._meta.app_label
+            name = model.__name__
+            if f"{app}.{name}" in registered_modeladmin:
+                # Out the modeladmin list page
+                index_url = AdminURLHelper(model).index_url
+                self.report_admin_list_pages(
+                    session, f"{name.upper()} list", f"{options['host']}{index_url}"
+                )
+                self.out_message(f"\n{name.upper()} edit page ...", "HTTP_INFO")
 
-            modeladmin_models = []
-            for model in apps.get_models():
-                app = model._meta.app_label
-                name = model.__name__
-                if f"{app}.{name}" in registered_modeladmin:
-                    modeladmin_models.append(apps.get_model(app, name))
+                modeladmin_models.append(apps.get_model(app, name))
 
-            self.out_models(session, options, modeladmin_models)
+        self.out_models(session, options, modeladmin_models)
 
     def report_pages(self, session, options):
         """Check and report the admin and frontend responses for all page model types."""
