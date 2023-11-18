@@ -46,11 +46,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[ci]
       - name: Test
-        run: |
-          python testmanage.py migrate
-          python testmanage.py load_fixtures
-          python testmanage.py runserver
-          tox
+        run: tox
         env:
           DB: sqlite
 
