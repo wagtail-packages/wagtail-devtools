@@ -28,7 +28,7 @@ class Command(BaseContentTypesCommand):
         self.out_table(content_type_settings, "Settings")
 
         # Validates the user input
-        index = self.validate_index(all_content_types)
+        index = self.validate_index(options, all_content_types)
 
         # Generates the list of edit links for the selected content type
         self.out_edit_links(options, all_content_types[index])

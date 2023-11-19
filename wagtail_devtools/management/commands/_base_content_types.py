@@ -36,6 +36,10 @@ class BaseContentTypesCommand(BaseCommand):
             default=get_admin_base_url(),
             help="The URL to check",
         )
+        parser.add_argument(
+            "--cid",
+            help="The C-Type ID to check, bypassing the input prompt",
+        )
 
     def handle(self, *args, **options):
         if not settings.DEBUG:
@@ -83,8 +87,13 @@ class BaseContentTypesCommand(BaseCommand):
             options,
         )
 
-    def validate_index(self, all_content_types):
-        index = input("\nC-Type ID: ")
+    def validate_index(self, options, all_content_types):
+        # Checking if the user has entered a valid C-Type ID as an argument
+        # The input prompt is not compatible with tests
+        if not options["cid"]:
+            index = input("\nC-Type ID: ")
+        else:
+            index = options["cid"]
 
         try:
             index = int(index)

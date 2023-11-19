@@ -2,7 +2,6 @@ import logging
 
 from io import StringIO
 from sys import stderr
-from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase, override_settings
@@ -17,6 +16,7 @@ class TestE2ELoadFixtures(TestCase):
         with StringIO() as out:
             call_command("load_fixtures", *args, **opts, stdout=out, stderr=stderr)
             output = out.getvalue().strip()
+            print(output)  # Just for debugging
 
         expected = [
             "Creating superuser.",
@@ -44,13 +44,15 @@ class TestE2EAdminContentTypes(TestCase):
         with StringIO() as out:
             call_command("load_fixtures", stdout=out, stderr=stderr)
 
-    @patch(
-        "wagtail_devtools.management.commands._base_content_types.input",
-        return_value="28",
-    )
-    def test_console_out(self, return_value):
+    # @patch(
+    #     "wagtail_devtools.management.commands._base_content_types.input",
+    #     return_value=28,
+    # )
+    def test_console_out(self):
         args = []
-        opts = {}
+        opts = {
+            "cid": 28,
+        }
 
         with StringIO() as out:
             call_command(
@@ -101,7 +103,7 @@ class TestE2EAdminContentTypes(TestCase):
             "Edit Links for StandardPageOne",
             "----------------------------------------------------------------------",
             "Standard Page One",
-            "8000/admin/pages/4/edit/",
+            "http://localhost:8000/admin/pages/4/edit/",
         ]
 
         for line in expected:
