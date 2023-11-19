@@ -2,6 +2,8 @@
 
 The `admin_responses` command will make a requests to the admin interface using get requests for a range of models. It will write a response result to the console.
 
+**Note:** As the command makes requests to the admin interface it will need a local development site to be running in `DEBUG` mode. It will work best if you have a full set of test data for all models.
+
 Reports can be generated for:
 
 - Admin Listing and Edit pages
@@ -38,7 +40,7 @@ You can use any name for the command file, but it must be in a `management/comma
 
 I'll use `report_responses.py` as an example.
 
-**Note:** A full report that uses all available checks can be found in the [test_admin_responses.py](../wagtail_devtools/test/management/commands/test_admin_responses.py) file which you can use as a quick start.
+**Note:** A full command that uses all available checks can be found in the [cmd_test_admin_responses.py](../wagtail_devtools/test/management/commands/cmd_test_admin_responses.py) file which you can use as a quick start.
 
 ### Page Models Report
 

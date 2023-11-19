@@ -2,6 +2,8 @@
 
 The `content_types` report will generate a report for all content types in the project.
 
+**Note:** It will work best if you have a full set of test data for all content types.
+
 Reports can be generated for:
 
 - Pages
@@ -56,6 +58,10 @@ I'll use `report_content_types.py` as an example.
 
 **Note:** The above example is a full report that uses all available checks.
 
+#### Example Console Output
+
+![Content Types Report](./assets/content_types.jpg)
+
 Run the command with:
 
 ```bash
@@ -65,3 +71,5 @@ Run the command with:
 Then enter the index number of the content type you want to generate edit links for.
 
 Optionally you can add the `--cid` option to the command to skip the index selection prompt.
+
+**Note:** A full command that uses all available checks can be found in the [cmd_test_admin_responses.py](../wagtail_devtools/test/management/commands/cmd_test_content_types.py) file which you can use as a quick start.

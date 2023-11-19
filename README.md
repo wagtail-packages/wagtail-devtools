@@ -14,9 +14,13 @@ A set of developer tools in the form of management commands.
 
 ### Admin Responses
 
+The `admin_responses` command will make a requests to the admin interface using get requests for a range of models. It will write a response result to the console.
+
 - [Documentation](docs/admin_responses.md)
 
 ### Content Types report
+
+The `content_types` report will generate a report for all content types in the project.
 
 - [Documentation](docs/content_types.md)
 
