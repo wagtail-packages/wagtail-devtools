@@ -34,7 +34,7 @@ class Command(BaseAdminResponsesCommand):
         ]
 ```
 
-You can use any name for the command file, but it must be in the `management/commands` directory.
+You can use any name for the command file, but it must be in a `management/commands` directory.
 
 I'll use `report_responses.py` as an example.
 
