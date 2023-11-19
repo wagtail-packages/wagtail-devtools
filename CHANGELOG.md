@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ...
+- Initial package code including 2 new commands:
+  - `admin_responses`
+  - `content_types`
 
 ### Changed
 

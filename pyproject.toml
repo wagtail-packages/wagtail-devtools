@@ -44,20 +44,11 @@ ci = [
     "tox-gh-actions==3.1.3"
 ]
 dev = [
-    "click==8.0.3",
     "black==23.9.1",
     "flake8==6.1.0",
     "isort==5.12.0",
     "coverage==7.3.2",
 ]
-
-[project.scripts]
-sandbox-init = "scripts.sandbox:init_sandbox"
-sandbox-reset = "scripts.sandbox:reset_sandbox"
-sandbox-create-superuser = "scripts.sandbox:create_superuser"
-sandbox-runserver = "scripts.sandbox:run_sandbox"
-sandbox-loaddata = "scripts.sandbox:sandbox_loaddata"
-sandbox-dumpdata = "scripts.sandbox:sandbox_dumpdata"
 
 [project.urls]
 Home = "https://github.com/nickmoreton/wagtail-devtools"

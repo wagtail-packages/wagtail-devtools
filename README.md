@@ -38,3 +38,9 @@ Add the package to your installed apps in your development settings file. The si
 DEBUG = True
 INSTALLED_APPS += ["wagtail_devtools"]
 ```
+
+## Links
+
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
