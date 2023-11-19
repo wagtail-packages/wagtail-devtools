@@ -99,11 +99,11 @@ class BaseContentTypesCommand(BaseCommand):
             index = int(index)
         except ValueError:
             self.out_message_error("Value must be an integer.")
-            exit()
+            return None
 
         if index not in all_content_types:
             self.out_message_error(f"Invalid C-Type ID: {index}")
-            exit()
+            return None
 
         return index
 
