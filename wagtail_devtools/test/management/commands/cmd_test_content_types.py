@@ -5,7 +5,11 @@ from wagtail_devtools.management.commands._base_content_types import (
 
 class Command(BaseContentTypesCommand):
     apps_prefix = None
-    registered_modeladmin = ["test.TestModelAdminOne"]
+    registered_modeladmin = [
+        "wagtail_devtools_test.TestModelAdminOne",
+        "wagtail_devtools_test.TestModelAdminTwo",
+        "wagtail_devtools_test.TestModelAdminThree",
+    ]
     excluded_apps = []
 
     def run_command(

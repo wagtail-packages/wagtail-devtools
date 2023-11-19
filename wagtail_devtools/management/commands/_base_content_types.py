@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.admin.utils import get_admin_base_url
 from wagtail.contrib.settings.registry import registry as settings_registry
-from wagtail.models import Page
+from wagtail.models import Page, get_page_models
 from wagtail.snippets.models import get_snippet_models
 
 
@@ -58,8 +58,8 @@ class BaseContentTypesCommand(BaseCommand):
             self.out_message_warning("No content types found.")
             return
 
-        content_type_pages = self.get_contenttype_for_pages(content_types)
-        content_type_snippets = self.get_contenttype_for_snippets(content_types)
+        content_type_pages = self.get_contenttype_for_pages()
+        content_type_snippets = self.get_contenttype_for_snippets()
         content_type_modeladmin = self.get_contenttypes_for_modeladmin(content_types)
         content_type_settings = self.get_contenttypes_for_settings(content_types)
 
@@ -100,58 +100,50 @@ class BaseContentTypesCommand(BaseCommand):
 
     def get_contenttypes_for_settings(self, content_types):
         content_type_settings = {}
-        settings_models = []
-        for model in settings_registry:
-            settings_models.append(
-                f"{model._meta.app_label}.{model._meta.model_name}".lower()
-            )
 
-        for content_type in content_types:
-            model_str = f"{content_type.app_label}.{content_type.model}"
-            if model_str in settings_models:
-                content_type_settings[content_type.id] = [
-                    content_type.model_class().__name__,
-                    content_type.app_label,
-                ]
+        for model in settings_registry:
+            content_type_settings[ContentType.objects.get_for_model(model).id] = [
+                model.__name__,
+                model._meta.app_label,
+            ]
 
         return content_type_settings
 
     def get_contenttypes_for_modeladmin(self, content_types):
         content_type_modeladmin = {}
-        modeladmin_models = [model.lower() for model in self.registered_modeladmin]
+        # modeladmin_models = [model.lower() for model in self.registered_modeladmin]
+        modeladmin_models = self.registered_modeladmin
 
-        for content_type in content_types:
-            model_str = f"{content_type.app_label}.{content_type.model}"
-            if model_str in modeladmin_models:
-                content_type_modeladmin[content_type.id] = [
-                    content_type.model_class().__name__,
-                    content_type.app_label,
-                ]
+        for model in modeladmin_models:
+            m = apps.get_model(model)
+            content_type_modeladmin[ContentType.objects.get_for_model(m).id] = [
+                m.__name__,
+                m._meta.app_label,
+            ]
 
         return content_type_modeladmin
 
-    def get_contenttype_for_snippets(self, content_types):
+    def get_contenttype_for_snippets(self):
         content_type_snippets = {}
-        snippet_models = [model.__name__.lower() for model in get_snippet_models()]
+        snippet_models = get_snippet_models()
 
-        for content_type in content_types:
-            if content_type.model in snippet_models:
-                content_type_snippets[content_type.id] = [
-                    content_type.model_class().__name__,
-                    content_type.app_label,
-                ]
+        for model in snippet_models:
+            content_type_snippets[ContentType.objects.get_for_model(model).id] = [
+                model.__name__,
+                model._meta.app_label,
+            ]
 
         return content_type_snippets
 
-    def get_contenttype_for_pages(self, content_types):
+    def get_contenttype_for_pages(self):
         content_type_pages = {}
 
-        for content_type in content_types:
-            cls = apps.get_model(content_type.app_label, content_type.model)
-            if issubclass(cls, Page):
-                content_type_pages[content_type.id] = [
-                    content_type.model_class().__name__,
-                    content_type.app_label,
+        page_models = get_page_models()
+        for model in page_models:
+            if issubclass(model, Page) and model is not Page:  # exclude Page itself
+                content_type_pages[ContentType.objects.get_for_model(model).id] = [
+                    model.__name__,
+                    model._meta.app_label,
                 ]
 
         return content_type_pages
