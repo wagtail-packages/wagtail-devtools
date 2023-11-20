@@ -26,10 +26,16 @@ The `content_types` report will generate a report for all content types in the p
 
 ## Installation
 
-Install the package
+~~Install the package~~ - There's no release yet so you'll need to install from the main branch.
 
 ```bash
 python -m pip install wagtail-devtools
+```
+
+Install from the main branch.
+
+```bash
+python -m pip install git+https://github.com/wagtail-packages/wagtail-devtools#egg=wagtail_devtools
 ```
 
 Add the package to your installed apps in your development settings file. The site will need to be running in `DEBUG` mode.
