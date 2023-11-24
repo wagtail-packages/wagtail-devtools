@@ -187,6 +187,7 @@ class BaseAdminResponsesCommand(BaseCommand):
 
         # Print the results
         for page in results:
+            print(page)
             message = f"\n{page['title']} ( {page['class_name']} ) ↓"
             self.out_message(message)
 
