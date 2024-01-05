@@ -6,7 +6,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-added-large-files
         args: ['--maxkb=1500']
@@ -20,7 +20,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 23.12.1
     hooks:
       - id: black
         language_version: python3
@@ -32,7 +32,7 @@ repos:
         additional_dependencies: [black==23.9.1]
   - repo: https://github.com/pycqa/isort
     # isort config is in setup.cfg
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
@@ -45,13 +45,13 @@ repos:
           - flake8-comprehensions
   - repo: https://github.com/pre-commit/mirrors-prettier
     # prettier config is in prettier.config.js
-    rev: 'v2.7.1'
+    rev: 'v4.0.0-alpha.8'
     hooks:
       - id: prettier
         types_or: [css, scss, javascript, ts, tsx, json, yaml]
   - repo: https://github.com/pre-commit/mirrors-eslint
     # eslint config is in .eslintrc.js
-    rev: v8.32.0
+    rev: v9.0.0-alpha.0
     hooks:
       - id: eslint
         additional_dependencies:
@@ -68,7 +68,7 @@ repos:
         types: [file]
   - repo: https://github.com/awebdeveloper/pre-commit-stylelint
     # stylelint config is in .stylelintrc.js
-    rev: 8f63da497580898a7e0ceef6bf9e72cc0af07828
+    rev: 0.0.2
     hooks:
       - id: stylelint
         files: \.(scss)$
