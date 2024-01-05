@@ -1,21 +1,28 @@
 import logging
+import shutil
 
 from io import StringIO
 from sys import stderr
 
+from django.conf import settings
 from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase, override_settings
 
 
 class TestE2ELoadFixtures(TestCase):
-    def test_load_fixtures(self):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(settings.MEDIA_ROOT)
+        super().tearDownClass()
+
+    def test_build_fixtures(self):
         args = []
         opts = {}
 
         with StringIO() as out:
-            call_command("load_fixtures", *args, **opts, stdout=out, stderr=stderr)
+            call_command("build_fixtures", *args, **opts, stdout=out, stderr=stderr)
             output = out.getvalue().strip()
-            print(output)  # Just for debugging
+            # print(output)  # Just for debugging
 
         expected = [
             "Creating superuser.",
@@ -39,9 +46,14 @@ class TestE2ELoadFixtures(TestCase):
 
 @override_settings(DEBUG=True)
 class TestE2EAdminContentTypes(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(settings.MEDIA_ROOT)
+        super().tearDownClass()
+
     def setUp(self):
         with StringIO() as out:
-            call_command("load_fixtures", stdout=out, stderr=stderr)
+            call_command("build_fixtures", stdout=out, stderr=stderr)
 
     def test_console_out(self):
         args = []
@@ -107,9 +119,14 @@ class TestE2EAdminContentTypes(TestCase):
 
 @override_settings(DEBUG=True)
 class TestE2EAdminResponses(LiveServerTestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(settings.MEDIA_ROOT)
+        super().tearDownClass()
+
     def setUp(self):
         with StringIO() as out:
-            call_command("load_fixtures", stdout=out, stderr=stderr)
+            call_command("build_fixtures", stdout=out, stderr=stderr)
 
     def test_console_out(self):
         args = [
