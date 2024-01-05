@@ -16,7 +16,9 @@ class TestE2ELoadFixtures(TestCase):
         super().tearDownClass()
 
     def test_build_fixtures(self):
-        args = []
+        args = [
+            "--no-color",
+        ]
         opts = {}
 
         with StringIO() as out:
@@ -56,7 +58,9 @@ class TestE2EAdminContentTypes(TestCase):
             call_command("build_fixtures", stdout=out, stderr=stderr)
 
     def test_console_out(self):
-        args = []
+        args = [
+            "--no-color",
+        ]
         opts = {
             "cid": 3,
         }
@@ -125,6 +129,7 @@ class TestE2EAdminResponses(LiveServerTestCase):
         super().tearDownClass()
 
     def setUp(self):
+        print(f"Live server url: {self.live_server_url}")  # Just for debugging
         with StringIO() as out:
             call_command("build_fixtures", stdout=out, stderr=stderr)
 
@@ -132,6 +137,7 @@ class TestE2EAdminResponses(LiveServerTestCase):
         args = [
             "superuser",
             "superuser",
+            "--no-color",
         ]
         opts = {
             "host": self.live_server_url,
@@ -148,21 +154,25 @@ class TestE2EAdminResponses(LiveServerTestCase):
         # Not testing edit page messages as the id's aren't guaranteed
         # The important test is the response error and draft page messages are found
         # For good measure we'll include a test for the first and almost last lines of the output
-        lines_expected = [
+        expected = [
             "Checking the admin and frontend responses of 4 page types ...",
             "==============================================================",
-            " 1. HomePage",
-            " 2. StandardPageOne",
-            " 3. StandardPageThree",
-            " 4. StandardPageTwo",
+            "1. HomePage",
+            "2. StandardPageOne",
+            "3. StandardPageThree",
+            "4. StandardPageTwo",
             "Home Page ( HomePage ) ↓",
-            f"{self.live_server_url}/ ← 200",
+            f"{self.live_server_url}/admin/pages/3/edit/ ← 200",
+            "http://localhost:8000/ ← 200",
             "Standard Page One ( StandardPageOne ) ↓",
-            f"{self.live_server_url}/standard-page-one/ ← 200",
+            f"{self.live_server_url}/admin/pages/4/edit/ ← 200",
+            "http://localhost:8000/standard-page-one/ ← 200",
             "Standard Page Two ( StandardPageTwo ) ↓",
-            f"{self.live_server_url}/standard-page-two/ ← 404 probably a draft page",
+            f"{self.live_server_url}/admin/pages/5/edit/ ← 200",
+            "http://localhost:8000/standard-page-two/ ← 404 probably a draft page",
             "Standard Page Three ( StandardPageThree ) ↓",
-            f"{self.live_server_url}/standard-page-three/ ← 500",
+            f"{self.live_server_url}/admin/pages/6/edit/ ← 200",
+            "http://localhost:8000/standard-page-three/ ← 500",
             "DASHBOARD page ...",
             "===================",
             f"{self.live_server_url}/admin/ ← 200",
@@ -179,22 +189,100 @@ class TestE2EAdminResponses(LiveServerTestCase):
             "==========================",
             f"{self.live_server_url}/admin/collections/ ← 200",
             "COLLECTIONS EDIT page ...",
-            "WORKFLOWS TASK edit page ...",
             "==========================",
+            "Test Collection 1 ↓",
+            f"{self.live_server_url}/admin/collections/2/ ← 200",
+            "DOCUMENTS list page ...",
+            "========================",
+            f"{self.live_server_url}/admin/documents/ ← 200",
+            "DOCUMENTS edit page ...",
+            "========================",
+            "Document ↓",
+            f"{self.live_server_url}/admin/documents/edit/1/ ← 200",
+            "GROUPS list page ...",
+            "=====================",
+            f"{self.live_server_url}/admin/groups/ ← 200",
+            "GROUPS EDIT page ...",
+            "=====================",
+            "Group ↓",
+            f"{self.live_server_url}/admin/groups/edit/1/ ← 200",
+            "IMAGES list page ...",
+            "=====================",
+            f"{self.live_server_url}/admin/images/ ← 200",
+            "IMAGES edit page ...",
+            "=====================",
+            "Image ↓",
+            f"{self.live_server_url}/admin/images/1/ ← 200",
+            "LOCKED PAGES list page ...",
+            "===========================",
+            f"{self.live_server_url}/admin/reports/locked/ ← 200",
+            "REDIRECTS list page ...",
+            "========================",
+            f"{self.live_server_url}/admin/redirects/ ← 200",
+            "REDIRECTS edit page ...",
+            "========================",
+            "Redirect ↓",
+            f"{self.live_server_url}/admin/redirects/1/ ← 200",
+            "SETTINGS edit pages ...",
+            "========================",
+            "Generic setting one ↓",
+            f"{self.live_server_url}/admin/settings/wagtail_devtools_test/genericsettingone/1/ ← 200",
+            "Generic setting two ↓",
+            f"{self.live_server_url}/admin/settings/wagtail_devtools_test/genericsettingtwo/1/ ← 200",
+            "Generic setting three ↓",
+            f"{self.live_server_url}/admin/settings/wagtail_devtools_test/genericsettingthree/1/ ← 200",
+            "Site setting one ↓",
+            f"{self.live_server_url}/admin/settings/wagtail_devtools_test/sitesettingone/2/ ← 200",
+            "Site setting two ↓",
+            f"{self.live_server_url}/admin/settings/wagtail_devtools_test/sitesettingtwo/2/ ← 200",
+            "Site setting three ↓",
+            f"{self.live_server_url}/admin/settings/wagtail_devtools_test/sitesettingthree/2/ ← 200",
+            "SITES list page ...",
+            "====================",
+            f"{self.live_server_url}/admin/sites/ ← 200",
+            "SITES EDIT page ...",
+            "====================",
+            "Site ↓",
+            f"{self.live_server_url}/admin/sites/edit/2/ ← 200",
+            "SITE HISTORY list page ...",
+            "===========================",
+            f"{self.live_server_url}/admin/reports/site-history/ ← 200",
+            "SNIPPETS list page ...",
+            "=======================",
+            f"{self.live_server_url}/admin/snippets/ ← 200",
+            "SNIPPETS models edit pages ...",
+            "===============================",
+            "Test snippet one ↓",
+            f"{self.live_server_url}/admin/snippets/wagtail_devtools_test/testsnippetone/edit/1/ ← 200",
+            "Test snippet three ↓",
+            f"{self.live_server_url}/admin/snippets/wagtail_devtools_test/testsnippetthree/edit/1/ ← 200",
+            "Test snippet two ↓",
+            f"{self.live_server_url}/admin/snippets/wagtail_devtools_test/testsnippettwo/edit/1/ ← 200",
+            "USERS list page ...",
+            "====================",
+            f"{self.live_server_url}/admin/users/ ← 200",
+            "USERS EDIT page ...",
+            "====================",
+            "User ↓",
+            f"{self.live_server_url}/admin/users/1/ ← 200",
+            "WORKFLOWS list page ...",
+            "========================",
+            f"{self.live_server_url}/admin/workflows/list/ ← 200",
+            "WORKFLOWS edit page ...",
+            "========================",
+            "Workflow ↓",
+            f"{self.live_server_url}/admin/workflows/edit/1/ ← 200",
+            "WORKFLOWS TASKS list page ...",
+            "==============================",
+            f"{self.live_server_url}/admin/workflows/tasks/index/ ← 200",
+            "WORKFLOWS TASK edit page ...",
+            "=============================",
             "Task ↓",
+            f"{self.live_server_url}/admin/workflows/tasks/edit/1/ ← 200",
         ]
 
-        line_count = 0
-
-        for line in lines_expected:
-            line_count += 1
-
+        for line in expected:
             if line not in output:
-                print(f"Missing this line: {line}")  # Just for debugging
+                # Just for debugging
+                print(f"Missing this line: {line}")
             self.assertIn(line, output)
-
-        print(f"Line count: {line_count}")  # Just for debugging
-
-        self.assertTrue(
-            line_count >= 30,
-        )
