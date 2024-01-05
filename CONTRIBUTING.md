@@ -55,10 +55,26 @@ or, you can run them for a specific environment `tox -e python3.11-django4.2-wag
 
 To run the test app interactively, use `tox -e interactive`, visit `http://127.0.0.1:8020/admin/` and log in with `admin`/`changeme`.
 
-### How to run tests without tox
+### Development setup
 
-After installing the project in editable mode, you can run tests with:
+With your preferred virtualenv activated:
 
 ```sh
-python testmanage.py test
+python testmanage.py migrate
+python testmanage.py build_fixtures
+python testmanage.py runserver
+```
+
+You can access the site at `http://localhost:8000/` and the admin at `http://localhost:8000/admin/`.
+
+To log in to the admin, use `superuser`/`superuser`.
+
+#### Optional use of build_fixtures
+
+The `build_fixtures` command will create a set of pages and images for use in the testing app. It is not required to run the tests, but it can be useful for testing the devtools in a real-world scenario.
+
+The option to clear old data is available with `--clear`. This will delete all data from the database before creating new data.
+
+```sh
+python testmanage.py build_fixtures --clear
 ```
