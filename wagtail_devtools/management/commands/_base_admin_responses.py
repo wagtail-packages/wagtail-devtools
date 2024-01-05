@@ -166,7 +166,7 @@ class BaseAdminResponsesCommand(BaseCommand):
                 results.append(
                     {
                         "title": item.title,
-                        "url": f"{options['host']}{item.url}",
+                        "url": f"{item.url}",
                         "id": item.id,
                         "editor_url": f"{self.get_admin_edit_url(options, item)}",
                         "class_name": item.__class__.__name__,
