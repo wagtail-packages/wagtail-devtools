@@ -35,7 +35,17 @@ from wagtail_devtools.test.models import (
 class Command(BaseCommand):
     help = "Create or load fixtures for testing."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--clear",
+            action="store_true",
+            help="Clear existing fixtures. If not specified, load fixtures.",
+        )
+
     def handle(self, *args, **options):
+        if options["clear"]:
+            self.clear_fixtures()
+
         self.create_superuser()
         self.update_home_page()
         self.create_standard_pages()
@@ -210,3 +220,26 @@ class Command(BaseCommand):
                 )
                 document.title = title
                 document.save()
+
+    def clear_fixtures(self):
+        self.stdout.write(self.style.SUCCESS("Clearing fixtures."))
+
+        StandardPageOne.objects.all().delete()
+        StandardPageTwo.objects.all().delete()
+        StandardPageThree.objects.all().delete()
+        TestSnippetOne.objects.all().delete()
+        TestSnippetTwo.objects.all().delete()
+        TestSnippetThree.objects.all().delete()
+        TestModelAdminOne.objects.all().delete()
+        TestModelAdminTwo.objects.all().delete()
+        TestModelAdminThree.objects.all().delete()
+        SiteSettingOne.objects.all().delete()
+        SiteSettingTwo.objects.all().delete()
+        SiteSettingThree.objects.all().delete()
+        GenericSettingOne.objects.all().delete()
+        GenericSettingTwo.objects.all().delete()
+        GenericSettingThree.objects.all().delete()
+        WagtailImage.objects.all().delete()
+        WagtailDocument.objects.all().delete()
+        Query.objects.all().delete()
+        SearchPromotion.objects.all().delete()
