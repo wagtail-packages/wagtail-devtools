@@ -8,12 +8,12 @@ from django.test import LiveServerTestCase, TestCase, override_settings
 
 
 class TestE2ELoadFixtures(TestCase):
-    def test_load_fixtures(self):
+    def test_build_fixtures(self):
         args = []
         opts = {}
 
         with StringIO() as out:
-            call_command("load_fixtures", *args, **opts, stdout=out, stderr=stderr)
+            call_command("build_fixtures", *args, **opts, stdout=out, stderr=stderr)
             output = out.getvalue().strip()
             print(output)  # Just for debugging
 
@@ -41,7 +41,7 @@ class TestE2ELoadFixtures(TestCase):
 class TestE2EAdminContentTypes(TestCase):
     def setUp(self):
         with StringIO() as out:
-            call_command("load_fixtures", stdout=out, stderr=stderr)
+            call_command("build_fixtures", stdout=out, stderr=stderr)
 
     def test_console_out(self):
         args = []
@@ -109,7 +109,7 @@ class TestE2EAdminContentTypes(TestCase):
 class TestE2EAdminResponses(LiveServerTestCase):
     def setUp(self):
         with StringIO() as out:
-            call_command("load_fixtures", stdout=out, stderr=stderr)
+            call_command("build_fixtures", stdout=out, stderr=stderr)
 
     def test_console_out(self):
         args = [
