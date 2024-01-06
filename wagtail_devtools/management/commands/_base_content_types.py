@@ -12,20 +12,25 @@ from wagtail.snippets.models import get_snippet_models
 class BaseContentTypesCommand(BaseCommand):
     """Base command for content types commands.
 
-    This command is used to generate a report of all the admin edit pages for a given content type by entering the C-Type ID.
-
-    The command is only available in DEBUG mode. Set DEBUG=True in your settings to enable it.
-
-    The command will generate a list of all the content types in your project, and then prompt you to enter a C-Type ID from the list.
-
-    The command will then generate a list of all the edit pages for that content type.
-
-    To implement this command in your project, create a management command that extends this class.
+    Extend this class to create a management command that generates a report of all the admin edit pages for a given content type by entering the C-Type ID.
     Add the following attributes to your command:
 
-    apps_prefix = str() optional # The prefix of the apps you want to include in the report
-    registered_modeladmin = [] # A list of modeladmin models you want to include in the report
-    excluded_apps = [] # A list of apps you want to exclude from the report
+        # The prefix of the apps you want to include in the report
+        apps_prefix = str() optional
+
+        # A list of modeladmin models you want to include in the report
+        registered_modeladmin = []
+
+        # A list of apps you want to exclude from the report
+        excluded_apps = []
+
+    It's only available in DEBUG mode. Set DEBUG=True in your settings to enable it.
+
+    Initially, the command will:
+        Generate a list of all the content types in your project, and then prompt you to enter a C-Type ID from the list.
+
+    Enter a C-Type ID from the list to view a report of all the admin edit pages of that type.
+        Then shows a list of all the edit pages for that content type.
     """
 
     help = "Generate a report of all the admin edit pages for a given content type by entering the C-Type ID."
@@ -158,9 +163,9 @@ class BaseContentTypesCommand(BaseCommand):
         return content_type_pages
 
     def out_table(self, data, model_type=None):
-        self.out_message_info(f"\nIndex of {model_type} Types")
+        self.out_message_info(f"\n{model_type} Models: {len(data)}")
 
-        headers = ["Model", "App", "C-Type ID"]
+        headers = ["Model Name", "App", "C-Type ID"]
         max_col_width = self.calc_col_width(data)
 
         self.out_message("-" * max_col_width * len(headers))

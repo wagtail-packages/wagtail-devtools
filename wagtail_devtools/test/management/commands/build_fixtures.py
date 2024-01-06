@@ -9,7 +9,7 @@ from wagtail.contrib.redirects.models import Redirect
 from wagtail.contrib.search_promotions.models import Query, SearchPromotion
 from wagtail.documents.models import Document as WagtailDocument
 from wagtail.images.models import Image as WagtailImage
-from wagtail.models import Site
+from wagtail.models import Page, Site
 from wagtail.models.collections import Collection
 
 from wagtail_devtools.test.models import (
@@ -56,6 +56,7 @@ class Command(BaseCommand):
         self.create_redirects()
         self.create_promoted_searches()
         self.import_media()
+        self.create_second_site()
 
     def create_superuser(self):
         self.stdout.write("Creating superuser.")
@@ -222,7 +223,7 @@ class Command(BaseCommand):
                 document.save()
 
     def clear_fixtures(self):
-        self.stdout.write(self.style.SUCCESS("Clearing fixtures."))
+        self.stdout.write("Clearing fixtures.")
 
         StandardPageOne.objects.all().delete()
         StandardPageTwo.objects.all().delete()
@@ -243,3 +244,46 @@ class Command(BaseCommand):
         WagtailDocument.objects.all().delete()
         Query.objects.all().delete()
         SearchPromotion.objects.all().delete()
+
+        Page.objects.filter(title="Second Site Home Page").delete()
+        Site.objects.filter(hostname="second-site.localhost").delete()
+
+    def create_second_site(self):
+        self.stdout.write("Creating second site.")
+
+        root_page = Page.objects.get(depth=1)
+
+        second_site_home_page = HomePage(title="Second Site Home Page")
+        root_page.add_child(instance=second_site_home_page)
+        rev = second_site_home_page.save_revision()
+        rev.publish()
+
+        Site.objects.create(
+            hostname="second-site.localhost",
+            port=8000,
+            root_page=second_site_home_page,
+            is_default_site=False,
+            site_name="Second Site",
+        )
+
+        self.stdout.write("Second site created.")
+
+        self.stdout.write("Creating second site standard pages.")
+
+        sp = StandardPageOne(title="Standard Page One")
+        second_site_home_page.add_child(instance=sp)
+        rev = sp.save_revision()
+        rev.publish()
+
+        # Intentionally is a draft page
+        sp = StandardPageTwo(title="Standard Page Two")
+        second_site_home_page.add_child(instance=sp)
+        rev = sp.save_revision()
+        rev.publish()
+        sp.unpublish()
+
+        # Intentionally has a template error
+        sp = StandardPageThree(title="Standard Page Three")
+        second_site_home_page.add_child(instance=sp)
+        rev = sp.save_revision()
+        rev.publish()
