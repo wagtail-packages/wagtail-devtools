@@ -18,7 +18,7 @@ from wagtail.snippets.models import get_snippet_models
 class BaseAdminResponsesCommand(BaseCommand):
     """Base command for admin responses commands.
 
-    This command will perform a get request to the admin edit and frontend page of all pages, snippets, settings and modeladmin and more.
+    Extend this class to create a management command that generates a report of all the admin and frontend responses for all pages, snippets, settings and modeladmin and more.
 
     You can specify the URL to check by passing the --host option.
     You can specify the URL to use for the report by passing the --report-url option.
