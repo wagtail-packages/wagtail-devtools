@@ -223,7 +223,7 @@ class Command(BaseCommand):
                 document.save()
 
     def clear_fixtures(self):
-        self.stdout.write(self.style.SUCCESS("Clearing fixtures."))
+        self.stdout.write("Clearing fixtures.")
 
         StandardPageOne.objects.all().delete()
         StandardPageTwo.objects.all().delete()
@@ -266,7 +266,7 @@ class Command(BaseCommand):
             site_name="Second Site",
         )
 
-        self.stdout.write(self.style.SUCCESS("Second site created."))
+        self.stdout.write("Second site created.")
 
         self.stdout.write("Creating second site standard pages.")
 
