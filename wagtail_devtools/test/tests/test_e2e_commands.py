@@ -335,7 +335,6 @@ class TestE2EAdminResponses(TestCase):
                 "cmd_test_admin_responses", *args, **opts, stdout=out, stderr=out
             )
             output = out.getvalue().splitlines()
-            print(output)
 
         for line in self.EXPECTED:
             if line not in output:  # Just for debugging
