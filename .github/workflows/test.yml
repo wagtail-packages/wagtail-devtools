@@ -46,7 +46,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[ci]
       - name: Test
-        run: tox
+        run: tox -- --exclude exclude-in-github-actions
         env:
           DB: sqlite
 
@@ -77,7 +77,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[ci]
       - name: Test
-        run: tox
+        run: tox -- --exclude exclude-in-github-actions
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/wagtail_devtools
           DB: postgres

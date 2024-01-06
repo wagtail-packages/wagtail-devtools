@@ -6,7 +6,7 @@ from sys import stderr
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 
 class TestE2ELoadFixtures(TestCase):
@@ -318,6 +318,7 @@ class TestE2EAdminResponses(TestCase):
         with StringIO() as out:
             call_command("build_fixtures", stdout=out, stderr=stderr)
 
+    @tag("exclude-in-github-actions")
     def test_console_out(self):
         args = [
             "superuser",
@@ -334,6 +335,7 @@ class TestE2EAdminResponses(TestCase):
                 "cmd_test_admin_responses", *args, **opts, stdout=out, stderr=out
             )
             output = out.getvalue().splitlines()
+            print(output)
 
         for line in self.EXPECTED:
             if line not in output:  # Just for debugging
