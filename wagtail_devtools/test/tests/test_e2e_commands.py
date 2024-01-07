@@ -135,6 +135,14 @@ class TestE2EAdminContentTypes(TestCase):
 
 @override_settings(DEBUG=True)
 class TestE2EAdminResponses(TestCase):
+    """
+    It's a challenge to get the expected output to match the actual output unless you get the output from
+    running the tox command. I'm not sure why this is the case.
+    But the best way to get the expected output is to run the tox command and copy the output from there.
+    Uncomment the print statement in the test_console_out method to see the output from the test. Then copy
+    the output and paste it into the EXPECTED list below. You'll need to add the "" and , to each line.
+    """
+
     EXPECTED = [
         "Checking the admin and frontend responses of 5 page types ...",
         "==============================================================",
@@ -149,19 +157,19 @@ class TestE2EAdminResponses(TestCase):
         "http://localhost:8000/ ← 200",
         "",
         "Standard Page One ( StandardPageOne ) ↓",
-        "http://localhost:8000/admin/pages/90/edit/ ← 200",
+        "http://localhost:8000/admin/pages/4/edit/ ← 200",
         "http://localhost:8000/standard-page-one/ ← 200",
         "",
         "Standard Page Two ( StandardPageTwo ) ↓",
-        "http://localhost:8000/admin/pages/91/edit/ ← 200",
+        "http://localhost:8000/admin/pages/5/edit/ ← 200",
         "http://localhost:8000/standard-page-two/ ← 404 probably a draft page",
         "",
         "Standard Page Three ( StandardPageThree ) ↓",
-        "http://localhost:8000/admin/pages/92/edit/ ← 200",
+        "http://localhost:8000/admin/pages/6/edit/ ← 200",
         "http://localhost:8000/standard-page-three/ ← 500",
         "",
         "Test Form Page ( FormPage ) ↓",
-        "http://localhost:8000/admin/pages/93/edit/ ← 200",
+        "http://localhost:8000/admin/pages/7/edit/ ← 200",
         "http://localhost:8000/test-form-page/ ← 200",
         "",
         "DASHBOARD page ...",
@@ -194,7 +202,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "DOCUMENTS edit page ...",
         "========================",
-        "http://localhost:8000/admin/documents/edit/41/ ← 200",
+        "http://localhost:8000/admin/documents/edit/1/ ← 200",
         "",
         "GROUPS list page ...",
         "=====================",
@@ -202,7 +210,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "GROUPS EDIT page ...",
         "=====================",
-        "http://localhost:8000/admin/groups/edit/1/ ← 200",
+        "http://localhost:8000/admin/groups/1/ ← 200",
         "",
         "IMAGES list page ...",
         "=====================",
@@ -210,7 +218,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "IMAGES edit page ...",
         "=====================",
-        "http://localhost:8000/admin/images/41/ ← 200",
+        "http://localhost:8000/admin/images/1/ ← 200",
         "",
         "LOCKED PAGES list page ...",
         "===========================",
@@ -226,9 +234,9 @@ class TestE2EAdminResponses(TestCase):
         "",
         "SETTINGS edit pages ...",
         "========================",
-        "http://localhost:8000/admin/settings/wagtail_devtools_test/genericsettingone/11/ ← 200",
-        "http://localhost:8000/admin/settings/wagtail_devtools_test/genericsettingtwo/11/ ← 200",
-        "http://localhost:8000/admin/settings/wagtail_devtools_test/genericsettingthree/11/ ← 200",
+        "http://localhost:8000/admin/settings/wagtail_devtools_test/genericsettingone/1/ ← 200",
+        "http://localhost:8000/admin/settings/wagtail_devtools_test/genericsettingtwo/1/ ← 200",
+        "http://localhost:8000/admin/settings/wagtail_devtools_test/genericsettingthree/1/ ← 200",
         "http://localhost:8000/admin/settings/wagtail_devtools_test/sitesettingone/2/ ← 200",
         "http://localhost:8000/admin/settings/wagtail_devtools_test/sitesettingtwo/2/ ← 200",
         "http://localhost:8000/admin/settings/wagtail_devtools_test/sitesettingthree/2/ ← 200",
@@ -239,7 +247,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "SITES EDIT page ...",
         "====================",
-        "http://localhost:8000/admin/sites/edit/2/ ← 200",
+        "http://localhost:8000/admin/sites/2/ ← 200",
         "",
         "SITE HISTORY list page ...",
         "===========================",
@@ -251,9 +259,9 @@ class TestE2EAdminResponses(TestCase):
         "",
         "SNIPPETS models edit pages ...",
         "===============================",
-        "http://localhost:8000/admin/snippets/wagtail_devtools_test/testsnippetone/edit/41/ ← 200",
-        "http://localhost:8000/admin/snippets/wagtail_devtools_test/testsnippetthree/edit/41/ ← 200",
-        "http://localhost:8000/admin/snippets/wagtail_devtools_test/testsnippettwo/edit/41/ ← 200",
+        "http://localhost:8000/admin/snippets/wagtail_devtools_test/testsnippetone/edit/1/ ← 200",
+        "http://localhost:8000/admin/snippets/wagtail_devtools_test/testsnippetthree/edit/1/ ← 200",
+        "http://localhost:8000/admin/snippets/wagtail_devtools_test/testsnippettwo/edit/1/ ← 200",
         "",
         "USERS list page ...",
         "====================",
@@ -285,7 +293,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "Model Admin One edit page ...",
         "==============================",
-        "http://localhost:8000/admin/wagtail_devtools_test/testmodeladminone/edit/41/ ← 200",
+        "http://localhost:8000/admin/wagtail_devtools_test/testmodeladminone/edit/1/ ← 200",
         "",
         "Model Admin Two list page ...",
         "==============================",
@@ -293,7 +301,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "Model Admin Two edit page ...",
         "==============================",
-        "http://localhost:8000/admin/wagtail_devtools_test/testmodeladmintwo/edit/41/ ← 200",
+        "http://localhost:8000/admin/wagtail_devtools_test/testmodeladmintwo/edit/1/ ← 200",
         "",
         "Model Admin Three list page ...",
         "================================",
@@ -301,7 +309,7 @@ class TestE2EAdminResponses(TestCase):
         "",
         "Model Admin Three edit page ...",
         "================================",
-        "http://localhost:8000/admin/wagtail_devtools_test/testmodeladminthree/edit/41/ ← 200",
+        "http://localhost:8000/admin/wagtail_devtools_test/testmodeladminthree/edit/1/ ← 200",
     ]
 
     @classmethod
