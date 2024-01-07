@@ -235,6 +235,14 @@ class Command(BaseAdminResponsesCommand):
             {
                 # MODELADMIN
                 "function": self.report_model_admin,
-                "args": [session, options, ["wagtail_devtools_test.TestModelAdmin"]],
+                "args": [
+                    session,
+                    options,
+                    [
+                        "wagtail_devtools_test.TestModelAdminOne",
+                        "wagtail_devtools_test.TestModelAdminTwo",
+                        "wagtail_devtools_test.TestModelAdminThree",
+                    ],
+                ],
             },
         ]

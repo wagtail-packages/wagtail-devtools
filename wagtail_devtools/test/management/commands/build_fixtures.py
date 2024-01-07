@@ -115,9 +115,9 @@ class Command(BaseCommand):
         self.stdout.write("Creating model admins.")
 
         for x in range(1, 5):
-            TestModelAdminOne.objects.create(title=f"Test Model Admin {x}")
-            TestModelAdminTwo.objects.create(title=f"Test Model Admin {x}")
-            TestModelAdminThree.objects.create(title=f"Test Model Admin {x}")
+            TestModelAdminOne.objects.create(title=f"Test Model Admin One {x}")
+            TestModelAdminTwo.objects.create(title=f"Test Model Admin Two {x}")
+            TestModelAdminThree.objects.create(title=f"Test Model Admin Three {x}")
 
     def create_settings(self):
         self.stdout.write("Creating settings.")
