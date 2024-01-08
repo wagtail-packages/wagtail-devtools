@@ -136,22 +136,18 @@ class BaseAdminResponsesCommand(BaseCommand):
         self.out_models(session, options, snippet_models)
 
     def report_model_admin(self, session, options, registered_modeladmin):
-        modeladmin_models = []
-
-        for model in apps.get_models():
-            app = model._meta.app_label
-            name = model.__name__
-            if f"{app}.{name}" in registered_modeladmin:
-                # Out the modeladmin list page
-                index_url = AdminURLHelper(model).index_url
-                self.report_admin_list_pages(
-                    session, f"{name.upper()} list", f"{options['host']}{index_url}"
-                )
-                self.out_message(f"\n{name.upper()} edit page ...", "HTTP_INFO")
-
-                modeladmin_models.append(apps.get_model(app, name))
-
-        self.out_models(session, options, modeladmin_models)
+        for registered in registered_modeladmin:
+            for model in apps.get_models():
+                app = model._meta.app_label
+                name = model.__name__
+                verbose_name = model._meta.verbose_name
+                if f"{app}.{name}" in registered:
+                    index_url = AdminURLHelper(model).index_url
+                    self.report_admin_list_pages(
+                        session, f"{verbose_name} list", f"{options['host']}{index_url}"
+                    )
+                    self.out_message(f"\n{verbose_name} edit page ...", "HTTP_INFO")
+                    self.out_models(session, options, [model])
 
     def report_pages(self, session, options):
         """Check and report the admin and frontend responses for all page model types."""
@@ -226,9 +222,6 @@ class BaseAdminResponsesCommand(BaseCommand):
 
             url = self.get_admin_edit_url(options, obj)
 
-            message = f"\n{model._meta.verbose_name.capitalize()} ↓"
-            self.out_message(message)
-
             response = session.get(url)
 
             if response.status_code == 200:
@@ -240,9 +233,6 @@ class BaseAdminResponsesCommand(BaseCommand):
         """Create a report for the first object of a model.
         The model does not have a base_manager so the object is passed in."""
         url = self.get_admin_edit_url(options, model)
-
-        message = f"\n{model.name} ↓"
-        self.out_message(message)
 
         response = session.get(url)
 

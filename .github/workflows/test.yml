@@ -33,7 +33,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[ci]
       - name: Test
-        run: tox -- --exclude exclude-in-github-actions # temporary workaround
+        run: tox # -- --exclude exclude-in-github-actions # temporary workaround
         env:
           DB: sqlite
 
@@ -63,7 +63,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[ci]
       - name: Test
-        run: tox -- --exclude exclude-in-github-actions # temporary workaround
+        run: tox # -- --exclude exclude-in-github-actions # temporary workaround
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/wagtail_devtools
           DB: postgres
