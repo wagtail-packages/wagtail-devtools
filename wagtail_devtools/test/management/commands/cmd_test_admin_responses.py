@@ -61,11 +61,6 @@ class Command(BaseAdminResponsesCommand):
                 ],
             },
             {
-                # COLLECTIONS EDIT
-                "function": self.report_collections,
-                "args": [session, options],
-            },
-            {
                 # DOCUMENTS LIST
                 "function": self.report_admin_list_pages,
                 "args": [
@@ -73,11 +68,6 @@ class Command(BaseAdminResponsesCommand):
                     "DOCUMENTS list",
                     f"{options['host']}{reverse('wagtaildocs:index')}",
                 ],
-            },
-            {
-                # DOCUMENTS
-                "function": self.report_documents,
-                "args": [session, options],
             },
             {
                 # GROUPS
@@ -89,11 +79,6 @@ class Command(BaseAdminResponsesCommand):
                 ],
             },
             {
-                # GROUPS EDIT
-                "function": self.report_groups,
-                "args": [session, options],
-            },
-            {
                 # IMAGES LIST
                 "function": self.report_admin_list_pages,
                 "args": [
@@ -101,11 +86,6 @@ class Command(BaseAdminResponsesCommand):
                     "IMAGES list",
                     f"{options['host']}{reverse('wagtailimages:index')}",
                 ],
-            },
-            {
-                # IMAGES
-                "function": self.report_images,
-                "args": [session, options],
             },
             {
                 # LOCKED PAGES
@@ -126,22 +106,6 @@ class Command(BaseAdminResponsesCommand):
                 ],
             },
             {
-                # REDIRECTS EDIT
-                "function": self.report_admin_app_model,
-                "args": [
-                    session,
-                    options,
-                    "REDIRECTS edit",
-                    "wagtailredirects",
-                    "Redirect",
-                ],
-            },
-            {
-                # SETTINGS
-                "function": self.report_settings_models,
-                "args": [session, options],
-            },
-            {
                 # SITES
                 "function": self.report_admin_list_pages,
                 "args": [
@@ -149,11 +113,6 @@ class Command(BaseAdminResponsesCommand):
                     "SITES list",
                     f"{options['host']}{reverse('wagtailsites:index')}",
                 ],
-            },
-            {
-                # SITES EDIT
-                "function": self.report_sites,
-                "args": [session, options],
             },
             {
                 # SITE HISTORY
@@ -174,11 +133,6 @@ class Command(BaseAdminResponsesCommand):
                 ],
             },
             {
-                # SNIPPETS
-                "function": self.report_snippets,
-                "args": [session, options],
-            },
-            {
                 # USERS
                 "function": self.report_admin_list_pages,
                 "args": [
@@ -186,11 +140,6 @@ class Command(BaseAdminResponsesCommand):
                     "USERS list",
                     f"{options['host']}{reverse('wagtailusers_users:index')}",
                 ],
-            },
-            {
-                # USERS EDIT
-                "function": self.report_users,
-                "args": [session, options],
             },
             {
                 # WORKFLOWS LIST
@@ -202,6 +151,66 @@ class Command(BaseAdminResponsesCommand):
                 ],
             },
             {
+                # WORKFLOWS TASKS
+                "function": self.report_admin_list_pages,
+                "args": [
+                    session,
+                    "WORKFLOWS TASKS list",
+                    f"{options['host']}{reverse('wagtailadmin_workflows:task_index')}",
+                ],
+            },
+            {
+                # COLLECTIONS EDIT
+                "function": self.report_collections,
+                "args": [session, options],
+            },
+            {
+                # DOCUMENTS
+                "function": self.report_documents,
+                "args": [session, options],
+            },
+            {
+                # GROUPS EDIT
+                "function": self.report_groups,
+                "args": [session, options],
+            },
+            {
+                # IMAGES
+                "function": self.report_images,
+                "args": [session, options],
+            },
+            {
+                # REDIRECTS EDIT
+                "function": self.report_admin_app_model,
+                "args": [
+                    session,
+                    options,
+                    "REDIRECTS edit",
+                    "wagtailredirects",
+                    "Redirect",
+                ],
+            },
+            {
+                # SETTINGS
+                "function": self.report_settings_models,
+                "args": [session, options],
+            },
+            {
+                # SITES EDIT
+                "function": self.report_sites,
+                "args": [session, options],
+            },
+            {
+                # SNIPPETS
+                "function": self.report_snippets,
+                "args": [session, options],
+            },
+            {
+                # USERS EDIT
+                "function": self.report_users,
+                "args": [session, options],
+            },
+            {
                 # WORKFLOWS EDIT
                 "function": self.report_admin_app_model,
                 "args": [
@@ -210,15 +219,6 @@ class Command(BaseAdminResponsesCommand):
                     "WORKFLOWS edit",
                     "wagtailcore",
                     "Workflow",
-                ],
-            },
-            {
-                # WORKFLOWS TASKS
-                "function": self.report_admin_list_pages,
-                "args": [
-                    session,
-                    "WORKFLOWS TASKS list",
-                    f"{options['host']}{reverse('wagtailadmin_workflows:task_index')}",
                 ],
             },
             {

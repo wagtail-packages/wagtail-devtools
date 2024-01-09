@@ -40,11 +40,42 @@ class StandardPageThree(Page):
     ]
 
 
-class FormField(AbstractFormField):
-    page = ParentalKey("FormPage", on_delete=models.CASCADE, related_name="form_fields")
+class FormFieldOne(AbstractFormField):
+    page = ParentalKey(
+        "FormPageOne", on_delete=models.CASCADE, related_name="form_fields"
+    )
 
 
-class FormPage(AbstractEmailForm):
+class FormPageOne(AbstractEmailForm):
+    intro = RichTextField(blank=True)
+    thank_you_text = RichTextField(blank=True)
+
+    content_panels = AbstractEmailForm.content_panels + [
+        FieldPanel("intro"),
+        InlinePanel("form_fields", label="Form fields"),
+        FieldPanel("thank_you_text"),
+        MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
+                FieldPanel("subject"),
+            ],
+            "Email",
+        ),
+    ]
+
+
+class FormFieldTwo(AbstractFormField):
+    page = ParentalKey(
+        "FormPageTwo", on_delete=models.CASCADE, related_name="form_fields"
+    )
+
+
+class FormPageTwo(AbstractEmailForm):
     intro = RichTextField(blank=True)
     thank_you_text = RichTextField(blank=True)
 

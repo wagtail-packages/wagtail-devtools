@@ -13,8 +13,10 @@ from wagtail.models import Page, Site
 from wagtail.models.collections import Collection
 
 from wagtail_devtools.test.models import (
-    FormField,
-    FormPage,
+    FormFieldOne,
+    FormFieldTwo,
+    FormPageOne,
+    FormPageTwo,
     GenericSettingOne,
     GenericSettingThree,
     GenericSettingTwo,
@@ -111,30 +113,61 @@ class Command(BaseCommand):
 
         home_page = HomePage.objects.first()
 
-        fp = FormPage(title="Test Form Page")
-        fp.intro = "This is the intro."
-        fp.thank_you_text = "Thank you for your submission."
-        fp.from_address = "from@test.com"
-        fp.to_address = "to@test.com"
-        fp.subject = "Form Submission"
+        fp1 = FormPageOne(title="Test Form Page One")
+        fp1.intro = "This is the intro."
+        fp1.thank_you_text = "Thank you for your submission."
+        fp1.from_address = "from@test.com"
+        fp1.to_address = "to@test.com"
+        fp1.subject = "Form Submission"
 
-        name = FormField(label="Name", field_type="singleline", required=True)
-        email = FormField(label="Email", field_type="email", required=True)
-        message = FormField(label="Message", field_type="multiline", required=True)
+        name = FormFieldOne(label="Name", field_type="singleline", required=True)
+        email = FormFieldOne(label="Email", field_type="email", required=True)
+        message = FormFieldOne(label="Message", field_type="multiline", required=True)
 
-        fp.form_fields.add(name)
-        fp.form_fields.add(email)
-        fp.form_fields.add(message)
+        fp1.form_fields.add(name)
+        fp1.form_fields.add(email)
+        fp1.form_fields.add(message)
 
-        home_page.add_child(instance=fp)
-        rev = fp.save_revision()
+        home_page.add_child(instance=fp1)
+        rev = fp1.save_revision()
         rev.publish()
 
-        formpage_submission = fp.get_submission_class()
+        form_page_one_submission = fp1.get_submission_class()
 
         for _ in range(1, 5):
-            formpage_submission.objects.create(
-                page=fp,
+            form_page_one_submission.objects.create(
+                page=fp1,
+                form_data={
+                    "name": "Test User",
+                    "email": "from@test.com",
+                    "message": "This is a test message.",
+                },
+            )
+
+        fp2 = FormPageTwo(title="Test Form Page Two")
+        fp2.intro = "This is the intro."
+        fp2.thank_you_text = "Thank you for your submission."
+        fp2.from_address = "from@test.com"
+        fp2.to_address = "to@test.com"
+        fp2.subject = "Form Submission"
+
+        name = FormFieldTwo(label="Name", field_type="singleline", required=True)
+        email = FormFieldTwo(label="Email", field_type="email", required=True)
+        message = FormFieldTwo(label="Message", field_type="multiline", required=True)
+
+        fp2.form_fields.add(name)
+        fp2.form_fields.add(email)
+        fp2.form_fields.add(message)
+
+        home_page.add_child(instance=fp2)
+        rev = fp2.save_revision()
+        rev.publish()
+
+        form_page_two_submission = fp2.get_submission_class()
+
+        for _ in range(1, 5):
+            form_page_two_submission.objects.create(
+                page=fp2,
                 form_data={
                     "name": "Test User",
                     "email": "from@test.com",
@@ -267,7 +300,8 @@ class Command(BaseCommand):
         StandardPageOne.objects.all().delete()
         StandardPageTwo.objects.all().delete()
         StandardPageThree.objects.all().delete()
-        FormPage.objects.all().delete()
+        FormPageOne.objects.all().delete()
+        FormPageTwo.objects.all().delete()
         TestSnippetOne.objects.all().delete()
         TestSnippetTwo.objects.all().delete()
         TestSnippetThree.objects.all().delete()
