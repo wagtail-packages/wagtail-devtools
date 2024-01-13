@@ -25,13 +25,13 @@ def api_view(request):
 
     ret = {
         "api-views": [
-            f"{get_host(request)}{reverse('get_page_model_types')}",
-            f"{get_host(request)}{reverse('get_wagtail_core_listing_pages')}",
-            f"{get_host(request)}{reverse('get_wagtail_core_edit_pages')}",
-            f"{get_host(request)}{reverse('get_settings_types')}",
-            f"{get_host(request)}{reverse('get_snippet_types')}",
-            f"{get_host(request)}{reverse('get_model_admin_types')}",
-            f"{get_host(request)}{reverse('get_form_types')}",
+            f"{get_host(request)}{reverse('edit-types')}",
+            f"{get_host(request)}{reverse('form-types')}",
+            f"{get_host(request)}{reverse('listing-types')}",
+            f"{get_host(request)}{reverse('modeladmin-types')}",
+            f"{get_host(request)}{reverse('page-types')}",
+            f"{get_host(request)}{reverse('settings-types')}",
+            f"{get_host(request)}{reverse('snippet-types')}",
         ]
     }
     return JsonResponse(ret, safe=False)

@@ -31,36 +31,36 @@ def get_admin_edit_url(host, obj):
 
 def wagtail_core_edit_pages_config():
     return [
-        "wagtailcore.Collection",
-        "wagtaildocs.Document",
         "auth.Group",
+        "auth.User",
+        "wagtailcore.Collection",
+        "wagtailcore.Site",
+        "wagtailcore.Task",
+        "wagtailcore.Workflow",
+        "wagtaildocs.Document",
         "wagtailimages.Image",
         "wagtailredirects.Redirect",
-        "wagtailcore.Site",
-        "auth.User",
-        "wagtailcore.Workflow",
-        "wagtailcore.Task",
     ]
 
 
 def wagtail_core_listing_pages_config():
     return [
-        "wagtailadmin_home",
+        "wagtailadmin_collections:index",
         "wagtailadmin_explore_root",
+        "wagtailadmin_home",
         "wagtailadmin_pages:search",
         "wagtailadmin_reports:aging_pages",
-        "wagtailadmin_collections:index",
-        "wagtaildocs:index",
-        "wagtailusers_groups:index",
-        "wagtailimages:index",
         "wagtailadmin_reports:locked_pages",
-        "wagtailredirects:index",
-        "wagtailsites:index",
         "wagtailadmin_reports:site_history",
-        "wagtailsnippets:index",
-        "wagtailusers_users:index",
         "wagtailadmin_workflows:index",
         "wagtailadmin_workflows:task_index",
+        "wagtaildocs:index",
+        "wagtailimages:index",
+        "wagtailredirects:index",
+        "wagtailsites:index",
+        "wagtailsnippets:index",
+        "wagtailusers_groups:index",
+        "wagtailusers_users:index",
     ]
 
 
