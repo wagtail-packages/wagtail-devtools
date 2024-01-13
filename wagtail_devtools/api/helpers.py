@@ -31,36 +31,36 @@ def get_admin_edit_url(host, obj):
 
 def wagtail_core_edit_pages_config():
     return [
-        ("COLLECTIONS edit", "wagtailcore", "Collection"),
-        ("DOCUMENTS edit", "wagtaildocs", "Document"),
-        ("GROUPS edit", "auth", "Group"),
-        ("IMAGES edit", "wagtailimages", "Image"),
-        ("REDIRECTS edit", "wagtailredirects", "Redirect"),
-        ("SITES edit", "wagtailcore", "Site"),
-        ("USERS edit", "auth", "User"),
-        ("WORKFLOWS edit", "wagtailcore", "Workflow"),
-        ("WORKFLOWS TASK edit", "wagtailcore", "Task"),
+        "wagtailcore.Collection",
+        "wagtaildocs.Document",
+        "auth.Group",
+        "wagtailimages.Image",
+        "wagtailredirects.Redirect",
+        "wagtailcore.Site",
+        "auth.User",
+        "wagtailcore.Workflow",
+        "wagtailcore.Task",
     ]
 
 
 def wagtail_core_listing_pages_config():
     return [
-        ("DASHBOARD", f"{reverse('wagtailadmin_home')}"),
-        ("PAGES list", f"{reverse('wagtailadmin_explore_root')}"),
-        ("SEARCH all", f"{reverse('wagtailadmin_pages:search')}"),
-        ("AGING PAGES list", f"{reverse('wagtailadmin_reports:aging_pages')}"),
-        ("COLLECTIONS list", f"{reverse('wagtailadmin_collections:index')}"),
-        ("DOCUMENTS list", f"{reverse('wagtaildocs:index')}"),
-        ("GROUPS list", f"{reverse('wagtailusers_groups:index')}"),
-        ("IMAGES list", f"{reverse('wagtailimages:index')}"),
-        ("LOCKED PAGES list", f"{reverse('wagtailadmin_reports:locked_pages')}"),
-        ("REDIRECTS list", f"{reverse('wagtailredirects:index')}"),
-        ("SITES list", f"{reverse('wagtailsites:index')}"),
-        ("SITE HISTORY list", f"{reverse('wagtailadmin_reports:site_history')}"),
-        ("SNIPPETS list", f"{reverse('wagtailsnippets:index')}"),
-        ("USERS list", f"{reverse('wagtailusers_users:index')}"),
-        ("WORKFLOWS list", f"{reverse('wagtailadmin_workflows:index')}"),
-        ("WORKFLOWS TASKS list", f"{reverse('wagtailadmin_workflows:task_index')}"),
+        "wagtailadmin_home",
+        "wagtailadmin_explore_root",
+        "wagtailadmin_pages:search",
+        "wagtailadmin_reports:aging_pages",
+        "wagtailadmin_collections:index",
+        "wagtaildocs:index",
+        "wagtailusers_groups:index",
+        "wagtailimages:index",
+        "wagtailadmin_reports:locked_pages",
+        "wagtailredirects:index",
+        "wagtailsites:index",
+        "wagtailadmin_reports:site_history",
+        "wagtailsnippets:index",
+        "wagtailusers_users:index",
+        "wagtailadmin_workflows:index",
+        "wagtailadmin_workflows:task_index",
     ]
 
 

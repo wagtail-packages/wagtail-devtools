@@ -76,7 +76,6 @@ def wagtail_core_listing_pages(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    listing_pages = wagtail_core_listing_pages_config()
 
     ret = {
         "meta": {
@@ -85,8 +84,21 @@ def wagtail_core_listing_pages(request):
         "results": [],
     }
 
-    for page in listing_pages:
-        response = session.get(f"{get_host(request)}{page[1]}")
+    def generate_title(page):
+        splits = page.split("_")
+        splits = " ".join(splits)
+        splits = splits.split(":")
+        splits = " ".join(splits)
+        splits = splits.replace("wagtail", "")
+        splits = splits.lower()  # just in case
+
+        def upper_words(s):
+            return " ".join(w.capitalize() for w in s.split(" "))
+
+        return upper_words(splits)
+
+    for page in wagtail_core_listing_pages_config():
+        response = session.get(f"{get_host(request)}{reverse(page)}")
 
         ret["results"].append(
             results_item(
@@ -95,8 +107,8 @@ def wagtail_core_listing_pages(request):
                 None,
                 response,
                 defaults={
-                    "title": page[0],
-                    "editor_url": f"{get_host(request)}{page[1]}",
+                    "title": generate_title(page),
+                    "editor_url": f"{get_host(request)}{reverse(page)}",
                     "editor_status_code": response.status_code,
                     "editor_status_text": response.reason,
                     "fe_url": None,
@@ -116,7 +128,6 @@ def wagtail_core_edit_pages(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    edit_pages = wagtail_core_edit_pages_config()
 
     ret = {
         "meta": {
@@ -125,8 +136,8 @@ def wagtail_core_edit_pages(request):
         "results": [],
     }
 
-    for item in edit_pages:
-        model = apps.get_model(item[1], item[2])
+    for item in wagtail_core_edit_pages_config():
+        model = apps.get_model(item.split(".")[0], item.split(".")[1])
         first = model.objects.first()
 
         if isinstance(first, Collection):
