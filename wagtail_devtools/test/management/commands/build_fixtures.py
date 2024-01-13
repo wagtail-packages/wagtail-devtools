@@ -17,10 +17,15 @@ from wagtail_devtools.test.models import (
     FormFieldTwo,
     FormPageOne,
     FormPageTwo,
+    FrontendPage200,
+    FrontendPage302,
+    FrontendPage404,
+    FrontendPage500,
     GenericSettingOne,
     GenericSettingThree,
     GenericSettingTwo,
     HomePage,
+    SecondHomePage,
     SiteSettingOne,
     SiteSettingThree,
     SiteSettingTwo,
@@ -51,9 +56,11 @@ class Command(BaseCommand):
             self.clear_fixtures()
 
         self.create_superuser()
+        self.update_default_site()
         self.update_home_page()
         self.create_standard_pages()
-        self.create_form_page()
+        self.create_problematic_pages()
+        self.create_form_pages()
         self.create_snippets()
         self.create_modeladmins()
         self.create_settings()
@@ -77,11 +84,27 @@ class Command(BaseCommand):
                 self.style.WARNING("Superuser already exists. Skipping creation.")
             )
 
+    def update_default_site(self):
+        self.stdout.write("Updating default site.")
+
+        site = Site.objects.first()
+        site.hostname = "localhost"
+        site.site_name = "Default Site"
+        site.save()
+
     def update_home_page(self):
         self.stdout.write("Updating home page.")
 
         home_page = HomePage.objects.first()
         home_page.title = "Home Page"
+        rev = home_page.save_revision()
+        rev.publish()
+
+    def update_second_home_page(self):
+        self.stdout.write("Updating second home page.")
+
+        home_page = Page.objects.get(depth=1, title="Second Site Home Page")
+        home_page.title = "Second Site Home Page"
         rev = home_page.save_revision()
         rev.publish()
 
@@ -95,20 +118,37 @@ class Command(BaseCommand):
         rev = sp.save_revision()
         rev.publish()
 
-        # Intentionally is a draft page
         sp = StandardPageTwo(title="Standard Page Two")
         home_page.add_child(instance=sp)
         rev = sp.save_revision()
         rev.publish()
-        sp.unpublish()
 
-        # Intentionally has a template error
         sp = StandardPageThree(title="Standard Page Three")
         home_page.add_child(instance=sp)
         rev = sp.save_revision()
         rev.publish()
 
-    def create_form_page(self):
+    def create_problematic_pages(self):
+        self.stdout.write("Creating problematic pages.")
+
+        home_page = HomePage.objects.first()
+
+        f200 = FrontendPage200(title="Frontend Page 200")
+        f302 = FrontendPage302(title="Frontend Page 302")
+        f404 = FrontendPage404(title="Frontend Page 404")
+        f500 = FrontendPage500(title="Frontend Page 500")
+
+        home_page.add_child(instance=f200)
+        home_page.add_child(instance=f302)
+        home_page.add_child(instance=f404)
+        home_page.add_child(instance=f500)
+
+        f200.save_revision().publish()
+        f302.save_revision().publish()
+        f404.save_revision().publish()
+        f500.save_revision().publish()
+
+    def create_form_pages(self):
         self.stdout.write("Creating form page.")
 
         home_page = HomePage.objects.first()
@@ -302,6 +342,10 @@ class Command(BaseCommand):
         StandardPageThree.objects.all().delete()
         FormPageOne.objects.all().delete()
         FormPageTwo.objects.all().delete()
+        FrontendPage200.objects.all().delete()
+        FrontendPage302.objects.all().delete()
+        FrontendPage404.objects.all().delete()
+        FrontendPage500.objects.all().delete()
         TestSnippetOne.objects.all().delete()
         TestSnippetTwo.objects.all().delete()
         TestSnippetThree.objects.all().delete()
@@ -320,20 +364,20 @@ class Command(BaseCommand):
         SearchPromotion.objects.all().delete()
 
         Page.objects.filter(title="Second Site Home Page").delete()
-        Site.objects.filter(hostname="second-site.localhost").delete()
+        Site.objects.filter(hostname="127.0.0.1").delete()
 
     def create_second_site(self):
         self.stdout.write("Creating second site.")
 
         root_page = Page.objects.get(depth=1)
 
-        second_site_home_page = HomePage(title="Second Site Home Page")
+        second_site_home_page = SecondHomePage(title="Second Site Home Page")
         root_page.add_child(instance=second_site_home_page)
         rev = second_site_home_page.save_revision()
         rev.publish()
 
         Site.objects.create(
-            hostname="second-site.localhost",
+            hostname="127.0.0.1",
             port=8000,
             root_page=second_site_home_page,
             is_default_site=False,
@@ -349,14 +393,11 @@ class Command(BaseCommand):
         rev = sp.save_revision()
         rev.publish()
 
-        # Intentionally is a draft page
         sp = StandardPageTwo(title="Standard Page Two")
         second_site_home_page.add_child(instance=sp)
         rev = sp.save_revision()
         rev.publish()
-        sp.unpublish()
 
-        # Intentionally has a template error
         sp = StandardPageThree(title="Standard Page Three")
         second_site_home_page.add_child(instance=sp)
         rev = sp.save_revision()

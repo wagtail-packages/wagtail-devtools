@@ -45,13 +45,14 @@ def form_types(request):
 
     session = session_login(request)
     models = []
-    results = []
 
     for model in get_page_models():
         if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
             models.append(apps.get_model(model._meta.app_label, model.__name__))
 
     ret = {"meta": {"title": "Form types"}, "results": []}
+
+    results = []
 
     for model in models:
         first = model.objects.first()
@@ -93,14 +94,13 @@ def model_admin_types(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    model_admin_types = get_model_admin_types()
 
     ret = {"meta": {"title": "Model admin types"}, "results": []}
 
     if not model_admin_types:
         return JsonResponse(ret, safe=False)
 
-    for item in model_admin_types:
+    for item in get_model_admin_types():
         model = apps.get_model(item)
         first = model.objects.first()
 
@@ -118,23 +118,25 @@ def page_model_types(request):
     session = session_login(request)
 
     def filter_page_models():
-        """Filter out page models that are not creatable or are in the core apps."""
+        """Filter out page models that are not creatable."""
         filtered_page_models = []
         for page_model in get_page_models():
             if page_model.is_creatable:
                 filtered_page_models.append(page_model)
         return filtered_page_models
 
-    page_models = filter_page_models()
-
     ret = {"meta": {"title": "Page model types"}, "results": []}
 
-    for page_model in page_models:
-        if item := page_model.objects.first():
-            fe_response = session.get(item.get_url())
-            be_response = session.get(f"{get_admin_edit_url(request, item)}")
+    for page_model in filter_page_models():
+        pages = page_model.objects.live()
+        if pages:
+            if item := pages.first():
+                fe_response = session.get(item.url)
+                be_response = session.get(f"{get_admin_edit_url(request, item)}")
 
-            ret["results"].append(results_item(request, item, fe_response, be_response))
+                ret["results"].append(
+                    results_item(request, item, fe_response, be_response)
+                )
 
     return JsonResponse(ret, safe=False)
 
