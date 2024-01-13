@@ -32,6 +32,10 @@ def get_host(request=None):
         return base_url_parsed.scheme + "://" + base_url_parsed.netloc
 
 
+def init_ret(title):
+    return {"meta": {"title": title}, "results": []}
+
+
 def results_item(request, item, fe_response, be_response, **kwargs):
     if kwargs.get("defaults"):
         defaults = kwargs.get("defaults")
