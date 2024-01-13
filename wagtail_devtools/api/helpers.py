@@ -52,30 +52,6 @@ def get_model_admin_types():
     return settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
 
 
-def results_base(request, url_name, models):
-    defaults = {
-        "index": [
-            f"{get_host(request)}{reverse(url_name)}",
-        ],
-        "meta": {
-            "host": get_host(request),
-            "fe_OK": 0,
-            "fe_500_ERROR": 0,
-            "fe_404_Response": 0,
-            "be_OK": 0,
-            "be_500_ERROR": 0,
-            "be_404_Response": 0,
-            "total_checks": 0,
-            "index": [],
-        },
-        "results": [],
-    }
-    if models:
-        defaults["meta"]["total_checks"] = len(models)
-
-    return defaults
-
-
 def results_item(request, item, fe_response, be_response, **kwargs):
     if kwargs.get("defaults"):
         defaults = kwargs.get("defaults")

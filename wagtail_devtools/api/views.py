@@ -13,7 +13,6 @@ from wagtail_devtools.api.helpers import (
     get_admin_edit_url,
     get_host,
     get_model_admin_types,
-    results_base,
     results_item,
     session_login,
 )
@@ -53,34 +52,19 @@ def page_model_types(request):
 
     page_models = filter_page_models()
 
-    ret = results_base(request, "api_view", page_models)
-    index = []
+    ret = {
+        "meta": {
+            "title": "Page model types",
+        },
+        "results": [],
+    }
 
     for page_model in page_models:
         if item := page_model.objects.first():
             fe_response = session.get(item.get_url())
-
-            if fe_response.status_code == 200:
-                ret["meta"]["fe_OK"] += 1
-            if fe_response.status_code == 500:
-                ret["meta"]["fe_500_ERROR"] += 1
-            if fe_response.status_code == 404:
-                ret["meta"]["fe_404_Response"] += 1
-
             be_response = session.get(f"{get_admin_edit_url(request, item)}")
 
-            if be_response.status_code == 200:
-                ret["meta"]["be_OK"] += 1
-            if be_response.status_code == 500:
-                ret["meta"]["be_500_ERROR"] += 1
-            if be_response.status_code == 404:
-                ret["meta"]["be_404_Response"] += 1
-
             ret["results"].append(results_item(request, item, fe_response, be_response))
-
-            index.append(item.__class__.__name__)
-
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
 
@@ -125,17 +109,15 @@ def wagtail_core_listing_pages(request):
         ("WORKFLOWS TASKS list", f"{reverse('wagtailadmin_workflows:task_index')}"),
     ]
 
-    ret = results_base(request, "api_view", listing_pages)
-    index = []
+    ret = {
+        "meta": {
+            "title": "Wagtail core listing pages",
+        },
+        "results": [],
+    }
 
     for page in listing_pages:
         response = session.get(f"{get_host(request)}{page[1]}")
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
 
         ret["results"].append(
             results_item(
@@ -156,10 +138,6 @@ def wagtail_core_listing_pages(request):
                 },
             )
         )
-
-        index.append(page[0])
-
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
 
@@ -190,8 +168,12 @@ def wagtail_core_edit_pages(request):
         ("WORKFLOWS TASK edit", "wagtailcore", "Task"),
     ]
 
-    ret = results_base(request, "api_view", edit_pages)
-    index = []
+    ret = {
+        "meta": {
+            "title": "Wagtail core edit pages",
+        },
+        "results": [],
+    }
 
     for item in edit_pages:
         model = apps.get_model(item[1], item[2])
@@ -210,18 +192,7 @@ def wagtail_core_edit_pages(request):
 
         response = session.get(f"{get_admin_edit_url(request, first)}")
 
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
-
         ret["results"].append(results_item(request, first, None, response))
-
-        index.append(item[0])
-
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
 
@@ -231,13 +202,14 @@ def settings_types(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    edit_pages = [
-        # SETTINGS edit
-        ("SETTINGS edit", settings_registry),
-    ]
 
-    ret = results_base(request, "api_view", edit_pages)
-    index = []
+    ret = {
+        "meta": {
+            "title": "Settings types",
+        },
+        "results": [],
+    }
+
     generic_settings_model = None
     site_settings_model = None
 
@@ -256,19 +228,7 @@ def settings_types(request):
 
     for obj in objects:
         response = session.get(f"{get_admin_edit_url(request, obj)}")
-
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
-
         ret["results"].append(results_item(request, obj, None, response))
-
-        index.append(obj.__class__.__name__)
-
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
 
@@ -278,30 +238,19 @@ def snippet_types(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    edit_pages = [
-        # SNIPPETS edit
-        ("SNIPPETS edit", get_snippet_models()),
-    ]
-    ret = results_base(request, "api_view", edit_pages)
-    index = []
+
+    ret = {
+        "meta": {
+            "title": "Snippet types",
+        },
+        "results": [],
+    }
 
     for cls in get_snippet_models():
         obj = cls.objects.first()
 
         response = session.get(f"{get_admin_edit_url(request, obj)}")
-
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
-
         ret["results"].append(results_item(request, obj, None, response))
-
-        index.append(obj.__class__.__name__)
-
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
 
@@ -312,27 +261,20 @@ def model_admin_types(request):
 
     session = session_login(request)
     model_admin_types = get_model_admin_types()
-    ret = results_base(request, "api_view", model_admin_types)
-    index = []
+
+    ret = {
+        "meta": {
+            "title": "Model admin types",
+        },
+        "results": [],
+    }
 
     for item in model_admin_types:
         model = apps.get_model(item)
         first = model.objects.first()
 
         response = session.get(f"{get_admin_edit_url(request, first)}")
-
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
-
         ret["results"].append(results_item(request, first, None, response))
-
-        index.append(item)
-
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
 
@@ -342,7 +284,6 @@ def form_types(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    index = []
     models = []
     results = []
 
@@ -350,34 +291,22 @@ def form_types(request):
         if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
             models.append(apps.get_model(model._meta.app_label, model.__name__))
 
-    ret = results_base(request, "api_view", models)
+    ret = {
+        "meta": {
+            "title": "Form types",
+        },
+        "results": [],
+    }
 
     for model in models:
         first = model.objects.first()
 
         response = session.get(f"{get_admin_edit_url(request, first)}")
-
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
-
         results.append(results_item(request, first, response, response))
-
-        index.append(model.__name__)
 
         editor_url = reverse("wagtailforms:list_submissions", args=[first.id])
 
         response = session.get(f"{get_host(request)}{editor_url}")
-
-        if response.status_code == 200:
-            ret["meta"]["be_OK"] += 1
-        if response.status_code == 500:
-            ret["meta"]["be_500_ERROR"] += 1
-        if response.status_code == 404:
-            ret["meta"]["be_404_Response"] += 1
 
         results.append(
             results_item(
@@ -399,8 +328,6 @@ def form_types(request):
             )
         )
 
-    ret = results_base(request, "api_view", models)
     ret["results"] = results
-    ret["meta"]["index"] = index
 
     return JsonResponse(ret, safe=False)
