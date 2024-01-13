@@ -6,7 +6,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.encoding import force_str
 from wagtail.admin.admin_url_finder import AdminURLFinder
-from wagtail.models import Site, get_page_models
+from wagtail.models import Site
 
 
 def get_host(request=None):
@@ -27,18 +27,6 @@ def get_host(request=None):
 
 def get_admin_edit_url(host, obj):
     return f"{get_host(host)}{AdminURLFinder().get_edit_url(obj)}"
-
-
-def filter_page_models():
-    """Filter out page models that are not creatable or are in the core apps."""
-
-    filtered_page_models = []
-
-    for page_model in get_page_models():
-        if page_model.is_creatable:
-            filtered_page_models.append(page_model)
-
-    return filtered_page_models
 
 
 def session_login(request):

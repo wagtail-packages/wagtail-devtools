@@ -10,7 +10,6 @@ from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
 from wagtail_devtools.api.helpers import (
-    filter_page_models,
     get_admin_edit_url,
     get_host,
     get_model_admin_types,
@@ -43,7 +42,17 @@ def page_model_types(request):
     """
 
     session = session_login(request)
+
+    def filter_page_models():
+        """Filter out page models that are not creatable or are in the core apps."""
+        filtered_page_models = []
+        for page_model in get_page_models():
+            if page_model.is_creatable:
+                filtered_page_models.append(page_model)
+        return filtered_page_models
+
     page_models = filter_page_models()
+
     ret = results_base(request, "api_view", page_models)
     index = []
 
