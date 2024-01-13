@@ -37,44 +37,44 @@ def api_view(request):
     return JsonResponse(ret, safe=False)
 
 
-def wagtail_core_listing_pages(request):
-    """API view for wagtail core listing pages.
+def form_types(request):
+    """API view for form types.
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
+    models = []
+    results = []
+
+    for model in get_page_models():
+        if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
+            models.append(apps.get_model(model._meta.app_label, model.__name__))
 
     ret = {
         "meta": {
-            "title": "Wagtail core listing pages",
+            "title": "Form types",
         },
         "results": [],
     }
 
-    def generate_title(page):
-        splits = page.split("_")
-        splits = " ".join(splits)
-        splits = splits.split(":")
-        splits = " ".join(splits)
-        splits = splits.replace("wagtail", "")
-        splits = splits.lower()  # just in case
+    for model in models:
+        first = model.objects.first()
 
-        def upper_words(s):
-            return " ".join(w.capitalize() for w in s.split(" "))
+        response = session.get(f"{get_admin_edit_url(request, first)}")
+        results.append(results_item(request, first, response, response))
 
-        return upper_words(splits)
+        editor_url = reverse("wagtailforms:list_submissions", args=[first.id])
 
-    for page in wagtail_core_listing_pages_config():
-        response = session.get(f"{get_host(request)}{reverse(page)}")
+        response = session.get(f"{get_host(request)}{editor_url}")
 
-        ret["results"].append(
+        results.append(
             results_item(
                 request,
                 None,
                 None,
                 response,
                 defaults={
-                    "title": generate_title(page),
-                    "editor_url": f"{get_host(request)}{reverse(page)}",
+                    "title": first.title,
+                    "editor_url": f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[first.id])}",
                     "editor_status_code": response.status_code,
                     "editor_status_text": response.reason,
                     "fe_url": None,
@@ -85,6 +85,32 @@ def wagtail_core_listing_pages(request):
                 },
             )
         )
+
+    ret["results"] = results
+
+    return JsonResponse(ret, safe=False)
+
+
+def model_admin_types(request):
+    """API view for model admin types.
+    It will check the response status code for each edit url and return the results."""
+
+    session = session_login(request)
+    model_admin_types = get_model_admin_types()
+
+    ret = {
+        "meta": {
+            "title": "Model admin types",
+        },
+        "results": [],
+    }
+
+    for item in model_admin_types:
+        model = apps.get_model(item)
+        first = model.objects.first()
+
+        response = session.get(f"{get_admin_edit_url(request, first)}")
+        ret["results"].append(results_item(request, first, None, response))
 
     return JsonResponse(ret, safe=False)
 
@@ -119,41 +145,6 @@ def page_model_types(request):
             be_response = session.get(f"{get_admin_edit_url(request, item)}")
 
             ret["results"].append(results_item(request, item, fe_response, be_response))
-
-    return JsonResponse(ret, safe=False)
-
-
-def wagtail_core_edit_pages(request):
-    """API view for wagtail core edit pages.
-    It will check the response status code for each edit url and return the results."""
-
-    session = session_login(request)
-
-    ret = {
-        "meta": {
-            "title": "Wagtail core edit pages",
-        },
-        "results": [],
-    }
-
-    for item in wagtail_core_edit_pages_config():
-        model = apps.get_model(item.split(".")[0], item.split(".")[1])
-        first = model.objects.first()
-
-        if isinstance(first, Collection):
-            first = Collection.objects.first().get_first_child()
-        elif isinstance(first, get_document_model()):
-            first = get_document_model().objects.first()
-        elif isinstance(first, get_image_model()):
-            first = get_image_model().objects.first()
-        elif isinstance(first, get_user_model()):
-            first = get_user_model().objects.first()
-        else:
-            first = model.objects.first()
-
-        response = session.get(f"{get_admin_edit_url(request, first)}")
-
-        ret["results"].append(results_item(request, first, None, response))
 
     return JsonResponse(ret, safe=False)
 
@@ -216,68 +207,79 @@ def snippet_types(request):
     return JsonResponse(ret, safe=False)
 
 
-def model_admin_types(request):
-    """API view for model admin types.
+def wagtail_core_edit_pages(request):
+    """API view for wagtail core edit pages.
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    model_admin_types = get_model_admin_types()
 
     ret = {
         "meta": {
-            "title": "Model admin types",
+            "title": "Wagtail core edit pages",
         },
         "results": [],
     }
 
-    for item in model_admin_types:
-        model = apps.get_model(item)
+    for item in wagtail_core_edit_pages_config():
+        model = apps.get_model(item.split(".")[0], item.split(".")[1])
         first = model.objects.first()
 
+        if isinstance(first, Collection):
+            first = Collection.objects.first().get_first_child()
+        elif isinstance(first, get_document_model()):
+            first = get_document_model().objects.first()
+        elif isinstance(first, get_image_model()):
+            first = get_image_model().objects.first()
+        elif isinstance(first, get_user_model()):
+            first = get_user_model().objects.first()
+        else:
+            first = model.objects.first()
+
         response = session.get(f"{get_admin_edit_url(request, first)}")
+
         ret["results"].append(results_item(request, first, None, response))
 
     return JsonResponse(ret, safe=False)
 
 
-def form_types(request):
-    """API view for form types.
+def wagtail_core_listing_pages(request):
+    """API view for wagtail core listing pages.
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    models = []
-    results = []
-
-    for model in get_page_models():
-        if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
-            models.append(apps.get_model(model._meta.app_label, model.__name__))
 
     ret = {
         "meta": {
-            "title": "Form types",
+            "title": "Wagtail core listing pages",
         },
         "results": [],
     }
 
-    for model in models:
-        first = model.objects.first()
+    def generate_title(page):
+        splits = page.split("_")
+        splits = " ".join(splits)
+        splits = splits.split(":")
+        splits = " ".join(splits)
+        splits = splits.replace("wagtail", "")
+        splits = splits.lower()  # just in case
 
-        response = session.get(f"{get_admin_edit_url(request, first)}")
-        results.append(results_item(request, first, response, response))
+        def upper_words(s):
+            return " ".join(w.capitalize() for w in s.split(" "))
 
-        editor_url = reverse("wagtailforms:list_submissions", args=[first.id])
+        return upper_words(splits)
 
-        response = session.get(f"{get_host(request)}{editor_url}")
+    for page in wagtail_core_listing_pages_config():
+        response = session.get(f"{get_host(request)}{reverse(page)}")
 
-        results.append(
+        ret["results"].append(
             results_item(
                 request,
                 None,
                 None,
                 response,
                 defaults={
-                    "title": first.title,
-                    "editor_url": f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[first.id])}",
+                    "title": generate_title(page),
+                    "editor_url": f"{get_host(request)}{reverse(page)}",
                     "editor_status_code": response.status_code,
                     "editor_status_text": response.reason,
                     "fe_url": None,
@@ -288,7 +290,5 @@ def form_types(request):
                 },
             )
         )
-
-    ret["results"] = results
 
     return JsonResponse(ret, safe=False)
