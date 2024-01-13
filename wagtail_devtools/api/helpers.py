@@ -9,9 +9,16 @@ from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.models import Site
 
 
+def get_admin_edit_url(host, obj):
+    return f"{get_host(host)}{AdminURLFinder().get_edit_url(obj)}"
+
+
 def get_host(request=None):
     # Modified from wagtail.api.v2.utils.get_base_url
-    base_url = getattr(settings, "WAGTAILADMIN_BASE_URL", None)
+    if hasattr(settings, "WAGTAIL_DEVTOOLS_BASE_URL"):
+        base_url = settings.WAGTAIL_DEVTOOLS_BASE_URL
+    else:
+        base_url = getattr(settings, "WAGTAILADMIN_BASE_URL", None)
 
     if base_url is None and request:
         site = Site.find_for_request(request)
@@ -23,68 +30,6 @@ def get_host(request=None):
         base_url_parsed = urlparse(force_str(base_url))
 
         return base_url_parsed.scheme + "://" + base_url_parsed.netloc
-
-
-def get_admin_edit_url(host, obj):
-    return f"{get_host(host)}{AdminURLFinder().get_edit_url(obj)}"
-
-
-def wagtail_core_edit_pages_config():
-    return [
-        "auth.Group",
-        "auth.User",
-        "wagtailcore.Collection",
-        "wagtailcore.Site",
-        "wagtailcore.Task",
-        "wagtailcore.Workflow",
-        "wagtaildocs.Document",
-        "wagtailimages.Image",
-        "wagtailredirects.Redirect",
-    ]
-
-
-def wagtail_core_listing_pages_config():
-    return [
-        "wagtailadmin_collections:index",
-        "wagtailadmin_explore_root",
-        "wagtailadmin_home",
-        "wagtailadmin_pages:search",
-        "wagtailadmin_reports:aging_pages",
-        "wagtailadmin_reports:locked_pages",
-        "wagtailadmin_reports:site_history",
-        "wagtailadmin_workflows:index",
-        "wagtailadmin_workflows:task_index",
-        "wagtaildocs:index",
-        "wagtailimages:index",
-        "wagtailredirects:index",
-        "wagtailsites:index",
-        "wagtailsnippets:index",
-        "wagtailusers_groups:index",
-        "wagtailusers_users:index",
-    ]
-
-
-def session_login(request):
-    session = requests.Session()
-    session.get(f"{get_host(request)}{reverse('wagtailadmin_login')}")
-    login_data = {
-        "username": "superuser",
-        "password": "superuser",
-        "csrfmiddlewaretoken": session.cookies["csrftoken"],
-    }
-    session.post(f"{get_host(request)}{reverse('wagtailadmin_login')}", data=login_data)
-
-    return session
-
-
-def get_model_admin_types():
-    if not hasattr(settings, "WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES"):
-        return [
-            "wagtail_devtools_test.TestModelAdminOne",
-            "wagtail_devtools_test.TestModelAdminTwo",
-            "wagtail_devtools_test.TestModelAdminThree",
-        ]
-    return settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
 
 
 def results_item(request, item, fe_response, be_response, **kwargs):
@@ -130,3 +75,16 @@ def results_item(request, item, fe_response, be_response, **kwargs):
             defaults["editor_status_text"] = be_response.reason
 
     return defaults
+
+
+def session_login(request):
+    session = requests.Session()
+    session.get(f"{get_host(request)}{reverse('wagtailadmin_login')}")
+    login_data = {
+        "username": "superuser",
+        "password": "superuser",
+        "csrfmiddlewaretoken": session.cookies["csrftoken"],
+    }
+    session.post(f"{get_host(request)}{reverse('wagtailadmin_login')}", data=login_data)
+
+    return session

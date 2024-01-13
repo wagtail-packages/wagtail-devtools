@@ -154,6 +154,41 @@ WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
-DEVTOOLS_REGISTERED_MODELADMIN = [
-    "wagtail_devtools_test.TestModelAdmin",
+# wagtail_devtools settings
+
+WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES = [  # optional but required if you use modeladmin
+    "wagtail_devtools_test.TestModelAdminOne",
+    "wagtail_devtools_test.TestModelAdminTwo",
+    "wagtail_devtools_test.TestModelAdminThree",
 ]
+
+# WAGTAIL_DEVTOOLS_EDIT_PAGES = [ # optional
+# "auth.Group",
+# "auth.User",
+# "wagtailcore.Collection",
+# "wagtailcore.Site",
+# "wagtailcore.Task",
+# "wagtailcore.Workflow",
+# "wagtaildocs.Document",
+# "wagtailimages.Image",
+# "wagtailredirects.Redirect",
+# ]
+
+# WAGTAIL_DEVTOOLS_LISTING_PAGES = [ # optional
+# "wagtailadmin_collections:index",
+# "wagtailadmin_explore_root",
+# "wagtailadmin_home",
+# "wagtailadmin_pages:search",
+# "wagtailadmin_reports:aging_pages",
+# "wagtailadmin_reports:locked_pages",
+# "wagtailadmin_reports:site_history",
+# "wagtailadmin_workflows:index",
+# "wagtailadmin_workflows:task_index",
+# "wagtaildocs:index",
+# "wagtailimages:index",
+# "wagtailredirects:index",
+# "wagtailsites:index",
+# "wagtailsnippets:index",
+# "wagtailusers_groups:index",
+# "wagtailusers_users:index",
+# ]

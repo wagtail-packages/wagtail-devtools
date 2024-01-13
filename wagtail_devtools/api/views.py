@@ -9,14 +9,16 @@ from wagtail.models import get_page_models
 from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
+from wagtail_devtools.api.conf import (
+    get_model_admin_types,
+    wagtail_core_edit_pages_config,
+    wagtail_core_listing_pages_config,
+)
 from wagtail_devtools.api.helpers import (
     get_admin_edit_url,
     get_host,
-    get_model_admin_types,
     results_item,
     session_login,
-    wagtail_core_edit_pages_config,
-    wagtail_core_listing_pages_config,
 )
 
 
@@ -49,12 +51,7 @@ def form_types(request):
         if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
             models.append(apps.get_model(model._meta.app_label, model.__name__))
 
-    ret = {
-        "meta": {
-            "title": "Form types",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Form types"}, "results": []}
 
     for model in models:
         first = model.objects.first()
@@ -98,12 +95,10 @@ def model_admin_types(request):
     session = session_login(request)
     model_admin_types = get_model_admin_types()
 
-    ret = {
-        "meta": {
-            "title": "Model admin types",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Model admin types"}, "results": []}
+
+    if not model_admin_types:
+        return JsonResponse(ret, safe=False)
 
     for item in model_admin_types:
         model = apps.get_model(item)
@@ -132,12 +127,7 @@ def page_model_types(request):
 
     page_models = filter_page_models()
 
-    ret = {
-        "meta": {
-            "title": "Page model types",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Page model types"}, "results": []}
 
     for page_model in page_models:
         if item := page_model.objects.first():
@@ -155,12 +145,7 @@ def settings_types(request):
 
     session = session_login(request)
 
-    ret = {
-        "meta": {
-            "title": "Settings types",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Settings types"}, "results": []}
 
     generic_settings_model = None
     site_settings_model = None
@@ -191,12 +176,7 @@ def snippet_types(request):
 
     session = session_login(request)
 
-    ret = {
-        "meta": {
-            "title": "Snippet types",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Snippet types"}, "results": []}
 
     for cls in get_snippet_models():
         obj = cls.objects.first()
@@ -213,12 +193,7 @@ def wagtail_core_edit_pages(request):
 
     session = session_login(request)
 
-    ret = {
-        "meta": {
-            "title": "Wagtail core edit pages",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Wagtail core edit pages"}, "results": []}
 
     for item in wagtail_core_edit_pages_config():
         model = apps.get_model(item.split(".")[0], item.split(".")[1])
@@ -248,12 +223,7 @@ def wagtail_core_listing_pages(request):
 
     session = session_login(request)
 
-    ret = {
-        "meta": {
-            "title": "Wagtail core listing pages",
-        },
-        "results": [],
-    }
+    ret = {"meta": {"title": "Wagtail core listing pages"}, "results": []}
 
     def generate_title(page):
         splits = page.split("_")
