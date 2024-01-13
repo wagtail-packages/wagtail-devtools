@@ -1,20 +1,28 @@
+from urllib.parse import urlparse
+
 import requests
 
 from django.conf import settings
 from django.urls import reverse
+from django.utils.encoding import force_str
 from wagtail.admin.admin_url_finder import AdminURLFinder
-from wagtail.models import get_page_models
+from wagtail.models import Site, get_page_models
 
 
-def get_host(request):
-    if not request.GET.get("host"):
-        return settings.WAGTAILADMIN_BASE_URL
+def get_host(request=None):
+    # Modified from wagtail.api.v2.utils.get_base_url
+    base_url = getattr(settings, "WAGTAILADMIN_BASE_URL", None)
 
-    return (
-        request.GET.get("host")
-        if request.GET.get("host").startswith("http")
-        else f"http://{request.GET.get('host')}"
-    )
+    if base_url is None and request:
+        site = Site.find_for_request(request)
+        if site:
+            base_url = site.root_url
+
+    if base_url:
+        # We only want the scheme and netloc
+        base_url_parsed = urlparse(force_str(base_url))
+
+        return base_url_parsed.scheme + "://" + base_url_parsed.netloc
 
 
 def get_admin_edit_url(host, obj):
@@ -27,13 +35,8 @@ def filter_page_models():
     filtered_page_models = []
 
     for page_model in get_page_models():
-        if page_model._meta.app_label == "wagtailcore":
-            # Skip the core apps
-            continue
-        if not page_model.is_creatable:
-            # Skip pages that can't be created
-            continue
-        filtered_page_models.append(page_model)
+        if page_model.is_creatable:
+            filtered_page_models.append(page_model)
 
     return filtered_page_models
 
