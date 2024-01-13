@@ -15,6 +15,8 @@ from wagtail_devtools.api.helpers import (
     get_model_admin_types,
     results_item,
     session_login,
+    wagtail_core_edit_pages_config,
+    wagtail_core_listing_pages_config,
 )
 
 
@@ -74,40 +76,7 @@ def wagtail_core_listing_pages(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    listing_pages = [
-        # DASHBOARD
-        ("DASHBOARD", f"{reverse('wagtailadmin_home')}"),
-        # PAGES LIST
-        ("PAGES list", f"{reverse('wagtailadmin_explore_root')}"),
-        # SEARCH PAGES
-        ("SEARCH all", f"{reverse('wagtailadmin_pages:search')}"),
-        # AGING PAGES
-        ("AGING PAGES list", f"{reverse('wagtailadmin_reports:aging_pages')}"),
-        # COLLECTIONS
-        ("COLLECTIONS list", f"{reverse('wagtailadmin_collections:index')}"),
-        # DOCUMENTS
-        ("DOCUMENTS list", f"{reverse('wagtaildocs:index')}"),
-        # GROUPS
-        ("GROUPS list", f"{reverse('wagtailusers_groups:index')}"),
-        # IMAGES
-        ("IMAGES list", f"{reverse('wagtailimages:index')}"),
-        # LOCKED PAGES
-        ("LOCKED PAGES list", f"{reverse('wagtailadmin_reports:locked_pages')}"),
-        # REDIRECTS
-        ("REDIRECTS list", f"{reverse('wagtailredirects:index')}"),
-        # SITES
-        ("SITES list", f"{reverse('wagtailsites:index')}"),
-        # SITE HISTORY
-        ("SITE HISTORY list", f"{reverse('wagtailadmin_reports:site_history')}"),
-        # SNIPPETS
-        ("SNIPPETS list", f"{reverse('wagtailsnippets:index')}"),
-        # USERS
-        ("USERS list", f"{reverse('wagtailusers_users:index')}"),
-        # WORKFLOWS
-        ("WORKFLOWS list", f"{reverse('wagtailadmin_workflows:index')}"),
-        # WORKFLOWS TASKS
-        ("WORKFLOWS TASKS list", f"{reverse('wagtailadmin_workflows:task_index')}"),
-    ]
+    listing_pages = wagtail_core_listing_pages_config()
 
     ret = {
         "meta": {
@@ -147,26 +116,7 @@ def wagtail_core_edit_pages(request):
     It will check the response status code for each edit url and return the results."""
 
     session = session_login(request)
-    edit_pages = [
-        # COLLECTIONS edit
-        ("COLLECTIONS edit", "wagtailcore", "Collection"),
-        # DOCUMENTS edit
-        ("DOCUMENTS edit", "wagtaildocs", "Document"),
-        # GROUPS edit
-        ("GROUPS edit", "auth", "Group"),
-        # IMAGES edit
-        ("IMAGES edit", "wagtailimages", "Image"),
-        # REDIRECTS edit
-        ("REDIRECTS edit", "wagtailredirects", "Redirect"),
-        # SITES edit
-        ("SITES edit", "wagtailcore", "Site"),
-        # USERS edit
-        ("USERS edit", "auth", "User"),
-        # WORKFLOWS edit
-        ("WORKFLOWS edit", "wagtailcore", "Workflow"),
-        # WORKFLOWS TASK edit
-        ("WORKFLOWS TASK edit", "wagtailcore", "Task"),
-    ]
+    edit_pages = wagtail_core_edit_pages_config()
 
     ret = {
         "meta": {
