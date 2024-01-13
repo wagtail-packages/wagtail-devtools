@@ -37,40 +37,6 @@ def api_view(request):
     return JsonResponse(ret, safe=False)
 
 
-def page_model_types(request):
-    """API view for page model types.
-    It will check the response status code for each edit url and one front end page return the results.
-    """
-
-    session = session_login(request)
-
-    def filter_page_models():
-        """Filter out page models that are not creatable or are in the core apps."""
-        filtered_page_models = []
-        for page_model in get_page_models():
-            if page_model.is_creatable:
-                filtered_page_models.append(page_model)
-        return filtered_page_models
-
-    page_models = filter_page_models()
-
-    ret = {
-        "meta": {
-            "title": "Page model types",
-        },
-        "results": [],
-    }
-
-    for page_model in page_models:
-        if item := page_model.objects.first():
-            fe_response = session.get(item.get_url())
-            be_response = session.get(f"{get_admin_edit_url(request, item)}")
-
-            ret["results"].append(results_item(request, item, fe_response, be_response))
-
-    return JsonResponse(ret, safe=False)
-
-
 def wagtail_core_listing_pages(request):
     """API view for wagtail core listing pages.
     It will check the response status code for each edit url and return the results."""
@@ -119,6 +85,40 @@ def wagtail_core_listing_pages(request):
                 },
             )
         )
+
+    return JsonResponse(ret, safe=False)
+
+
+def page_model_types(request):
+    """API view for page model types.
+    It will check the response status code for each edit url and one front end page return the results.
+    """
+
+    session = session_login(request)
+
+    def filter_page_models():
+        """Filter out page models that are not creatable or are in the core apps."""
+        filtered_page_models = []
+        for page_model in get_page_models():
+            if page_model.is_creatable:
+                filtered_page_models.append(page_model)
+        return filtered_page_models
+
+    page_models = filter_page_models()
+
+    ret = {
+        "meta": {
+            "title": "Page model types",
+        },
+        "results": [],
+    }
+
+    for page_model in page_models:
+        if item := page_model.objects.first():
+            fe_response = session.get(item.get_url())
+            be_response = session.get(f"{get_admin_edit_url(request, item)}")
+
+            ret["results"].append(results_item(request, item, fe_response, be_response))
 
     return JsonResponse(ret, safe=False)
 
