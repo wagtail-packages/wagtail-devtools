@@ -17,3 +17,4 @@ __pycache__/
 /sandbox.db
 /media
 /sandbox
+fixtures.json

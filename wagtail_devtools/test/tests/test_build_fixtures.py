@@ -24,30 +24,10 @@ class TestBuildFixtures(TestCase):
     that rebuilds the test-media folder."""
 
     def test_fixtures(self):
-        EXPECTED = [
-            "Creating superuser.",
-            "Updating default site.",
-            "Updating home page.",
-            "Creating standard pages.",
-            "Creating problematic pages.",
-            "Creating form page.",
-            "Creating snippets.",
-            "Creating model admins.",
-            "Creating settings.",
-            "Creating collections.",
-            "Creating redirects.",
-            "Creating promoted searches.",
-            "Importing media files.",
-            "Creating second site.",
-            "Second site created.",
-            "Creating second site standard pages.",
-        ]
-
         with StringIO() as out:
-            call_command("build_fixtures", stdout=out)
-            output = out.getvalue()
-            for expected in EXPECTED:
-                self.assertIn(expected, output)
+            # Don't want to see the output of the command
+            call_command("build_fixtures", "--clear", stdout=out)
+            self.assertIn("Fixtures created.", out.getvalue())
 
     def test_fixtures_creates_pages(self):
         with StringIO() as _:

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, override_settings
 
 from wagtail_devtools.api.conf import (
     get_model_admin_types,
@@ -8,11 +8,17 @@ from wagtail_devtools.api.conf import (
 )
 
 
-class TestApiConf(TestCase):
+class TestApiConf(SimpleTestCase):
     """Test the API conf."""
 
     @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=[])
-    def test_get_model_admin_types(self):
+    def test_model_admin_types(self):
+        # simulate the absence of the setting
+        del settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
+        self.assertEqual(get_model_admin_types(), [])
+
+    @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=[])
+    def test_get_model_admin_types_empty(self):
         # There's no default value for this setting
         self.assertEqual(get_model_admin_types(), [])
 
