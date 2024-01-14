@@ -154,6 +154,10 @@ WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
+# testing
+# this restores the test-media folder after the test suite has run
+TEST_RUNNER = "wagtail_devtools.test.tests.runner.WagtailDevToolsTestRunner"
+
 # wagtail_devtools settings
 
 WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES = [  # optional but required if you use modeladmin
