@@ -1,7 +1,7 @@
 from django.conf import settings
 
 
-def get_model_admin_types():
+def get_registered_modeladmin():
     if hasattr(settings, "WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES"):
         return settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
     return []

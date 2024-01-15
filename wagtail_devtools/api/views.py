@@ -10,13 +10,18 @@ from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
 from wagtail_devtools.api.conf import (
-    get_model_admin_types,
+    get_registered_modeladmin,
     wagtail_core_edit_pages_config,
     wagtail_core_listing_pages_config,
 )
 from wagtail_devtools.api.helpers import (
+    generate_title,
     get_admin_edit_url,
+    get_backend_response,
+    get_creatable_page_models,
+    get_frontend_response,
     get_host,
+    get_model_admin_models,
     init_ret,
     results_item,
     session_login,
@@ -98,15 +103,15 @@ def model_admin_types(request):
 
     ret = init_ret("Model admin types")
 
-    if not model_admin_types:
+    if not get_registered_modeladmin():
         return JsonResponse(ret, safe=False)
 
-    for item in get_model_admin_types():
-        model = apps.get_model(item)
-        first = model.objects.first()
+    registered_modeladmin = get_registered_modeladmin()
+    model_admins = get_model_admin_models(registered_modeladmin)
 
-        response = session.get(f"{get_admin_edit_url(request, first)}")
-        ret["results"].append(results_item(request, first, None, response))
+    for item in model_admins:
+        be_response = get_backend_response(session, item)
+        ret["results"].append(results_item(session, item, None, be_response))
 
     return JsonResponse(ret, safe=False)
 
@@ -118,22 +123,14 @@ def page_model_types(request):
 
     session = session_login(request)
 
-    def filter_page_models():
-        """Filter out page models that are not creatable."""
-        filtered_page_models = []
-        for page_model in get_page_models():
-            if page_model.is_creatable:
-                filtered_page_models.append(page_model)
-        return filtered_page_models
-
     ret = init_ret("Page model types")
 
-    for page_model in filter_page_models():
+    for page_model in get_creatable_page_models():
         pages = page_model.objects.live()
         if pages:
             if item := pages.first():
-                fe_response = session.get(item.url)
-                be_response = session.get(f"{get_admin_edit_url(request, item)}")
+                fe_response = get_frontend_response(session, item)
+                be_response = get_backend_response(session, item)
 
                 ret["results"].append(
                     results_item(request, item, fe_response, be_response)
@@ -182,10 +179,9 @@ def snippet_types(request):
     ret = init_ret("Snippet types")
 
     for cls in get_snippet_models():
-        obj = cls.objects.first()
-
-        response = session.get(f"{get_admin_edit_url(request, obj)}")
-        ret["results"].append(results_item(request, obj, None, response))
+        item = cls.objects.first()
+        be_response = get_backend_response(session, item)
+        ret["results"].append(results_item(request, item, None, be_response))
 
     return JsonResponse(ret, safe=False)
 
@@ -228,33 +224,21 @@ def wagtail_core_listing_pages(request):
 
     ret = init_ret("Wagtail core listing pages")
 
-    def generate_title(page):
-        splits = page.split("_")
-        splits = " ".join(splits)
-        splits = splits.split(":")
-        splits = " ".join(splits)
-        splits = splits.replace("wagtail", "")
-        splits = splits.lower()  # just in case
-
-        def upper_words(s):
-            return " ".join(w.capitalize() for w in s.split(" "))
-
-        return upper_words(splits)
-
     for page in wagtail_core_listing_pages_config():
-        response = session.get(f"{get_host(request)}{reverse(page)}")
+        editor_url = f"{get_host(request)}{reverse(page)}"
+        be_response = get_backend_response(session, page, editor_url)
 
         ret["results"].append(
             results_item(
                 request,
                 None,
                 None,
-                response,
+                be_response,
                 defaults={
                     "title": generate_title(page),
-                    "editor_url": f"{get_host(request)}{reverse(page)}",
-                    "editor_status_code": response.status_code,
-                    "editor_status_text": response.reason,
+                    "editor_url": editor_url,
+                    "editor_status_code": be_response.status_code,
+                    "editor_status_text": be_response.reason,
                     "fe_url": None,
                     "fe_status_code": None,
                     "fe_status_text": None,

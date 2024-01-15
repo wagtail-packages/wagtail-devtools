@@ -2,11 +2,12 @@ from urllib.parse import urlparse
 
 import requests
 
+from django.apps import apps
 from django.conf import settings
 from django.urls import reverse
 from django.utils.encoding import force_str
 from wagtail.admin.admin_url_finder import AdminURLFinder
-from wagtail.models import Site
+from wagtail.models import Site, get_page_models
 
 
 def get_admin_edit_url(host, obj):
@@ -90,5 +91,36 @@ def session_login(request):
         "csrfmiddlewaretoken": session.cookies["csrftoken"],
     }
     session.post(f"{get_host(request)}{reverse('wagtailadmin_login')}", data=login_data)
-
     return session
+
+
+def get_creatable_page_models():
+    return [model for model in get_page_models() if model.is_creatable]
+
+
+def get_frontend_response(session, item):
+    return session.get(item.get_url())
+
+
+def get_backend_response(session, item, editor_url=None):
+    if not editor_url:
+        return session.get(f"{get_admin_edit_url(session, item)}")
+    return session.get(editor_url)
+
+
+def get_model_admin_models(model_admin_types):
+    return [apps.get_model(item).objects.first() for item in model_admin_types]
+
+
+def generate_title(page):
+    splits = page.split("_")
+    splits = " ".join(splits)
+    splits = splits.split(":")
+    splits = " ".join(splits)
+    splits = splits.replace("wagtail", "")
+    splits = splits.lower()  # just in case
+
+    def upper_words(s):
+        return " ".join(w.capitalize() for w in s.split(" "))
+
+    return upper_words(splits)

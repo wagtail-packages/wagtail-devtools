@@ -2,7 +2,7 @@ from django.conf import settings
 from django.test import SimpleTestCase, override_settings
 
 from wagtail_devtools.api.conf import (
-    get_model_admin_types,
+    get_registered_modeladmin,
     wagtail_core_edit_pages_config,
     wagtail_core_listing_pages_config,
 )
@@ -15,16 +15,16 @@ class TestApiConf(SimpleTestCase):
     def test_model_admin_types(self):
         # simulate the absence of the setting
         del settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
-        self.assertEqual(get_model_admin_types(), [])
+        self.assertEqual(get_registered_modeladmin(), [])
 
     @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=[])
     def test_get_model_admin_types_empty(self):
         # There's no default value for this setting
-        self.assertEqual(get_model_admin_types(), [])
+        self.assertEqual(get_registered_modeladmin(), [])
 
     @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=["test"])
     def test_get_model_admin_types_with_value(self):
-        self.assertEqual(get_model_admin_types(), ["test"])
+        self.assertEqual(get_registered_modeladmin(), ["test"])
 
     @override_settings(WAGTAIL_DEVTOOLS_EDIT_PAGES=[])
     def test_wagtail_core_edit_pages_config(self):
