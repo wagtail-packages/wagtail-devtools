@@ -5,7 +5,6 @@ from django.urls import reverse
 from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
-from wagtail.models import get_page_models
 from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
@@ -16,9 +15,9 @@ from wagtail_devtools.api.conf import (
 )
 from wagtail_devtools.api.helpers import (
     generate_title,
-    get_admin_edit_url,
     get_backend_response,
     get_creatable_page_models,
+    get_form_page_models,
     get_frontend_response,
     get_host,
     get_model_admin_models,
@@ -50,37 +49,30 @@ def form_types(request):
     It will check the response status code for each form submissions listing page."""
 
     session = session_login(request)
-    models = []
-
-    for model in get_page_models():
-        if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
-            models.append(apps.get_model(model._meta.app_label, model.__name__))
 
     ret = init_ret("Form types")
 
     results = []
 
-    for model in models:
-        first = model.objects.first()
+    for model in get_form_page_models():
+        item = model.objects.first()
+        be_response = get_backend_response(session, item)
+        results.append(results_item(request, item, be_response, be_response))
 
-        response = session.get(f"{get_admin_edit_url(request, first)}")
-        results.append(results_item(request, first, response, response))
-
-        editor_url = reverse("wagtailforms:list_submissions", args=[first.id])
-
-        response = session.get(f"{get_host(request)}{editor_url}")
+        editor_url = reverse("wagtailforms:list_submissions", args=[item.id])
+        be_response = session.get(f"{get_host(request)}{editor_url}")
 
         results.append(
             results_item(
                 request,
                 None,
                 None,
-                response,
+                be_response,
                 defaults={
-                    "title": first.title,
-                    "editor_url": f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[first.id])}",
-                    "editor_status_code": response.status_code,
-                    "editor_status_text": response.reason,
+                    "title": item.title,
+                    "editor_url": f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[item.id])}",
+                    "editor_status_code": be_response.status_code,
+                    "editor_status_text": be_response.reason,
                     "fe_url": None,
                     "fe_status_code": None,
                     "fe_status_text": None,
@@ -163,9 +155,10 @@ def settings_types(request):
 
     objects = [generic_settings_model, site_settings_model]
 
-    for obj in objects:
-        response = session.get(f"{get_admin_edit_url(request, obj)}")
-        ret["results"].append(results_item(request, obj, None, response))
+    for item in objects:
+        be_response = get_backend_response(session, item)
+        # response = session.get(f"{get_admin_edit_url(request, obj)}")
+        ret["results"].append(results_item(request, item, None, be_response))
 
     return JsonResponse(ret, safe=False)
 
@@ -209,9 +202,9 @@ def wagtail_core_edit_pages(request):
         else:
             first = model.objects.first()
 
-        response = session.get(f"{get_admin_edit_url(request, first)}")
+        be_response = get_backend_response(session, first)
 
-        ret["results"].append(results_item(request, first, None, response))
+        ret["results"].append(results_item(request, first, None, be_response))
 
     return JsonResponse(ret, safe=False)
 

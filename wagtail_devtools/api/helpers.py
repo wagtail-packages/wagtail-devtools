@@ -98,6 +98,14 @@ def get_creatable_page_models():
     return [model for model in get_page_models() if model.is_creatable]
 
 
+def get_form_page_models():
+    models = []
+    for model in get_page_models():
+        if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
+            models.append(apps.get_model(model._meta.app_label, model.__name__))
+    return models
+
+
 def get_frontend_response(session, item):
     return session.get(item.get_url())
 
