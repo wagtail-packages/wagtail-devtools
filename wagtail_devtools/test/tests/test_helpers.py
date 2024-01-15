@@ -10,6 +10,7 @@ from wagtail_devtools.api.helpers import (
     get_host,
     init_ret,
     results_item,
+    session_login,
 )
 from wagtail_devtools.test.management.commands.build_fixtures import (
     create_standard_pages,
@@ -150,3 +151,12 @@ class TestApiHelpers(TestCase):
         page_id = page.id
         url = get_admin_edit_url("http://localhost:8000", page)
         self.assertEqual(url, f"http://localhost:8000/admin/pages/{page_id}/edit/")
+
+
+class TestSessionLogin(TestCase):
+    """Test the session_login helper."""
+
+    def test_session_login(self):
+        session = session_login(RequestFactory().get("/"))
+        self.assertIsNotNone(session)
+        self.assertIsNotNone(session.cookies["sessionid"])
