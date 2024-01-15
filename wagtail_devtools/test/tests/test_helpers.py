@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.db import models
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from wagtail.models import Page
 
 from wagtail_devtools.api.helpers import (
@@ -29,19 +29,17 @@ class TestApiHelpers(TestCase):
     @override_settings(WAGTAIL_DEVTOOLS_BASE_URL=None, WAGTAILADMIN_BASE_URL=None)
     def test_get_host_with_request(self):
         del settings.WAGTAIL_DEVTOOLS_BASE_URL
-        request = self.client.get("/")
-        host = get_host(request=request)
+        host = get_host(request=RequestFactory().get("/"))
         self.assertEqual(host, "http://localhost:8000")
 
     @override_settings(WAGTAIL_DEVTOOLS_BASE_URL="http://example.com")
     def test_get_host_with_unhelpful_request(self):
-        host = get_host(request="test")
+        host = get_host(request=RequestFactory().get("/"))
         self.assertEqual(host, "http://example.com")
 
     @override_settings(WAGTAIL_DEVTOOLS_BASE_URL="https://example.com")
     def test_get_host_with_request_parses_url(self):
-        request = self.client.get("/")
-        host = get_host(request=request)
+        host = get_host(request=RequestFactory().get("/"))
         self.assertEqual(host, "https://example.com")
 
     @override_settings(
@@ -50,7 +48,7 @@ class TestApiHelpers(TestCase):
     )
     def test_get_host_with_request_and_setting(self):
         # WAGTAIL_DEVTOOLS_BASE_URL takes precedence
-        request = self.client.get("/")
+        request = RequestFactory().get("/")
         host = get_host(request=request)
         self.assertEqual(host, "https://example.com")
         del settings.WAGTAIL_DEVTOOLS_BASE_URL
@@ -113,7 +111,6 @@ class TestApiHelpers(TestCase):
     def test_results_with_item(self, mock_get_admin_edit_url):
         mock_get_admin_edit_url.return_value = "/test/"
 
-        request = self.client.get("/")
         fe_response = self.client.get("/")
         fe_response.status_code = 200
         fe_response.reason = "OK"
@@ -131,7 +128,7 @@ class TestApiHelpers(TestCase):
                 app_label = "test_item"
 
         item = TestItem(title="Test Item")
-        ret = results_item(request, item, fe_response, be_response)
+        ret = results_item(RequestFactory().get("/"), item, fe_response, be_response)
         self.assertEqual(
             ret,
             {
