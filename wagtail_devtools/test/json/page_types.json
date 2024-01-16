@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "title": "Page model types"
+  },
+  "results": [
+    {
+      "title": "Home Page",
+      "editor_url": "http://localhost:8000/admin/pages/3/edit/",
+      "url": "http://localhost:8000/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "HomePage"
+    },
+    {
+      "title": "Second Site Home Page",
+      "editor_url": "http://127.0.0.1:8000/admin/pages/26/edit/",
+      "url": "http://127.0.0.1:8000/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "SecondHomePage"
+    },
+    {
+      "title": "A nested page",
+      "editor_url": "http://localhost:8000/admin/pages/30/edit/",
+      "url": "http://localhost:8000/test-form-page-two/a-nested-page/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageOne"
+    },
+    {
+      "title": "Standard Page One",
+      "editor_url": "http://127.0.0.1:8000/admin/pages/27/edit/",
+      "url": "http://127.0.0.1:8000/standard-page-one/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageOne"
+    },
+    {
+      "title": "Standard Page One",
+      "editor_url": "http://localhost:8000/admin/pages/17/edit/",
+      "url": "http://localhost:8000/standard-page-one/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageOne"
+    },
+    {
+      "title": "Standard Page Two",
+      "editor_url": "http://127.0.0.1:8000/admin/pages/28/edit/",
+      "url": "http://127.0.0.1:8000/standard-page-two/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageTwo"
+    },
+    {
+      "title": "Standard Page Two",
+      "editor_url": "http://localhost:8000/admin/pages/18/edit/",
+      "url": "http://localhost:8000/standard-page-two/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageTwo"
+    },
+    {
+      "title": "Standard Page Three",
+      "editor_url": "http://127.0.0.1:8000/admin/pages/29/edit/",
+      "url": "http://127.0.0.1:8000/standard-page-three/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageThree"
+    },
+    {
+      "title": "Standard Page Three",
+      "editor_url": "http://localhost:8000/admin/pages/19/edit/",
+      "url": "http://localhost:8000/standard-page-three/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "StandardPageThree"
+    },
+    {
+      "title": "Test Form Page One",
+      "editor_url": "http://localhost:8000/admin/pages/24/edit/",
+      "url": "http://localhost:8000/test-form-page-one/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "FormPageOne"
+    },
+    {
+      "title": "Test Form Page Two",
+      "editor_url": "http://localhost:8000/admin/pages/25/edit/",
+      "url": "http://localhost:8000/test-form-page-two/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "FormPageTwo"
+    },
+    {
+      "title": "Frontend Page 500",
+      "editor_url": "http://localhost:8000/admin/pages/23/edit/",
+      "url": "http://localhost:8000/frontend-page-500/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "FrontendPage500"
+    },
+    {
+      "title": "Frontend Page 404",
+      "editor_url": "http://localhost:8000/admin/pages/22/edit/",
+      "url": "http://localhost:8000/frontend-page-404/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "FrontendPage404"
+    },
+    {
+      "title": "Frontend Page 302",
+      "editor_url": "http://localhost:8000/admin/pages/21/edit/",
+      "url": "http://localhost:8000/frontend-page-302/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "FrontendPage302"
+    },
+    {
+      "title": "Frontend Page 200",
+      "editor_url": "http://localhost:8000/admin/pages/20/edit/",
+      "url": "http://localhost:8000/frontend-page-200/",
+      "app_name": "wagtail_devtools_test",
+      "class_name": "FrontendPage200"
+    }
+  ]
+}

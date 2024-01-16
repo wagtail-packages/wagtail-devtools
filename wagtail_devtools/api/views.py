@@ -8,6 +8,7 @@ from wagtail.images import get_image_model
 from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
+from wagtail_devtools.api.auth import AdminSession
 from wagtail_devtools.api.conf import (
     get_registered_modeladmin,
     wagtail_core_edit_pages_config,
@@ -17,7 +18,6 @@ from wagtail_devtools.api.helpers import (
     generate_title,
     get_backend_response,
     get_creatable_page_models,
-    get_form_page_models,
     get_frontend_response,
     get_host,
     get_model_admin_models,
@@ -25,6 +25,7 @@ from wagtail_devtools.api.helpers import (
     results_item,
     session_login,
 )
+from wagtail_devtools.api.serializers import form_types_serializer
 
 
 def api_view(request):
@@ -48,37 +49,10 @@ def form_types(request):
     """API view for form types.
     It will check the response status code for each form submissions listing page."""
 
-    session = session_login(request)
+    session = AdminSession()
+    results = form_types_serializer(request, session)
 
-    ret = init_ret("Form types")
-
-    for model in get_form_page_models():
-        item = model.objects.first()
-
-        editor_url = f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[item.id])}"
-        be_response = get_backend_response(session, item, editor_url)
-
-        ret["results"].append(
-            results_item(
-                request,
-                None,
-                None,
-                be_response,
-                defaults={
-                    "title": item.title,
-                    "editor_url": editor_url,
-                    "editor_status_code": be_response.status_code,
-                    "editor_status_text": be_response.reason,
-                    "fe_url": None,
-                    "fe_status_code": None,
-                    "fe_status_text": None,
-                    "app_name": None,
-                    "class_name": None,
-                },
-            )
-        )
-
-    return JsonResponse(ret, safe=False)
+    return JsonResponse(results, safe=False)
 
 
 def model_admin_types(request):

@@ -5,15 +5,22 @@ from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
 from wagtail.models import Page
 
-from wagtail_devtools.api.helpers import (
+from wagtail_devtools.api.helpers import (  # get_frontend_response,; session_login,
+    generate_title,
     get_admin_edit_url,
+    get_creatable_page_models,
+    get_form_page_models,
     get_host,
+    get_model_admin_models,
     init_ret,
     results_item,
 )
 from wagtail_devtools.test.management.commands.build_fixtures import (
     create_standard_pages,
 )
+
+
+# from wagtail_devtools.test.models import HomePage, StandardPageOne
 
 
 class TestApiHelpers(TestCase):
@@ -150,6 +157,31 @@ class TestApiHelpers(TestCase):
         page_id = page.id
         url = get_admin_edit_url("http://localhost:8000", page)
         self.assertEqual(url, f"http://localhost:8000/admin/pages/{page_id}/edit/")
+
+    def test_get_creatable_page_models(self):
+        self.assertIsInstance(get_creatable_page_models(), list)
+
+    def test_get_form_page_models(self):
+        models = get_form_page_models()
+        self.assertIsInstance(models, list)
+        self.assertEqual(len(models), 2)
+        for model in models:
+            self.assertTrue(
+                "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]
+            )
+
+    def test_get_model_admin_models(self):
+        model_admin_types = [
+            "wagtail_devtools_test.TestModelAdminOne",
+        ]
+        models = get_model_admin_models(model_admin_types)
+        self.assertIsInstance(models, list)
+        self.assertEqual(len(models), 1)
+
+    def test_generate_title(self):
+        page = "wagtailadmin_collections:index"
+        title = generate_title(page)
+        self.assertEqual(title, "Admin Collections Index")
 
 
 # TODO: Test session_login helper
