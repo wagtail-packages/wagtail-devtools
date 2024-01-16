@@ -52,17 +52,13 @@ def form_types(request):
 
     ret = init_ret("Form types")
 
-    results = []
-
     for model in get_form_page_models():
         item = model.objects.first()
-        be_response = get_backend_response(session, item)
-        results.append(results_item(request, item, be_response, be_response))
 
-        editor_url = reverse("wagtailforms:list_submissions", args=[item.id])
-        be_response = session.get(f"{get_host(request)}{editor_url}")
+        editor_url = f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[item.id])}"
+        be_response = get_backend_response(session, item, editor_url)
 
-        results.append(
+        ret["results"].append(
             results_item(
                 request,
                 None,
@@ -70,7 +66,7 @@ def form_types(request):
                 be_response,
                 defaults={
                     "title": item.title,
-                    "editor_url": f"{get_host(request)}{reverse('wagtailforms:list_submissions', args=[item.id])}",
+                    "editor_url": editor_url,
                     "editor_status_code": be_response.status_code,
                     "editor_status_text": be_response.reason,
                     "fe_url": None,
@@ -81,8 +77,6 @@ def form_types(request):
                 },
             )
         )
-
-    ret["results"] = results
 
     return JsonResponse(ret, safe=False)
 
@@ -157,7 +151,6 @@ def settings_types(request):
 
     for item in objects:
         be_response = get_backend_response(session, item)
-        # response = session.get(f"{get_admin_edit_url(request, obj)}")
         ret["results"].append(results_item(request, item, None, be_response))
 
     return JsonResponse(ret, safe=False)
