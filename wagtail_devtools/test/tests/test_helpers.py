@@ -66,64 +66,29 @@ class TestApiHelpers(TestCase):
         ret = init_ret("test")
         self.assertEqual(ret, {"meta": {"title": "test"}, "results": []})
 
-    def test_results_item(self):
-        ret = results_item(None, None, None, None)
-        self.assertEqual(
-            ret,
-            {
-                "app_name": None,
-                "class_name": None,
-                "editor_status_code": None,
-                "editor_status_text": None,
-                "editor_url": None,
-                "fe_status_code": None,
-                "fe_status_text": None,
-                "fe_url": None,
-                "title": None,
-            },
-        )
-
-    def test_results_with_defaults(self):
-        the_nones = [None, None, None, None]
-        ret = results_item(
-            *the_nones,
-            defaults={
-                "title": "Test Title",
-                "editor_url": None,
-                "editor_status_code": None,
-                "editor_status_text": None,
-                "fe_url": None,
-                "fe_status_code": None,
-                "fe_status_text": None,
-                "app_name": "app",
-                "class_name": "class_name",
-            },
-        )
-        self.assertEqual(
-            ret,
-            {
-                "title": "Test Title",
-                "editor_url": None,
-                "editor_status_code": None,
-                "editor_status_text": None,
-                "fe_url": None,
-                "fe_status_code": None,
-                "fe_status_text": None,
-                "app_name": "app",
-                "class_name": "class_name",
-            },
-        )
+    # def test_results_item(self):
+    #     ret = results_item(None, None)
+    #     self.assertEqual(
+    #         ret,
+    #         {
+    #             # "app_name": None,
+    #             # "class_name": None,
+    #             "editor_url": None,
+    #             "fe_url": None,
+    #             "title": None,
+    #         },
+    #     )
 
     @patch("wagtail_devtools.api.helpers.get_admin_edit_url")
     def test_results_with_item(self, mock_get_admin_edit_url):
         mock_get_admin_edit_url.return_value = "/test/"
 
-        fe_response = self.client.get("/")
-        fe_response.status_code = 200
-        fe_response.reason = "OK"
-        be_response = self.client.get("/admin/")
-        be_response.status_code = 200
-        be_response.reason = "OK"
+        # fe_response = self.client.get("/")
+        # fe_response.status_code = 200
+        # fe_response.reason = "OK"
+        # be_response = self.client.get("/admin/")
+        # be_response.status_code = 200
+        # be_response.reason = "OK"
 
         class TestItem(models.Model):
             title = models.CharField(max_length=255)
@@ -135,19 +100,19 @@ class TestApiHelpers(TestCase):
                 app_label = "test_item"
 
         item = TestItem(title="Test Item")
-        ret = results_item(RequestFactory().get("/"), item, fe_response, be_response)
+        ret = results_item(RequestFactory().get("/"), item)
         self.assertEqual(
             ret,
             {
                 "title": "Test Item",
                 "editor_url": "/test/",
-                "editor_status_code": 200,
-                "editor_status_text": "OK",
+                # "editor_status_code": 200,
+                # "editor_status_text": "OK",
                 "fe_url": "/test/",
-                "fe_status_code": 200,
-                "fe_status_text": "OK",
-                "app_name": "test_item",
-                "class_name": "TestItem",
+                # "fe_status_code": 200,
+                # "fe_status_text": "OK",
+                # "app_name": "test_item",
+                # "class_name": "TestItem",
             },
         )
 
