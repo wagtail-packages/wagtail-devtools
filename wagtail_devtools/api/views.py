@@ -31,66 +31,47 @@ def api_view(request):
 
 
 def form_types(request):
-    """API view for form types.
-    It will check the response status code for each form submissions listing page."""
-
-    results = form_types_serializer(request, "Form types")
-
-    return JsonResponse(results, safe=False)
+    """API view for form types."""
+    return JsonResponse(form_types_serializer(request, "Form types"))
 
 
 def model_admin_types(request):
-    """API view for model admin types.
-    It will check the response status code for each edit url and return the results."""
-
-    results = model_admin_types_serializer(request, "Model admin types")
-
-    return JsonResponse(results, safe=False)
+    """API view for model admin types."""
+    return JsonResponse(
+        model_admin_types_serializer(request, "Model admin types"), safe=False
+    )
 
 
 def page_model_types(request):
-    """API view for page model types.
-    It will check the response status code for each edit url and one front end page return the results.
-    """
-
-    results = page_model_types_serializer(request, "Page model types")
-
-    return JsonResponse(results, safe=False)
+    """API view for page model types."""
+    return JsonResponse(
+        page_model_types_serializer(request, "Page model types"), safe=False
+    )
 
 
 def settings_types(request):
-    """API view for settings types.
-    It will check the response status code for each edit url and return the results."""
-
-    results = settings_types_serializer(request, "Settings types")
-
-    return JsonResponse(results, safe=False)
+    """API view for settings types."""
+    return JsonResponse(
+        settings_types_serializer(request, "Settings types"), safe=False
+    )
 
 
 def snippet_types(request):
-    """API view for snippet types.
-    It will check the response status code for each edit url and return the results."""
-
-    results = snippet_types_serializer(request, "Snippet types")
-
-    return JsonResponse(results, safe=False)
+    """API view for snippet types."""
+    return JsonResponse(snippet_types_serializer(request, "Snippet types"), safe=False)
 
 
 def wagtail_core_edit_pages(request):
-    """API view for wagtail core edit pages.
-    It will check the response status code for each edit url and return the results."""
-
-    results = wagtail_core_edit_pages_serializer(request, "Wagtail core edit pages")
-
-    return JsonResponse(results, safe=False)
+    """API view for wagtail core edit pages."""
+    return JsonResponse(
+        wagtail_core_edit_pages_serializer(request, "Wagtail core edit pages"),
+        safe=False,
+    )
 
 
 def wagtail_core_listing_pages(request):
-    """API view for wagtail core listing pages.
-    It will check the response status code for each edit url and return the results."""
-
-    results = wagtail_core_listing_pages_serializer(
-        request, "Wagtail core listing pages"
+    """API view for wagtail core listing pages."""
+    return JsonResponse(
+        wagtail_core_listing_pages_serializer(request, "Wagtail core listing pages"),
+        safe=False,
     )
-
-    return JsonResponse(results, safe=False)

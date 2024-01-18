@@ -12,13 +12,13 @@ from wagtail_devtools.api.conf import (
     wagtail_core_edit_pages_config,
     wagtail_core_listing_pages_config,
 )
+from wagtail_devtools.api.dataclasses import ResultsListingItem, ResultsModelItem
 from wagtail_devtools.api.helpers import (
     get_creatable_page_models,
     get_form_page_models,
     get_host,
     get_model_admin_models,
     init_ret,
-    results_item,
 )
 
 
@@ -27,13 +27,7 @@ def form_types_serializer(request, title):
 
     for model in get_form_page_models():
         item = model.objects.first()
-
-        ret["results"].append(
-            results_item(
-                request,
-                item,
-            )
-        )
+        ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
 
@@ -48,7 +42,7 @@ def model_admin_types_serializer(request, title):
     model_admins = get_model_admin_models(registered_modeladmin)
 
     for item in model_admins:
-        ret["results"].append(results_item(request, item))
+        ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
 
@@ -71,7 +65,7 @@ def wagtail_core_edit_pages_serializer(request, title):
         else:
             first = model.objects.first()
 
-        ret["results"].append(results_item(request, first))
+        ret["results"].append(ResultsModelItem(request, first).get())
 
     return ret
 
@@ -83,13 +77,7 @@ def wagtail_core_listing_pages_serializer(request, title):
         editor_url = f"{get_host(request)}{reverse(page)}"
         print(editor_url)
 
-        ret["results"].append(
-            results_item(
-                request,
-                page,
-                editor_url=editor_url,
-            )
-        )
+        ret["results"].append(ResultsListingItem(request, page, editor_url).get())
 
     return ret
 
@@ -101,7 +89,7 @@ def page_model_types_serializer(request, title):
         pages = page_model.objects.live()
         if pages:
             if item := pages.first():
-                ret["results"].append(results_item(request, item))
+                ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
 
@@ -126,7 +114,7 @@ def settings_types_serializer(request, title):
     objects = [generic_settings_model, site_settings_model]
 
     for item in objects:
-        ret["results"].append(results_item(request, item))
+        ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
 
@@ -136,6 +124,6 @@ def snippet_types_serializer(request, title):
 
     for cls in get_snippet_models():
         item = cls.objects.first()
-        ret["results"].append(results_item(request, item))
+        ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
