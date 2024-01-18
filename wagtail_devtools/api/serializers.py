@@ -75,7 +75,6 @@ def wagtail_core_listing_pages_serializer(request, title):
 
     for page in wagtail_core_listing_pages_config():
         editor_url = f"{get_host(request)}{reverse(page)}"
-        print(editor_url)
 
         ret["results"].append(ResultsListingItem(request, page, editor_url).get())
 

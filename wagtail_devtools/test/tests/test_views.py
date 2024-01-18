@@ -8,27 +8,15 @@ from django.test import RequestFactory, TestCase
 from wagtail_devtools.api.views import api_view
 
 
-# from unittest.mock import patch
-
-
-def mock_session_login():
-    request = RequestFactory().get("/")
-    request.session = {
-        "wagtail_devtools": {
-            "username": "admin",
-            "password": "password",
-            "sessionid": "1234567890",
-        }
-    }
-
-
 class TestApiViews(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.request = RequestFactory().get("/")
         with StringIO() as _:
             # Don't want to see the output of the command
             call_command("build_fixtures", "--clear", stdout=_)
+
+    def setUp(self):
+        self.request = RequestFactory().get("/")
 
     def test_api_view(self):
         response = api_view(self.request)
@@ -62,3 +50,38 @@ class TestApiViews(TestCase):
             data[6],
             "http://localhost:8000/wagtail-devtools-api/snippet-types/",
         )
+
+    def test_form_types(self):
+        response = self.client.get("/wagtail-devtools-api/form-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)
+
+    def test_model_admin_types(self):
+        response = self.client.get("/wagtail-devtools-api/modeladmin-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)
+
+    def test_page_model_types(self):
+        response = self.client.get("/wagtail-devtools-api/page-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)
+
+    def test_settings_types(self):
+        response = self.client.get("/wagtail-devtools-api/settings-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)
+
+    def test_snippet_types(self):
+        response = self.client.get("/wagtail-devtools-api/snippet-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)
+
+    def test_listing_types(self):
+        response = self.client.get("/wagtail-devtools-api/listing-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)
+
+    def test_edit_types(self):
+        response = self.client.get("/wagtail-devtools-api/edit-types/")
+        data = json.loads(response.content)
+        self.assertIsInstance(data, dict)

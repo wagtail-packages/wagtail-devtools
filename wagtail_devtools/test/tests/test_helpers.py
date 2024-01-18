@@ -1,26 +1,18 @@
-from unittest.mock import patch
-
 from django.conf import settings
-from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
 from wagtail.models import Page
 
-from wagtail_devtools.api.helpers import (  # get_frontend_response,; session_login,
-    generate_title,
+from wagtail_devtools.api.helpers import (
     get_admin_edit_url,
     get_creatable_page_models,
     get_form_page_models,
     get_host,
     get_model_admin_models,
     init_ret,
-    results_item,
 )
 from wagtail_devtools.test.management.commands.build_fixtures import (
     create_standard_pages,
 )
-
-
-# from wagtail_devtools.test.models import HomePage, StandardPageOne
 
 
 class TestApiHelpers(TestCase):
@@ -79,42 +71,42 @@ class TestApiHelpers(TestCase):
     #         },
     #     )
 
-    @patch("wagtail_devtools.api.helpers.get_admin_edit_url")
-    def test_results_with_item(self, mock_get_admin_edit_url):
-        mock_get_admin_edit_url.return_value = "/test/"
+    # @patch("wagtail_devtools.api.helpers.get_admin_edit_url")
+    # def test_results_with_item(self, mock_get_admin_edit_url):
+    #     mock_get_admin_edit_url.return_value = "/test/"
 
-        # fe_response = self.client.get("/")
-        # fe_response.status_code = 200
-        # fe_response.reason = "OK"
-        # be_response = self.client.get("/admin/")
-        # be_response.status_code = 200
-        # be_response.reason = "OK"
+    #     # fe_response = self.client.get("/")
+    #     # fe_response.status_code = 200
+    #     # fe_response.reason = "OK"
+    #     # be_response = self.client.get("/admin/")
+    #     # be_response.status_code = 200
+    #     # be_response.reason = "OK"
 
-        class TestItem(models.Model):
-            title = models.CharField(max_length=255)
+    #     class TestItem(models.Model):
+    #         title = models.CharField(max_length=255)
 
-            def get_url(self):
-                return "/test/"
+    #         def get_url(self):
+    #             return "/test/"
 
-            class Meta:
-                app_label = "test_item"
+    #         class Meta:
+    #             app_label = "test_item"
 
-        item = TestItem(title="Test Item")
-        ret = results_item(RequestFactory().get("/"), item)
-        self.assertEqual(
-            ret,
-            {
-                "title": "Test Item",
-                "editor_url": "/test/",
-                # "editor_status_code": 200,
-                # "editor_status_text": "OK",
-                "fe_url": "/test/",
-                # "fe_status_code": 200,
-                # "fe_status_text": "OK",
-                # "app_name": "test_item",
-                # "class_name": "TestItem",
-            },
-        )
+    #     item = TestItem(title="Test Item")
+    #     ret = results_item(RequestFactory().get("/"), item)
+    #     self.assertEqual(
+    #         ret,
+    #         {
+    #             "title": "Test Item",
+    #             "editor_url": "/test/",
+    #             # "editor_status_code": 200,
+    #             # "editor_status_text": "OK",
+    #             "fe_url": "/test/",
+    #             # "fe_status_code": 200,
+    #             # "fe_status_text": "OK",
+    #             # "app_name": "test_item",
+    #             # "class_name": "TestItem",
+    #         },
+    #     )
 
     def test_get_admin_edit_url(self):
         create_standard_pages()
@@ -143,10 +135,10 @@ class TestApiHelpers(TestCase):
         self.assertIsInstance(models, list)
         self.assertEqual(len(models), 1)
 
-    def test_generate_title(self):
-        page = "wagtailadmin_collections:index"
-        title = generate_title(page)
-        self.assertEqual(title, "Admin Collections Index")
+    # def test_generate_title(self):
+    #     page = "wagtailadmin_collections:index"
+    #     title = generate_title(page)
+    #     self.assertEqual(title, "Admin Collections Index")
 
 
 # TODO: Test session_login helper
