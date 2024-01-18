@@ -37,49 +37,31 @@ def init_ret(title):
     return {"meta": {"title": title}, "results": []}
 
 
-def results_item(request, item, fe_response, be_response, **kwargs):
-    if kwargs.get("defaults"):
-        defaults = kwargs.get("defaults")
+def results_item(request, item, editor_url=None):
+    ret = {}
+
+    if not editor_url:
+        ret["title"] = (
+            item.title
+            if hasattr(item, "title")
+            else item.name
+            if hasattr(item, "name")
+            else item.hostname
+            if hasattr(item, "hostname")
+            else item.username
+            if hasattr(item, "username")
+            else item.__str__()
+        )
+        ret["fe_url"] = item.get_url() if hasattr(item, "get_url") else None
+        ret["editor_url"] = f"{get_admin_edit_url(request, item)}"
+        # TODO: Add app_name and class_name
+        # ret["app_name"] = item._meta.app_label
+        # ret["class_name"] = item.__class__.__name__
     else:
-        defaults = {
-            "title": None,
-            "editor_url": None,
-            "editor_status_code": None,
-            "editor_status_text": None,
-            "fe_url": None,
-            "fe_status_code": None,
-            "fe_status_text": None,
-            "app_name": None,
-            "class_name": None,
-        }
+        ret["title"] = generate_title(item)
+        ret["editor_url"] = editor_url
 
-        if item:
-            if hasattr(item, "title"):
-                defaults["title"] = item.title
-            elif hasattr(item, "name"):
-                defaults["title"] = item.name
-            elif hasattr(item, "hostname"):
-                defaults["title"] = item.hostname
-            elif hasattr(item, "username"):
-                defaults["title"] = item.username
-            else:
-                defaults["title"] = item.__str__()
-
-            # Not all items have a front-end URL
-            if hasattr(item, "get_url"):
-                defaults["fe_url"] = item.get_url()
-                defaults["fe_status_code"] = fe_response.status_code
-                defaults["fe_status_text"] = fe_response.reason
-
-            defaults["fe_url"] = item.get_url() if hasattr(item, "get_url") else None
-            defaults["editor_url"] = f"{get_admin_edit_url(request, item)}"
-            defaults["app_name"] = item._meta.app_label
-            defaults["class_name"] = item.__class__.__name__
-
-            defaults["editor_status_code"] = be_response.status_code
-            defaults["editor_status_text"] = be_response.reason
-
-    return defaults
+    return ret
 
 
 def session_login(request):
