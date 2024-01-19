@@ -52,20 +52,20 @@ def wagtail_core_edit_pages_serializer(request, title):
 
     for item in wagtail_core_edit_pages_config():
         model = apps.get_model(item.split(".")[0], item.split(".")[1])
-        first = model.objects.first()
 
-        if isinstance(first, Collection):
-            first = Collection.objects.first().get_first_child()
-        elif isinstance(first, get_document_model()):
-            first = get_document_model().objects.first()
-        elif isinstance(first, get_image_model()):
-            first = get_image_model().objects.first()
-        elif isinstance(first, get_user_model()):
-            first = get_user_model().objects.first()
-        else:
-            first = model.objects.first()
+        if first := model.objects.first():
+            if isinstance(first, Collection):
+                first = Collection.objects.first().get_first_child()
+            elif isinstance(first, get_document_model()):
+                first = get_document_model().objects.first()
+            elif isinstance(first, get_image_model()):
+                first = get_image_model().objects.first()
+            elif isinstance(first, get_user_model()):
+                first = get_user_model().objects.first()
+            else:
+                first = model.objects.first()
 
-        ret["results"].append(ResultsModelItem(request, first).get())
+            ret["results"].append(ResultsModelItem(request, first).get())
 
     return ret
 
