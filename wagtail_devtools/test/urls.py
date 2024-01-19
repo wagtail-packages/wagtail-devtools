@@ -5,15 +5,18 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+from wagtail_devtools.api.urls import urlpatterns as api_urlpatterns
+
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+    path("wagtail-devtools-api/", include(api_urlpatterns)),
     path("", include(wagtail_urls)),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG:  # pragma: no cover
     from django.conf.urls.static import static
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 

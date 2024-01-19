@@ -154,6 +154,56 @@ WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
-DEVTOOLS_REGISTERED_MODELADMIN = [
-    "wagtail_devtools_test.TestModelAdmin",
+# testing
+# this restores the test-media folder after the test suite has run
+# not using this at the moment, see how it goes.
+# TEST_RUNNER = "wagtail_devtools.test.tests.runner.WagtailDevToolsTestRunner"
+
+# wagtail_devtools settings
+
+# WAGTAIL_DEVTOOLS_ENABLED = True
+# WAGTAIL_DEVTOOLS_TEST_USER = {
+#     "login_url": "http://localhost:8000/admin/login/",
+#     "username": "admin",
+#     "password": "admin",
+# }
+
+WAGTAIL_DEVTOOLS_CONFIG = {
+    "json_dir": os.path.join(PROJECT_DIR, "test", "json"),
+}
+WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES = [  # optional but required if you use modeladmin
+    "wagtail_devtools_test.TestModelAdminOne",
+    "wagtail_devtools_test.TestModelAdminTwo",
+    "wagtail_devtools_test.TestModelAdminThree",
 ]
+
+# WAGTAIL_DEVTOOLS_EDIT_PAGES = [ # optional
+# "auth.Group",
+# "auth.User",
+# "wagtailcore.Collection",
+# "wagtailcore.Site",
+# "wagtailcore.Task",
+# "wagtailcore.Workflow",
+# "wagtaildocs.Document",
+# "wagtailimages.Image",
+# "wagtailredirects.Redirect",
+# ]
+
+# WAGTAIL_DEVTOOLS_LISTING_PAGES = [ # optional
+# "wagtailadmin_collections:index",
+# "wagtailadmin_explore_root",
+# "wagtailadmin_home",
+# "wagtailadmin_pages:search",
+# "wagtailadmin_reports:aging_pages",
+# "wagtailadmin_reports:locked_pages",
+# "wagtailadmin_reports:site_history",
+# "wagtailadmin_workflows:index",
+# "wagtailadmin_workflows:task_index",
+# "wagtaildocs:index",
+# "wagtailimages:index",
+# "wagtailredirects:index",
+# "wagtailsites:index",
+# "wagtailsnippets:index",
+# "wagtailusers_groups:index",
+# "wagtailusers_users:index",
+# ]

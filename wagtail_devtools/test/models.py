@@ -1,5 +1,8 @@
-from django.db import models  # noqa: F401
-from wagtail.admin.panels import FieldPanel
+from django.db import models
+from django.http import HttpResponse
+from modelcluster.fields import ParentalKey
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from wagtail.contrib.settings.models import (
     BaseGenericSetting,
     BaseSiteSetting,
@@ -11,6 +14,10 @@ from wagtail.snippets.models import register_snippet
 
 
 class HomePage(Page):
+    pass
+
+
+class SecondHomePage(Page):
     pass
 
 
@@ -35,6 +42,64 @@ class StandardPageThree(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("body"),
+    ]
+
+
+class FormFieldOne(AbstractFormField):
+    page = ParentalKey(
+        "FormPageOne", on_delete=models.CASCADE, related_name="form_fields"
+    )
+
+
+class FormPageOne(AbstractEmailForm):
+    intro = RichTextField(blank=True)
+    thank_you_text = RichTextField(blank=True)
+
+    content_panels = AbstractEmailForm.content_panels + [
+        FieldPanel("intro"),
+        InlinePanel("form_fields", label="Form fields"),
+        FieldPanel("thank_you_text"),
+        MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
+                FieldPanel("subject"),
+            ],
+            "Email",
+        ),
+    ]
+
+
+class FormFieldTwo(AbstractFormField):
+    page = ParentalKey(
+        "FormPageTwo", on_delete=models.CASCADE, related_name="form_fields"
+    )
+
+
+class FormPageTwo(AbstractEmailForm):
+    intro = RichTextField(blank=True)
+    thank_you_text = RichTextField(blank=True)
+
+    content_panels = AbstractEmailForm.content_panels + [
+        FieldPanel("intro"),
+        InlinePanel("form_fields", label="Form fields"),
+        FieldPanel("thank_you_text"),
+        MultiFieldPanel(
+            [
+                FieldRowPanel(
+                    [
+                        FieldPanel("from_address", classname="col6"),
+                        FieldPanel("to_address", classname="col6"),
+                    ]
+                ),
+                FieldPanel("subject"),
+            ],
+            "Email",
+        ),
     ]
 
 
@@ -135,3 +200,27 @@ class SiteSettingTwo(BaseSiteSetting):
 @register_setting
 class SiteSettingThree(BaseSiteSetting):
     name = models.CharField(max_length=255)
+
+
+class FrontendPage500(Page):
+    # returns a 500 response
+    def serve(self, request, *args, **kwargs):
+        return HttpResponse(status=500)
+
+
+class FrontendPage404(Page):
+    # returns a 404 response
+    def serve(self, request, *args, **kwargs):
+        return HttpResponse(status=404)
+
+
+class FrontendPage302(Page):
+    # returns a 302 response
+    def serve(self, request, *args, **kwargs):
+        return HttpResponse(status=302)
+
+
+class FrontendPage200(Page):
+    # returns a 200 response
+    def serve(self, request, *args, **kwargs):
+        return HttpResponse(status=200)
