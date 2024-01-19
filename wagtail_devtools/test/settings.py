@@ -161,13 +161,6 @@ WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
 # wagtail_devtools settings
 
-# WAGTAIL_DEVTOOLS_ENABLED = True
-# WAGTAIL_DEVTOOLS_TEST_USER = {
-#     "login_url": "http://localhost:8000/admin/login/",
-#     "username": "admin",
-#     "password": "admin",
-# }
-
 WAGTAIL_DEVTOOLS_CONFIG = {
     "json_dir": os.path.join(PROJECT_DIR, "test", "json"),
 }
