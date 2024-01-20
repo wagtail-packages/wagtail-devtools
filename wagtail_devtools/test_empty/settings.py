@@ -33,21 +33,21 @@ ALLOWED_HOSTS = ["localhost", "testserver", "127.0.0.1"]
 
 INSTALLED_APPS = [
     "wagtail_devtools",
-    # "wagtail_devtools.test",
+    "wagtail_devtools.test_empty",
     # "wagtail_devtools.search",
     # "wagtail.contrib.search_promotions",
     # "wagtail.contrib.forms",
-    # "wagtail.contrib.redirects",
+    "wagtail.contrib.redirects",
     # "wagtail.contrib.settings",
     # "wagtail.embeds",
     "wagtail.users",
-    # "wagtail.snippets",
+    "wagtail.snippets",
     "wagtail.documents",
     "wagtail.images",
     # "wagtail.search",
     "wagtail.admin",
     # "wagtail.api.v2",
-    # "wagtail.contrib.modeladmin",
+    "wagtail.contrib.modeladmin",
     # "wagtail.contrib.routable_page",
     # "wagtail.contrib.styleguide",
     "wagtail.sites",
@@ -170,14 +170,14 @@ WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 #     "password": "admin",
 # }
 
-WAGTAIL_DEVTOOLS_CONFIG = {
-    "json_dir": os.path.join(PROJECT_DIR, "test", "json"),
-}
-WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES = [  # optional but required if you use modeladmin
-    "wagtail_devtools_test.TestModelAdminOne",
-    "wagtail_devtools_test.TestModelAdminTwo",
-    "wagtail_devtools_test.TestModelAdminThree",
-]
+# WAGTAIL_DEVTOOLS_CONFIG = {
+#     "json_dir": os.path.join(PROJECT_DIR, "test", "json"),
+# }
+# WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES = [  # optional but required if you use modeladmin
+#     "wagtail_devtools_test.TestModelAdminOne",
+#     "wagtail_devtools_test.TestModelAdminTwo",
+#     "wagtail_devtools_test.TestModelAdminThree",
+# ]
 
 # WAGTAIL_DEVTOOLS_EDIT_PAGES = [ # optional
 # "auth.Group",
