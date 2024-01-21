@@ -220,7 +220,11 @@ def snippet_types_serializer(request, title):
 
     snippets_types = get_snippet_models()
 
-    if len(snippets_types) == 0:
+    if len(snippets_types) > 0:
+        for cls in snippets_types:
+            if item := cls.objects.first():
+                ret["results"].append(ResultsModelItem(request, item).get())
+    else:
         ret["results"].append(
             {
                 "title": "No snippets found",
@@ -230,10 +234,5 @@ def snippet_types_serializer(request, title):
                 "url": None,
             }
         )
-        return ret
-    else:
-        for cls in snippets_types:
-            item = cls.objects.first()
-            ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
