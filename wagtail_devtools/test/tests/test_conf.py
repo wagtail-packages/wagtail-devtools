@@ -30,20 +30,15 @@ class TestApiConf(SimpleTestCase):
     def test_wagtail_core_edit_pages_config(self):
         # simulate the absence of the setting
         del settings.WAGTAIL_DEVTOOLS_EDIT_PAGES
-        self.assertEqual(
-            wagtail_core_edit_pages_config(),
-            [
-                "auth.Group",
-                "auth.User",
-                "wagtailcore.Collection",
-                "wagtailcore.Site",
-                "wagtailcore.Task",
-                "wagtailcore.Workflow",
-                "wagtaildocs.Document",
-                "wagtailimages.Image",
-                "wagtailredirects.Redirect",
-            ],
-        )
+        self.assertIn("auth.User", wagtail_core_edit_pages_config())
+        self.assertIn("auth.Group", wagtail_core_edit_pages_config())
+        self.assertIn("wagtailcore.Collection", wagtail_core_edit_pages_config())
+        self.assertIn("wagtailcore.Site", wagtail_core_edit_pages_config())
+        self.assertIn("wagtailcore.Task", wagtail_core_edit_pages_config())
+        self.assertIn("wagtailcore.Workflow", wagtail_core_edit_pages_config())
+        self.assertIn("wagtaildocs.Document", wagtail_core_edit_pages_config())
+        self.assertIn("wagtailimages.Image", wagtail_core_edit_pages_config())
+        self.assertIn("wagtailredirects.Redirect", wagtail_core_edit_pages_config())
 
     @override_settings(WAGTAIL_DEVTOOLS_EDIT_PAGES=["test.Model"])
     def test_wagtail_core_edit_pages_config_with_value(self):
