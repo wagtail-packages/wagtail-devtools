@@ -154,33 +154,7 @@ WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
-# testing
-# this restores the test-media folder after the test suite has run
-# not using this at the moment, see how it goes.
-# TEST_RUNNER = "wagtail_devtools.test.tests.runner.WagtailDevToolsTestRunner"
-
 # wagtail_devtools settings
-
-WAGTAIL_DEVTOOLS_CONFIG = {
-    "json_dir": os.path.join(PROJECT_DIR, "test", "json"),
-}
-WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES = [  # optional but required if you use modeladmin
-    "wagtail_devtools_test.TestModelAdminOne",
-    "wagtail_devtools_test.TestModelAdminTwo",
-    "wagtail_devtools_test.TestModelAdminThree",
-]
-
-# WAGTAIL_DEVTOOLS_EDIT_PAGES = [ # optional
-# "auth.Group",
-# "auth.User",
-# "wagtailcore.Collection",
-# "wagtailcore.Site",
-# "wagtailcore.Task",
-# "wagtailcore.Workflow",
-# "wagtaildocs.Document",
-# "wagtailimages.Image",
-# "wagtailredirects.Redirect",
-# ]
 
 # WAGTAIL_DEVTOOLS_LISTING_PAGES = [ # optional
 # "wagtailadmin_collections:index",
