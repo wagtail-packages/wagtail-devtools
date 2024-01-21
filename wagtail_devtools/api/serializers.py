@@ -1,8 +1,6 @@
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
 from wagtail.models.collections import Collection
@@ -159,7 +157,9 @@ def settings_types_serializer(request, title):
     generic_settings_model = None
     site_settings_model = None
 
-    if "wagtail.contrib.settings" not in settings.INSTALLED_APPS:
+    try:
+        from wagtail.contrib.settings.registry import registry as settings_registry
+    except ImportError:
         ret["results"].append(
             {
                 "title": "wagtail.contrib.settings not in INSTALLED_APPS",
@@ -184,19 +184,18 @@ def settings_types_serializer(request, title):
         return ret
 
     for cls in settings_registry:
-        if (
-            cls.__mro__[1].__name__ == "BaseGenericSetting"
-            and not generic_settings_model
-        ):
-            generic_settings_model = cls.objects.first()
-            continue
-        if cls.__mro__[1].__name__ == "BaseSiteSetting" and not site_settings_model:
-            site_settings_model = cls.objects.first()
-            continue
+        if cls.__mro__[1].__name__ == "BaseGenericSetting":
+            generic_settings_model = cls
+        if cls.__mro__[1].__name__ == "BaseSiteSetting":
+            site_settings_model = cls
 
-    settings_objects = [generic_settings_model, site_settings_model]
+    settings = [
+        settings
+        for settings in [generic_settings_model, site_settings_model]
+        if settings
+    ]
 
-    if len(settings_objects) == 0:
+    if len(settings) == 0:
         ret["results"].append(
             {
                 "title": "No settings found",
@@ -207,9 +206,23 @@ def settings_types_serializer(request, title):
             }
         )
         return ret
-    else:
-        for item in settings_objects:
-            ret["results"].append(ResultsModelItem(request, item).get())
+
+    models = [cls.objects.first() for cls in settings_registry if cls.objects.first()]
+
+    if len(models) == 0:
+        ret["results"].append(
+            {
+                "title": "No settings objects found",
+                "app_name": None,
+                "class_name": None,
+                "editor_url": None,
+                "url": None,
+            }
+        )
+        return ret
+
+    for item in models:
+        ret["results"].append(ResultsModelItem(request, item).get())
 
     return ret
 
