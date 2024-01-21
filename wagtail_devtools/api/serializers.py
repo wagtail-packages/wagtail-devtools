@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from wagtail.contrib.settings.registry import registry as settings_registry
@@ -157,6 +158,18 @@ def settings_types_serializer(request, title):
 
     generic_settings_model = None
     site_settings_model = None
+
+    if "wagtail.contrib.settings" not in settings.INSTALLED_APPS:
+        ret["results"].append(
+            {
+                "title": "wagtail.contrib.settings not in INSTALLED_APPS",
+                "app_name": None,
+                "class_name": None,
+                "editor_url": None,
+                "url": None,
+            }
+        )
+        return ret
 
     if not settings_registry:
         ret["results"].append(
