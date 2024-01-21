@@ -53,44 +53,27 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options["clear"]:
-            # self.clear_fixtures()
             clear_fixtures()
 
-        # self.create_superuser()
         create_superuser()
-        # self.update_default_site()
         update_default_site()
-        # self.update_home_page()
         update_home_page()
-        # self.create_standard_pages()
         create_standard_pages()
-        # self.create_problematic_pages()
         create_problematic_pages()
-        # self.create_form_pages()
         create_form_pages()
-        # self.create_snippets()
         create_snippets()
-        # self.create_modeladmins()
         create_modeladmins()
-        # self.create_settings()
         create_settings()
-        # self.create_collections()
         create_collections()
-        # self.create_redirects()
         create_redirects()
-        # self.create_promoted_searches()
         create_promoted_searches()
-        # self.import_media()
         import_media()
-        # self.create_second_site()
         create_second_site()
 
         self.stdout.write(self.style.SUCCESS("Fixtures created."))
 
 
 def create_superuser():
-    # self.stdout.write("Creating superuser.")
-
     try:
         User.objects.create_superuser(
             username="superuser",
@@ -99,14 +82,9 @@ def create_superuser():
         )
     except IntegrityError:
         print("Superuser already exists.")
-        # self.stdout.write(
-        #     self.style.WARNING("Superuser already exists. Skipping creation.")
-        # )
 
 
 def update_default_site():
-    # self.stdout.write("Updating default site.")
-
     site = Site.objects.first()
     site.hostname = "localhost"
     site.site_name = "Default Site"
@@ -114,26 +92,13 @@ def update_default_site():
 
 
 def update_home_page():
-    # self.stdout.write("Updating home page.")
-
     home_page = HomePage.objects.first()
     home_page.title = "Home Page"
     rev = home_page.save_revision()
     rev.publish()
 
 
-# def update_second_home_page():
-#     # self.stdout.write("Updating second home page.")
-
-#     home_page = Page.objects.get(depth=1, title="Second Site Home Page")
-#     home_page.title = "Second Site Home Page"
-#     rev = home_page.save_revision()
-#     rev.publish()
-
-
 def create_standard_pages():
-    # self.stdout.write("Creating standard pages.")
-
     home_page = HomePage.objects.first()
 
     sp = StandardPageOne(title="Standard Page One")
@@ -153,8 +118,6 @@ def create_standard_pages():
 
 
 def create_problematic_pages():
-    # self.stdout.write("Creating problematic pages.")
-
     home_page = HomePage.objects.first()
 
     f200 = FrontendPage200(title="Frontend Page 200")
@@ -174,8 +137,6 @@ def create_problematic_pages():
 
 
 def create_form_pages():
-    # self.stdout.write("Creating form page.")
-
     home_page = HomePage.objects.first()
 
     fp1 = FormPageOne(title="Test Form Page One")
@@ -242,8 +203,6 @@ def create_form_pages():
 
 
 def create_snippets():
-    # self.stdout.write("Creating snippets.")
-
     for x in range(1, 5):
         TestSnippetOne.objects.create(title=f"Test Snippet {x}")
         TestSnippetTwo.objects.create(title=f"Test Snippet {x}")
@@ -251,8 +210,6 @@ def create_snippets():
 
 
 def create_modeladmins():
-    # self.stdout.write("Creating model admins.")
-
     for x in range(1, 5):
         TestModelAdminOne.objects.create(title=f"Test Model Admin One {x}")
         TestModelAdminTwo.objects.create(title=f"Test Model Admin Two {x}")
@@ -260,8 +217,6 @@ def create_modeladmins():
 
 
 def create_settings():
-    # self.stdout.write("Creating settings.")
-
     site_setting = SiteSettingOne.for_site(Site.objects.first())
     site_setting.name = "Site Setting One"
     site_setting.save()
@@ -288,7 +243,6 @@ def create_settings():
 
 
 def create_collections():
-    # self.stdout.write("Creating collections.")
     root_collection = Collection.objects.get(depth=1)
 
     for x in range(1, 5):
@@ -296,8 +250,6 @@ def create_collections():
 
 
 def create_redirects():
-    # self.stdout.write("Creating redirects.")
-
     for x in range(1, 5):
         redirect_page = HomePage.objects.first()
         Redirect.objects.create(
@@ -307,8 +259,6 @@ def create_redirects():
 
 
 def create_promoted_searches():
-    # self.stdout.write("Creating promoted searches.")
-
     home_page = HomePage.objects.first()
     for x in range(1, 5):
         try:
@@ -319,16 +269,9 @@ def create_promoted_searches():
             )
         except IntegrityError:
             print("Search promotion already exists.")
-            # self.stdout.write(
-            #     self.style.WARNING(
-            #         f"Search promotion for query 'Test Query {x}' already exists. Skipping creation."
-            #     )
-            # )
 
 
 def import_media():
-    # self.stdout.write("Importing media files.")
-
     original_images = ["one.jpg", "two.jpg", "three.jpg", "four.jpg"]
 
     for image in original_images:
@@ -367,8 +310,6 @@ def import_media():
 
 
 def clear_fixtures():
-    # self.stdout.write("Clearing fixtures.")
-
     StandardPageOne.objects.all().delete()
     StandardPageTwo.objects.all().delete()
     StandardPageThree.objects.all().delete()
@@ -400,8 +341,6 @@ def clear_fixtures():
 
 
 def create_second_site():
-    # self.stdout.write("Creating second site.")
-
     root_page = Page.objects.get(depth=1)
 
     second_site_home_page = SecondHomePage(title="Second Site Home Page")
@@ -416,10 +355,6 @@ def create_second_site():
         is_default_site=False,
         site_name="Second Site",
     )
-
-    # self.stdout.write("Second site created.")
-
-    # self.stdout.write("Creating second site standard pages.")
 
     sp = StandardPageOne(title="Standard Page One")
     second_site_home_page.add_child(instance=sp)
