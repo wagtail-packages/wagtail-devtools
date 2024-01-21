@@ -1,6 +1,8 @@
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
 from wagtail.models.collections import Collection
@@ -157,24 +159,10 @@ def settings_types_serializer(request, title):
     generic_settings_model = None
     site_settings_model = None
 
-    try:
-        from wagtail.contrib.settings.registry import registry as settings_registry
-    except ImportError:
+    if "wagtail.contrib.settings" not in settings.INSTALLED_APPS:
         ret["results"].append(
             {
                 "title": "wagtail.contrib.settings not in INSTALLED_APPS",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
-
-    if not settings_registry:
-        ret["results"].append(
-            {
-                "title": "No settings found",
                 "app_name": None,
                 "class_name": None,
                 "editor_url": None,
@@ -189,13 +177,13 @@ def settings_types_serializer(request, title):
         if cls.__mro__[1].__name__ == "BaseSiteSetting":
             site_settings_model = cls
 
-    settings = [
+    registered_settings = [
         settings
         for settings in [generic_settings_model, site_settings_model]
         if settings
     ]
 
-    if len(settings) == 0:
+    if len(registered_settings) == 0:
         ret["results"].append(
             {
                 "title": "No settings found",
