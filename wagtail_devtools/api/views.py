@@ -22,8 +22,13 @@ def api_view(request):
 
 def wagtail_core_apps(request):
     """API view for wagtail core apps."""
+    if not request.GET.get("all"):
+        return JsonResponse(
+            wagtail_core_apps_serializer(request, "Wagtail core apps"), safe=False
+        )
     return JsonResponse(
-        wagtail_core_apps_serializer(request, "Wagtail core apps"), safe=False
+        wagtail_core_apps_serializer(request, "Wagtail core apps", True),
+        safe=False,
     )
 
 
