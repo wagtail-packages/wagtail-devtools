@@ -3,9 +3,9 @@ from django.urls import reverse
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.models.collections import Collection
 
-from wagtail_devtools.api.conf import wagtail_core_listing_pages_config
+from wagtail_devtools.api.conf import installed_apps, wagtail_core_listing_pages_config
 from wagtail_devtools.api.dataclasses import ResultsListingItem, ResultsModelItem
-from wagtail_devtools.api.helpers import get_host, init_ret, mangle_installed_apps
+from wagtail_devtools.api.helpers import get_host, init_ret
 
 
 def wagtail_core_listing_pages_serializer(request, title):
@@ -22,30 +22,7 @@ def wagtail_core_listing_pages_serializer(request, title):
 def wagtail_core_apps_serializer(request, title):
     ret = init_ret(title)
 
-    a = [
-        "wagtail.contrib.search_promotions",
-        "wagtail.contrib.forms",
-        "wagtail.contrib.redirects",
-        "wagtail.contrib.settings",
-        "wagtail.embeds",
-        "wagtail.users",
-        "wagtail.snippets",
-        "wagtail.documents",
-        "wagtail.images",
-        "wagtail.search",
-        "wagtail.admin",
-        "wagtail.api.v2",
-        "wagtail.contrib.modeladmin",
-        "wagtail.contrib.routable_page",
-        "wagtail.contrib.styleguide",
-        "wagtail.sites",
-    ]
-
-    all_apps = (
-        ["wagtail_devtools_test"] + mangle_installed_apps(a) + ["wagtailcore", "auth"]
-    )
-
-    for app in all_apps:
+    for app in installed_apps():
         models = apps.get_app_config(app).get_models()
         for model in models:
             item = model.objects.first()

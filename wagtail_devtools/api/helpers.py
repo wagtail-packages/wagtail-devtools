@@ -31,16 +31,3 @@ def get_host(request=None):
 
 def init_ret(title):
     return {"meta": {"title": title}, "results": []}
-
-
-def mangle_installed_apps(apps):
-    """Mangle the installed apps to be more readable."""
-    return [
-        app.replace(".contrib.", "")
-        .replace("_", "")
-        .replace(".", "")
-        .replace("documents", "docs")
-        .replace("apiv2", "api_v2")
-        .strip()
-        for app in apps
-    ]
