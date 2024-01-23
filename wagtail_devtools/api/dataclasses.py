@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from wagtail_devtools.api.conf import default_field_identifier
 from wagtail_devtools.api.helpers import get_admin_edit_url
@@ -47,6 +47,25 @@ class ResultsModelItem:
             "editor_url": self.editor_url,
             "url": self.url,
         }
+
+
+@dataclass
+class Results:
+    items: list = field(default_factory=list)
+
+    def is_duplicate(self, item):
+        # avoid having duplicate results
+        for i in self.items:
+            if i.get("editor_url") == item.get("editor_url"):
+                return True
+        return False
+
+    def add(self, item):
+        if not self.is_duplicate(item):
+            self.items.append(item)
+
+    def get(self):
+        return self.items
 
 
 @dataclass
