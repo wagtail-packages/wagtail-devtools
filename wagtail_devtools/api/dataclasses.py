@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from wagtail_devtools.api.conf import default_field_identifier
 from wagtail_devtools.api.helpers import get_admin_edit_url
 
 
@@ -17,17 +18,10 @@ class ResultsModelItem:
 
     @property
     def _title(self):
-        return (
-            self.item.title
-            if hasattr(self.item, "title")
-            else self.item.name
-            if hasattr(self.item, "name")
-            else self.item.hostname
-            if hasattr(self.item, "hostname")
-            else self.item.username
-            if hasattr(self.item, "username")
-            else self.item.__str__()
-        )
+        for key in default_field_identifier():
+            if hasattr(self.item, key):
+                return getattr(self.item, key)
+        return f"Field not found {self}"
 
     @property
     def _app_name(self):

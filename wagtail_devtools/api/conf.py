@@ -1,9 +1,4 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
-
-
-def get_user_model_string():
-    return f"{get_user_model()._meta.app_label}.{get_user_model()._meta.model_name.capitalize()}"
 
 
 def wagtail_core_listing_pages_config():
@@ -27,3 +22,9 @@ def wagtail_core_listing_pages_config():
         "wagtailusers_groups:index",
         "wagtailusers_users:index",
     ]
+
+
+def default_field_identifier():
+    if hasattr(settings, "WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER"):
+        return settings.WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER
+    return ["title", "name", "username", "hostname"]
