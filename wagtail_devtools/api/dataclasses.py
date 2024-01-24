@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 
+from django.urls import reverse
+
 from wagtail_devtools.api.conf import default_field_identifier
-from wagtail_devtools.api.helpers import get_admin_edit_url
+from wagtail_devtools.api.helpers import get_admin_edit_url, get_host
 
 
 @dataclass
@@ -71,34 +73,33 @@ class Results:
 @dataclass
 class ResultsListingItem:
     request: object
-    page: object
-    editor_url: str
+    app: dict
 
     def __post_init__(self):
-        self.title = self._generate_title
+        self.title = self.app["title"]
         self.app_name = None
         self.class_name = None
         self.url = None
 
-    @property
-    def _generate_title(self):
-        splits = self.page.split("_")
-        splits = " ".join(splits)
-        splits = splits.split(":")
-        splits = " ".join(splits)
-        splits = splits.replace("wagtail", "")
-        splits = splits.lower()  # just in case
+    # @property
+    # def _generate_title(self):
+    #     splits = self.page.split("_")
+    #     splits = " ".join(splits)
+    #     splits = splits.split(":")
+    #     splits = " ".join(splits)
+    #     splits = splits.replace("wagtail", "")
+    #     splits = splits.lower()  # just in case
 
-        def upper_words(s):
-            return " ".join(w.capitalize() for w in s.split(" "))
+    #     def upper_words(s):
+    #         return " ".join(w.capitalize() for w in s.split(" "))
 
-        return upper_words(splits)
+    #     return upper_words(splits)
 
     def get(self):
         return {
             "title": self.title,
-            "app_name": self.app_name,
+            "app_name": self.app["app_name"],
             "class_name": self.class_name,
-            "editor_url": self.editor_url,
+            "editor_url": f'{get_host(self.request)}{reverse(self.app["listing_name"])}',
             "url": self.url,
         }

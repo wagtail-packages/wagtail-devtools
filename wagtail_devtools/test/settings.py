@@ -175,6 +175,12 @@ WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 # "wagtailusers_users:index",
 # ]
 
-WAGTAIL_DEVTOOLS_CUSTOM_INSTALLED_APPS = [
-    "wagtail_devtools_test",
-]
+# WAGTAIL_DEVTOOLS_CUSTOM_INSTALLED_APPS = [
+#     "wagtail_devtools_test",
+# ]
+
+# WAGTAIL_DEVTOOLS_INSTALLED_APPS = {
+#     "wagtail_devtools.test": {
+#         "app_name": "wagtail_devtools_test",
+#     }
+# }

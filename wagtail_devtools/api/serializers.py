@@ -1,25 +1,25 @@
 from django.apps import apps
-from django.urls import reverse
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
-from wagtail_devtools.api.conf import installed_apps, wagtail_core_listing_pages_config
+from wagtail_devtools.api.conf import installed_apps
 from wagtail_devtools.api.dataclasses import (
     Results,
     ResultsListingItem,
     ResultsModelItem,
 )
-from wagtail_devtools.api.helpers import get_host, init_ret
+from wagtail_devtools.api.helpers import init_ret
 
 
-def wagtail_core_listing_pages_serializer(request, title):
+def wagtail_core_listing_pages_serializer(request, config, title):
+    print(config)
     ret = init_ret(title)
     results = Results()
 
-    for page in wagtail_core_listing_pages_config():
-        editor_url = f"{get_host(request)}{reverse(page)}"
-        results.add(ResultsListingItem(request, page, editor_url).get())
+    for app in config["apps"]:
+        # editor_url = f'{get_host(request)}{reverse(app["listing_name"])}'
+        results.add(ResultsListingItem(request, app).get())
 
     ret["results"] = results.get()
 
@@ -32,7 +32,7 @@ def wagtail_core_apps_serializer(request, title, all=False):
     # Making the assumption here that any page visible on the frontend will have an editor url
 
     results = Results()
-
+    print(installed_apps())
     for app in installed_apps():
         models = apps.get_app_config(app).get_models()
         if not all:

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.urls import reverse
 
+from wagtail_devtools.api.conf import get_wagtail_core_listing_pages_config
 from wagtail_devtools.api.helpers import get_host
 from wagtail_devtools.api.serializers import (
     wagtail_core_apps_serializer,
@@ -20,6 +21,18 @@ def api_view(request):
     return JsonResponse(ret, safe=False)
 
 
+def wagtail_core_listing_pages(request):
+    """API view for wagtail core listing pages."""
+    return JsonResponse(
+        wagtail_core_listing_pages_serializer(
+            request,
+            get_wagtail_core_listing_pages_config(),
+            "Wagtail core listing pages",
+        ),
+        safe=False,
+    )
+
+
 def wagtail_core_apps(request):
     """API view for wagtail core apps."""
     if not request.GET.get("all"):
@@ -28,13 +41,5 @@ def wagtail_core_apps(request):
         )
     return JsonResponse(
         wagtail_core_apps_serializer(request, "Wagtail core apps", True),
-        safe=False,
-    )
-
-
-def wagtail_core_listing_pages(request):
-    """API view for wagtail core listing pages."""
-    return JsonResponse(
-        wagtail_core_listing_pages_serializer(request, "Wagtail core listing pages"),
         safe=False,
     )
