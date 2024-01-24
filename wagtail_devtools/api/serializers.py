@@ -3,7 +3,6 @@ from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
-from wagtail_devtools.api.conf import installed_apps
 from wagtail_devtools.api.dataclasses import (
     Results,
     ResultsListingItem,
@@ -13,12 +12,10 @@ from wagtail_devtools.api.helpers import init_ret
 
 
 def wagtail_core_listing_pages_serializer(request, config, title):
-    print(config)
     ret = init_ret(title)
     results = Results()
 
     for app in config["apps"]:
-        # editor_url = f'{get_host(request)}{reverse(app["listing_name"])}'
         results.add(ResultsListingItem(request, app).get())
 
     ret["results"] = results.get()
@@ -26,15 +23,16 @@ def wagtail_core_listing_pages_serializer(request, config, title):
     return ret
 
 
-def wagtail_core_apps_serializer(request, title, all=False):
+def wagtail_core_apps_serializer(request, config, title, all=False):
     ret = init_ret(title)
 
     # Making the assumption here that any page visible on the frontend will have an editor url
 
     results = Results()
-    print(installed_apps())
-    for app in installed_apps():
-        models = apps.get_app_config(app).get_models()
+
+    for app in config["apps"]:
+        print(app)
+        models = apps.get_app_config(app["app_name"]).get_models()
         if not all:
             for model in models:
                 item = model.objects.first()
