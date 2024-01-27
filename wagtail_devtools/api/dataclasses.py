@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 
+from django.conf import settings
 from django.urls import reverse
 
-from wagtail_devtools.api.conf import default_field_identifier
 from wagtail_devtools.api.helpers import get_admin_edit_url, get_host
 
 
@@ -103,3 +103,9 @@ class ResultsListingItem:
             "editor_url": f'{get_host(self.request)}{reverse(self.app["listing_name"])}',
             "url": self.url,
         }
+
+
+def default_field_identifier():
+    if hasattr(settings, "WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER"):
+        return settings.WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER
+    return ["title", "name", "username", "hostname"]

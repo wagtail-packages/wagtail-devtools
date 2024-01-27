@@ -112,15 +112,6 @@ INSTALLED_APPS_CONFIG = {
     ],
 }
 
-ADMIN_URLS_EXCLUDED = [
-    "/admin/failwhale",
-    "/admin/choose-",
-    "/admin/tag-autocomplete",
-    "/admin/dismissibles",
-    "/admin/sprite-",
-    "/admin/jsi18n",
-]
-
 
 def get_wagtail_core_listing_pages_config():
     configuration = {
@@ -154,12 +145,6 @@ def get_wagtail_core_listing_pages_config():
                 )
 
     return configuration
-
-
-def default_field_identifier():
-    if hasattr(settings, "WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER"):
-        return settings.WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER
-    return ["title", "name", "username", "hostname"]
 
 
 def get_wagtail_core_edit_pages_config():
