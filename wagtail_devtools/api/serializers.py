@@ -31,7 +31,6 @@ def wagtail_core_apps_serializer(request, config, title, all=False):
     results = Results()
 
     for app in config["apps"]:
-        print(app)
         models = apps.get_app_config(app["app_name"]).get_models()
         if not all:
             for model in models:

@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.conf import settings
 
 
@@ -16,16 +17,6 @@ INSTALLED_APPS_CONFIG = {
         "title": "Redirects",
         "app_name": "wagtailredirects",
         "listing_name": "wagtailredirects:index",
-    },
-    "wagtail.contrib.settings": {
-        "title": "Settings",
-        "app_name": "wagtailsettings",
-        "listing_name": None,
-    },
-    "wagtail.embeds": {
-        "title": "Embeds",
-        "app_name": None,
-        "listing_name": None,
     },
     "wagtail.users": {
         "title": "Users",
@@ -51,6 +42,16 @@ INSTALLED_APPS_CONFIG = {
         "title": "Search",
         "app_name": "wagtailsearch",
         "listing_name": "wagtailadmin_pages:search",
+    },
+    "wagtail.contrib.styleguide": {
+        "title": "Styleguide",
+        "app_name": "wagtailstyleguide",
+        "listing_name": "wagtailstyleguide",
+    },
+    "wagtail.sites": {
+        "title": "Sites",
+        "app_name": "wagtailsites",
+        "listing_name": "wagtailsites:index",
     },
     "wagtail.admin": [
         {
@@ -109,37 +110,16 @@ INSTALLED_APPS_CONFIG = {
             "listing_name": "wagtailusers_groups:index",
         },
     ],
-    "wagtail.api.v2": {
-        "title": "API v2",
-        "app_name": None,
-        "listing_name": None,
-    },
-    "wagtail.contrib.modeladmin": {
-        "title": "Model admin",
-        "app_name": "wagtailmodeladmin",
-        "listing_name": None,
-    },
-    "wagtail.contrib.routable_page": {
-        "title": "Routeable page",
-        "app_name": None,
-        "listing_name": None,
-    },
-    "wagtail.contrib.styleguide": {
-        "title": "Styleguide",
-        "app_name": "wagtailstyleguide",
-        "listing_name": "wagtailstyleguide",
-    },
-    "wagtail.sites": {
-        "title": "Sites",
-        "app_name": "wagtailsites",
-        "listing_name": "wagtailsites:index",
-    },
-    "wagtail_devtools.test": {
-        "title": "Test",
-        "app_name": "wagtail_devtools_test",
-        "listing_name": None,
-    },
 }
+
+ADMIN_URLS_EXCLUDED = [
+    "/admin/failwhale",
+    "/admin/choose-",
+    "/admin/tag-autocomplete",
+    "/admin/dismissibles",
+    "/admin/sprite-",
+    "/admin/jsi18n",
+]
 
 
 def get_wagtail_core_listing_pages_config():
@@ -188,45 +168,13 @@ def get_wagtail_core_edit_pages_config():
         "apps": [],
     }
 
-    for app, config in INSTALLED_APPS_CONFIG.items():
-        if app not in settings.INSTALLED_APPS:
-            break
-        if isinstance(config, dict):
-            if not config["app_name"]:
-                continue
-            configuration["apps"].append(
-                {
-                    "title": config["title"],
-                    "app_name": config["app_name"],
-                }
-            )
-        elif isinstance(config, list):
-            for item in config:
-                if not item["app_name"]:
-                    continue
-                configuration["apps"].append(
-                    {
-                        "title": item["title"],
-                        "app_name": item["app_name"],
-                    }
-                )
+    for a in apps.get_app_configs():
+        configuration["apps"].append(
+            {
+                "app_name": a.label,
+                "label": a.name,
+                "models": [apps.get_model(a.label, m).__name__ for m in a.models],
+            }
+        )
 
     return configuration
-    # if hasattr(settings, "WAGTAIL_DEVTOOLS_INSTALLED_APPS"):
-    #     core = settings.WAGTAIL_DEVTOOLS_INSTALLED_APPS
-    # else:
-    #     core = (
-    #         settings.WAGTAIL_DEVTOOLS_CUSTOM_INSTALLED_APPS
-    #         if hasattr(settings, "WAGTAIL_DEVTOOLS_CUSTOM_INSTALLED_APPS")
-    #         else settings.INSTALLED_APPS
-    #     )
-
-    # app_names = []
-    # for app in INSTALLED_APPS_CONFIG:
-    #     if app in INSTALLED_APPS_CONFIG:
-    #         app_names.append(INSTALLED_APPS_CONFIG[app]["app_name"])
-    #     else:
-    #         app_names.append(app)
-
-    # return app_names
-    # return INSTALLED_APPS_CONFIG
