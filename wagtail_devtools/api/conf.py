@@ -2,7 +2,7 @@ from django.apps import apps
 from django.conf import settings
 
 
-INSTALLED_APPS_CONFIG = {
+LISTING_PAGES_CONFIG = {
     "wagtail.contrib.search_promotions": {
         "title": "Search promotions",
         "app_name": "wagtailsearchpromotions",
@@ -61,56 +61,75 @@ INSTALLED_APPS_CONFIG = {
         },
         {
             "title": "Collections",
-            "app_name": None,  # "wagtailadmin_collections",
+            "app_name": None,
             "listing_name": "wagtailadmin_collections:index",
         },
         {
             "title": "Login",
-            "app_name": None,  # "wagtailadmin_login",
+            "app_name": None,
             "listing_name": "wagtailadmin_login",
         },
         {
             "title": "Password reset",
-            "app_name": None,  # "wagtailadmin_password_reset",
+            "app_name": None,
             "listing_name": "wagtailadmin_password_reset",
         },
         {
             "title": "Reports Locked Pages",
-            "app_name": None,  # "wagtailadmin_reports",
+            "app_name": None,
             "listing_name": "wagtailadmin_reports:locked_pages",
         },
         {
             "title": "Reports Aging Pages",
-            "app_name": None,  # "wagtailadmin_reports",
+            "app_name": None,
             "listing_name": "wagtailadmin_reports:aging_pages",
         },
         {
             "title": "Reports Site History",
-            "app_name": None,  # "wagtailadmin_reports",
+            "app_name": None,
             "listing_name": "wagtailadmin_reports:site_history",
         },
         {
             "title": "Reports Workflow",
-            "app_name": None,  # "wagtailadmin_reports",
+            "app_name": None,
             "listing_name": "wagtailadmin_reports:workflow",
         },
         {
             "title": "Reports Workflow Tasks",
-            "app_name": None,  # "wagtailadmin_reports",
+            "app_name": None,
             "listing_name": "wagtailadmin_reports:workflow_tasks",
         },
         {
             "title": "Reports Workflows",
-            "app_name": None,  # "wagtailadmin_workflows",
+            "app_name": None,
             "listing_name": "wagtailadmin_workflows:index",
         },
         {
             "title": "Groups",
-            "app_name": None,  # "wagtailadmin_groups",
+            "app_name": None,
             "listing_name": "wagtailusers_groups:index",
+        },
+        {
+            "title": "Example Calendar (admin view)",
+            "app_name": None,
+            "listing_name": "calendar",
+        },
+        {
+            "title": "Example Calendar (admin view - month)",
+            "app_name": None,
+            "listing_name": "calendar-month",
         },
     ],
 }
+
+if (
+    hasattr(settings, "DEVTOOLS_LISTING_PAGES_REPLACE")
+    and settings.DEVTOOLS_LISTING_PAGES_REPLACE
+):
+    LISTING_PAGES_CONFIG = {}
+
+if hasattr(settings, "DEVTOOLS_LISTING_PAGES"):
+    LISTING_PAGES_CONFIG.update(settings.DEVTOOLS_LISTING_PAGES)
 
 
 def get_wagtail_core_listing_pages_config():
@@ -119,7 +138,7 @@ def get_wagtail_core_listing_pages_config():
         "apps": [],
     }
 
-    for app, config in INSTALLED_APPS_CONFIG.items():
+    for app, config in LISTING_PAGES_CONFIG.items():
         if app not in settings.INSTALLED_APPS:
             break
         if isinstance(config, dict):

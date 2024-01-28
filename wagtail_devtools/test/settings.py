@@ -155,6 +155,26 @@ WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
 # wagtail_devtools settings
+# DEVTOOLS_LISTING_PAGES_REPLACE = True
+# DEVTOOLS_LISTING_PAGES = {
+#     "wagtail.contrib.search_promotions": {
+#         "title": "Search promotions",
+#         "app_name": "wagtailsearchpromotions",
+#         "listing_name": "wagtailsearchpromotions:index",
+#     },
+#     "wagtail.admin": [
+#         {
+#             "title": "Example Calendar (admin view)",
+#             "app_name": None,
+#             "listing_name": "calendar",
+#         },
+#         {
+#             "title": "Example Calendar (admin view - month)",
+#             "app_name": None,
+#             "listing_name": "calendar-month",
+#         },
+#     ],
+# }
 
 # WAGTAIL_DEVTOOLS_LISTING_PAGES = [ # optional
 # "wagtailadmin_collections:index",
