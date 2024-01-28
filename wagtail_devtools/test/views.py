@@ -1,5 +1,9 @@
+import calendar
+
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.shortcuts import render
 from django.template.response import TemplateResponse
+from django.utils import timezone
 from wagtail.models import Page
 from wagtail.search.models import Query
 
@@ -33,5 +37,34 @@ def search(request):
         {
             "search_query": search_query,
             "search_results": search_results,
+        },
+    )
+
+
+def example_calendar(request):
+    current_year = timezone.now().year
+    calendar_html = calendar.HTMLCalendar().formatyear(current_year)
+
+    return render(
+        request,
+        "wagtailcalendar/example_calendar.html",
+        {
+            "current_year": current_year,
+            "calendar_html": calendar_html,
+        },
+    )
+
+
+def example_calendar_month(request):
+    current_year = timezone.now().year
+    current_month = timezone.now().month
+    calendar_html = calendar.HTMLCalendar().formatmonth(current_year, current_month)
+
+    return render(
+        request,
+        "wagtailcalendar/example_calendar.html",
+        {
+            "current_year": current_year,
+            "calendar_html": calendar_html,
         },
     )
