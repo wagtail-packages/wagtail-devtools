@@ -23,7 +23,7 @@ class ResultsModelItem:
         for key in default_field_identifier():
             if hasattr(self.item, key):
                 return getattr(self.item, key)
-        return f"Field not found {self}"
+        return "Title Field not found"
 
     @property
     def _app_name(self):
@@ -81,20 +81,6 @@ class ResultsListingItem:
         self.class_name = None
         self.url = None
 
-    # @property
-    # def _generate_title(self):
-    #     splits = self.page.split("_")
-    #     splits = " ".join(splits)
-    #     splits = splits.split(":")
-    #     splits = " ".join(splits)
-    #     splits = splits.replace("wagtail", "")
-    #     splits = splits.lower()  # just in case
-
-    #     def upper_words(s):
-    #         return " ".join(w.capitalize() for w in s.split(" "))
-
-    #     return upper_words(splits)
-
     def get(self):
         return {
             "title": self.title,
@@ -106,6 +92,6 @@ class ResultsListingItem:
 
 
 def default_field_identifier():
-    if hasattr(settings, "WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER"):
-        return settings.WAGTAIL_DEVTOOLS_FIELD_IDENTIFIER
+    if hasattr(settings, "DEVTOOLS_FIELD_IDENTIFIER"):
+        return settings.DEVTOOLS_FIELD_IDENTIFIER
     return ["title", "name", "username", "hostname"]

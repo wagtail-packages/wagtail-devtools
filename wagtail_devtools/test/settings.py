@@ -155,52 +155,7 @@ WAGTAIL_SITE_NAME = "Wagtail devtools test site"
 WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
 # wagtail_devtools settings
-# DEVTOOLS_LISTING_PAGES_REPLACE = True
-# DEVTOOLS_LISTING_PAGES = {
-#     "wagtail.contrib.search_promotions": {
-#         "title": "Search promotions",
-#         "app_name": "wagtailsearchpromotions",
-#         "listing_name": "wagtailsearchpromotions:index",
-#     },
-#     "wagtail.admin": [
-#         {
-#             "title": "Example Calendar (admin view)",
-#             "app_name": None,
-#             "listing_name": "calendar",
-#         },
-#         {
-#             "title": "Example Calendar (admin view - month)",
-#             "app_name": None,
-#             "listing_name": "calendar-month",
-#         },
-#     ],
-# }
 
-# WAGTAIL_DEVTOOLS_LISTING_PAGES = [ # optional
-# "wagtailadmin_collections:index",
-# "wagtailadmin_explore_root",
-# "wagtailadmin_home",
-# "wagtailadmin_pages:search",
-# "wagtailadmin_reports:aging_pages",
-# "wagtailadmin_reports:locked_pages",
-# "wagtailadmin_reports:site_history",
-# "wagtailadmin_workflows:index",
-# "wagtailadmin_workflows:task_index",
-# "wagtaildocs:index",
-# "wagtailimages:index",
-# "wagtailredirects:index",
-# "wagtailsites:index",
-# "wagtailsnippets:index",
-# "wagtailusers_groups:index",
-# "wagtailusers_users:index",
-# ]
-
-# WAGTAIL_DEVTOOLS_CUSTOM_INSTALLED_APPS = [
-#     "wagtail_devtools_test",
-# ]
-
-# WAGTAIL_DEVTOOLS_INSTALLED_APPS = {
-#     "wagtail_devtools.test": {
-#         "app_name": "wagtail_devtools_test",
-#     }
-# }
+# DEVTOOLS_APPS_EXCLUDE = ["wagtail_devtools.test"]
+# DEVTOOLS_LISTING_EXCLUDE = ["wagtailsearchpromotions:index"]
+# DEVTOOLS_FIELD_IDENTIFIER = ["title", "name", "slug"]
