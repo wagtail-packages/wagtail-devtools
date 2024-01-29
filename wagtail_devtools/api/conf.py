@@ -132,8 +132,8 @@ def get_wagtail_core_listing_pages_config():
     }
 
     for item in get_listing_pages_config():
-        if not item["listing_name"]:
-            continue
+        # if not item["listing_name"]: # TODO decide if this is required, do some testing on real data
+        #     continue
         if hasattr(settings, "DEVTOOLS_LISTING_EXCLUDE"):
             if item["listing_name"] in settings.DEVTOOLS_LISTING_EXCLUDE:
                 continue

@@ -44,13 +44,13 @@ def wagtail_core_apps_serializer(request, config, title, all=False):
                 items = model.objects.all()
                 if isinstance(items.first(), Collection):
                     for item in items:
-                        if AdminURLFinder().get_edit_url(item):
-                            results.add(ResultsModelItem(request, item).get())
+                        # if AdminURLFinder().get_edit_url(item): # TODO decide if this is required, do some testing on real data
+                        results.add(ResultsModelItem(request, item).get())
                 snippet_models = [model.__name__ for model in get_snippet_models()]
                 if model.__name__ in snippet_models:
                     for item in items:
-                        if AdminURLFinder().get_edit_url(item):
-                            results.add(ResultsModelItem(request, item).get())
+                        # if AdminURLFinder().get_edit_url(item): # TODO decide if this is required, do some testing on real data
+                        results.add(ResultsModelItem(request, item).get())
                 else:
                     for item in items:
                         if AdminURLFinder().get_edit_url(item):
