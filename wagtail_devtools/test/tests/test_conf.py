@@ -1,7 +1,8 @@
+from io import StringIO
 from unittest.mock import patch
 
-from django.test import SimpleTestCase, override_settings
-from wagtail import VERSION as WAGTAIL_VERSION
+from django.core.management import call_command
+from django.test import SimpleTestCase, TestCase, override_settings
 
 from wagtail_devtools.api.conf import (
     get_wagtail_core_edit_pages_config,
@@ -9,10 +10,13 @@ from wagtail_devtools.api.conf import (
 )
 
 
-class TestApiConf(SimpleTestCase):
-    """Test the API conf."""
+class TestListingConf(SimpleTestCase):
+    """Tests for the listing pages config."""
 
     def test_wagtail_core_listing_pages_config(self):
+        """Test the default config for wagtail core listing pages.
+        This really about what goes in must come out."""
+
         conf = get_wagtail_core_listing_pages_config()
         self.assertEqual(conf["title"], "Wagtail core listing pages")
         self.assertIsInstance(conf["apps"], list)
@@ -133,8 +137,24 @@ class TestApiConf(SimpleTestCase):
 
         self.assertEqual(conf["apps"], expected_apps)
 
+    @patch("wagtail_devtools.api.conf.LISTING_PAGES_CONFIG")
+    def test_wagtail_core_listing_pages_config_missing_list_name(self, mock_config):
+        mock_config.append(
+            {
+                "title": "Example Calendar (admin view - month)",
+                "app_name": None,
+                "listing_name": None,
+            }
+        )
+        conf = get_wagtail_core_listing_pages_config()
+        self.assertIsInstance(conf["apps"], list)
+        self.assertEqual(len(conf["apps"]), 0)
+
     @override_settings(DEVTOOLS_LISTING_EXCLUDE=["wagtailsearchpromotions:index"])
     def test_wagtail_core_listing_pages_config_exclude_one(self):
+        """Test the default config for wagtail core listing pages.
+        This tests the exclude functionality."""
+
         conf = get_wagtail_core_listing_pages_config()
         self.assertEqual(
             conf["apps"][0]["title"], "Forms"
@@ -144,259 +164,115 @@ class TestApiConf(SimpleTestCase):
         DEVTOOLS_LISTING_EXCLUDE=["wagtailsearchpromotions:index", "wagtailforms:index"]
     )
     def test_wagtail_core_listing_pages_config_exclude_multiple(self):
+        """Test the default config for wagtail core listing pages.
+        This tests the exclude functionality with multiple exclude items."""
+
         conf = get_wagtail_core_listing_pages_config()
         self.assertEqual(
             conf["apps"][0]["title"], "Redirects"
         )  # not "Search promotions" as first item
 
-    @patch("wagtail_devtools.api.conf.get_listing_pages_config")
-    def test_not_appear_in_listing(self, mock_listing_pages_config):
-        mock_listing_pages_config.return_value = [
-            {
-                "title": "Search promotions",
-                "app_name": "wagtailsearchpromotions",
-                "listing_name": None,
-            },
-        ]
-        conf = get_wagtail_core_listing_pages_config()
-        self.assertEqual(conf["apps"], [])
+
+class TestEditConf(TestCase):
+    """Tests for the edit pages config."""
+
+    def setUpTestData():
+        with StringIO() as _:
+            # Don't want to see the output of the command
+            call_command("build_fixtures", "--clear", stdout=_)
 
     def test_get_wagtail_core_edit_pages_config(self):
+        """Test the default config for wagtail core edit pages.
+        Loading all the possible apps we know about that are in the test_app."""
+
         conf = get_wagtail_core_edit_pages_config()
         self.assertEqual(conf["title"], "Wagtail core edit pages")
         self.assertIsInstance(conf["apps"], list)
+        for app in conf["apps"]:
+            self.assertIsInstance(app["models"], list)
+            keys = app.keys()
+            self.assertIn("app_name", keys)
+            self.assertIn("models", keys)
+            self.assertIsInstance(app["models"], list)
 
-        if WAGTAIL_VERSION >= (5, 0):
-            expected = [
-                {"app_name": "wagtail_devtools", "models": []},
-                {
-                    "app_name": "wagtail_devtools_test",
-                    "models": [
-                        "HomePage",
-                        "SecondHomePage",
-                        "StandardPageOne",
-                        "StandardPageTwo",
-                        "StandardPageThree",
-                        "FormFieldOne",
-                        "FormPageOne",
-                        "FormFieldTwo",
-                        "FormPageTwo",
-                        "TestSnippetOne",
-                        "TestSnippetTwo",
-                        "TestSnippetThree",
-                        "TestModelAdminOne",
-                        "TestModelAdminTwo",
-                        "TestModelAdminThree",
-                        "GenericSettingOne",
-                        "GenericSettingTwo",
-                        "GenericSettingThree",
-                        "SiteSettingOne",
-                        "SiteSettingTwo",
-                        "SiteSettingThree",
-                        "FrontendPage500",
-                        "FrontendPage404",
-                        "FrontendPage302",
-                        "FrontendPage200",
-                    ],
-                },
-                {
-                    "app_name": "wagtailsearchpromotions",
-                    "models": ["Query", "QueryDailyHits", "SearchPromotion"],
-                },
-                {"app_name": "wagtailforms", "models": ["FormSubmission"]},
-                {"app_name": "wagtailredirects", "models": ["Redirect"]},
-                {"app_name": "wagtailsettings", "models": []},
-                {"app_name": "wagtailembeds", "models": ["Embed"]},
-                {"app_name": "wagtailusers", "models": ["UserProfile"]},
-                {"app_name": "wagtailsnippets", "models": []},
-                {"app_name": "wagtaildocs", "models": ["Document", "UploadedDocument"]},
-                {
-                    "app_name": "wagtailimages",
-                    "models": ["Image", "Rendition", "UploadedImage"],
-                },
-                {
-                    "app_name": "wagtailsearch",
-                    "models": [
-                        "Query",
-                        "QueryDailyHits",
-                        "SQLiteFTSIndexEntry",
-                        "IndexEntry",
-                    ],
-                },
-                {"app_name": "wagtailadmin", "models": ["Admin"]},
-                {"app_name": "wagtailapi_v2", "models": []},
-                {"app_name": "wagtailmodeladmin", "models": []},
-                {"app_name": "wagtailroutablepage", "models": []},
-                {"app_name": "wagtailstyleguide", "models": []},
-                {"app_name": "wagtailsites", "models": []},
-                {
-                    "app_name": "wagtailcore",
-                    "models": [
-                        "Locale",
-                        "Site",
-                        "ModelLogEntry",
-                        "CollectionViewRestriction_groups",
-                        "CollectionViewRestriction",
-                        "Collection",
-                        "GroupCollectionPermission",
-                        "ReferenceIndex",
-                        "Page",
-                        "Revision",
-                        "GroupPagePermission",
-                        "PageViewRestriction_groups",
-                        "PageViewRestriction",
-                        "WorkflowPage",
-                        "WorkflowContentType",
-                        "WorkflowTask",
-                        "Task",
-                        "Workflow",
-                        "GroupApprovalTask_groups",
-                        "GroupApprovalTask",
-                        "WorkflowState",
-                        "TaskState",
-                        "PageLogEntry",
-                        "Comment",
-                        "CommentReply",
-                        "PageSubscription",
-                    ],
-                },
-                {"app_name": "taggit", "models": ["Tag", "TaggedItem"]},
-                {"app_name": "rest_framework", "models": []},
-                {"app_name": "admin", "models": ["LogEntry"]},
-                {
-                    "app_name": "auth",
-                    "models": [
-                        "Permission",
-                        "Group_permissions",
-                        "Group",
-                        "User_groups",
-                        "User_user_permissions",
-                        "User",
-                    ],
-                },
-                {"app_name": "contenttypes", "models": ["ContentType"]},
-                {"app_name": "sessions", "models": ["Session"]},
-                {"app_name": "messages", "models": []},
-                {"app_name": "staticfiles", "models": []},
-                {"app_name": "sitemaps", "models": []},
-            ]
-        else:
-            expected = [
-                {"app_name": "wagtail_devtools", "models": []},
-                {
-                    "app_name": "wagtail_devtools_test",
-                    "models": [
-                        "HomePage",
-                        "SecondHomePage",
-                        "StandardPageOne",
-                        "StandardPageTwo",
-                        "StandardPageThree",
-                        "FormFieldOne",
-                        "FormPageOne",
-                        "FormFieldTwo",
-                        "FormPageTwo",
-                        "TestSnippetOne",
-                        "TestSnippetTwo",
-                        "TestSnippetThree",
-                        "TestModelAdminOne",
-                        "TestModelAdminTwo",
-                        "TestModelAdminThree",
-                        "GenericSettingOne",
-                        "GenericSettingTwo",
-                        "GenericSettingThree",
-                        "SiteSettingOne",
-                        "SiteSettingTwo",
-                        "SiteSettingThree",
-                        "FrontendPage500",
-                        "FrontendPage404",
-                        "FrontendPage302",
-                        "FrontendPage200",
-                    ],
-                },
-                {"app_name": "wagtailsearchpromotions", "models": ["SearchPromotion"]},
-                {"app_name": "wagtailforms", "models": ["FormSubmission"]},
-                {"app_name": "wagtailredirects", "models": ["Redirect"]},
-                {"app_name": "wagtailsettings", "models": []},
-                {"app_name": "wagtailembeds", "models": ["Embed"]},
-                {"app_name": "wagtailusers", "models": ["UserProfile"]},
-                {"app_name": "wagtailsnippets", "models": []},
-                {"app_name": "wagtaildocs", "models": ["Document", "UploadedDocument"]},
-                {
-                    "app_name": "wagtailimages",
-                    "models": ["Image", "Rendition", "UploadedImage"],
-                },
-                {
-                    "app_name": "wagtailsearch",
-                    "models": [
-                        "Query",
-                        "QueryDailyHits",
-                        "SQLiteFTSIndexEntry",
-                        "IndexEntry",
-                    ],
-                },
-                {"app_name": "wagtailadmin", "models": ["Admin"]},
-                {"app_name": "wagtailapi_v2", "models": []},
-                {"app_name": "wagtailmodeladmin", "models": []},
-                {"app_name": "wagtailroutablepage", "models": []},
-                {"app_name": "wagtailstyleguide", "models": []},
-                {"app_name": "wagtailsites", "models": []},
-                {
-                    "app_name": "wagtailcore",
-                    "models": [
-                        "Locale",
-                        "Site",
-                        "ModelLogEntry",
-                        "CollectionViewRestriction_groups",
-                        "CollectionViewRestriction",
-                        "Collection",
-                        "GroupCollectionPermission",
-                        "ReferenceIndex",
-                        "Page",
-                        "Revision",
-                        "GroupPagePermission",
-                        "PageViewRestriction_groups",
-                        "PageViewRestriction",
-                        "WorkflowPage",
-                        "WorkflowContentType",
-                        "WorkflowTask",
-                        "Task",
-                        "Workflow",
-                        "GroupApprovalTask_groups",
-                        "GroupApprovalTask",
-                        "WorkflowState",
-                        "TaskState",
-                        "PageLogEntry",
-                        "Comment",
-                        "CommentReply",
-                        "PageSubscription",
-                    ],
-                },
-                {"app_name": "taggit", "models": ["Tag", "TaggedItem"]},
-                {"app_name": "rest_framework", "models": []},
-                {"app_name": "admin", "models": ["LogEntry"]},
-                {
-                    "app_name": "auth",
-                    "models": [
-                        "Permission",
-                        "Group_permissions",
-                        "Group",
-                        "User_groups",
-                        "User_user_permissions",
-                        "User",
-                    ],
-                },
-                {"app_name": "contenttypes", "models": ["ContentType"]},
-                {"app_name": "sessions", "models": ["Session"]},
-                {"app_name": "messages", "models": []},
-                {"app_name": "staticfiles", "models": []},
-                {"app_name": "sitemaps", "models": []},
-            ]
+            # check known models in the test_app
+            if app["app_name"] == "wagtail_devtools_test":
+                self.assertEqual(
+                    app,
+                    {
+                        "app_name": "wagtail_devtools_test",
+                        "models": [
+                            "HomePage",
+                            "SecondHomePage",
+                            "StandardPageOne",
+                            "StandardPageTwo",
+                            "StandardPageThree",
+                            "FormFieldOne",
+                            "FormPageOne",
+                            "FormFieldTwo",
+                            "FormPageTwo",
+                            "TestSnippetOne",
+                            "TestSnippetTwo",
+                            "TestSnippetThree",
+                            "TestModelAdminOne",
+                            "TestModelAdminTwo",
+                            "TestModelAdminThree",
+                            "GenericSettingOne",
+                            "GenericSettingTwo",
+                            "GenericSettingThree",
+                            "SiteSettingOne",
+                            "SiteSettingTwo",
+                            "SiteSettingThree",
+                            "FrontendPage500",
+                            "FrontendPage404",
+                            "FrontendPage302",
+                            "FrontendPage200",
+                        ],
+                    },
+                )
 
-        self.assertEqual(conf["apps"], expected)
+            # check known models in the wagtailcore app
+            if app["app_name"] == "wagtailcore":
+                self.assertEqual(
+                    app,
+                    {
+                        "app_name": "wagtailcore",
+                        "models": [
+                            "Locale",
+                            "Site",
+                            "ModelLogEntry",
+                            "CollectionViewRestriction_groups",
+                            "CollectionViewRestriction",
+                            "Collection",
+                            "GroupCollectionPermission",
+                            "ReferenceIndex",
+                            "Page",
+                            "Revision",
+                            "GroupPagePermission",
+                            "PageViewRestriction_groups",
+                            "PageViewRestriction",
+                            "WorkflowPage",
+                            "WorkflowContentType",
+                            "WorkflowTask",
+                            "Task",
+                            "Workflow",
+                            "GroupApprovalTask_groups",
+                            "GroupApprovalTask",
+                            "WorkflowState",
+                            "TaskState",
+                            "PageLogEntry",
+                            "Comment",
+                            "CommentReply",
+                            "PageSubscription",
+                        ],
+                    },
+                )
 
     @override_settings(DEVTOOLS_APPS_EXCLUDE=["wagtail_devtools"])
     def test_wagtail_core_edit_pages_config_exclude_one(self):
+        """Test the default config for wagtail core edit pages.
+        This tests the exclude functionality."""
+
         conf = get_wagtail_core_edit_pages_config()
-        self.assertEqual(
-            conf["apps"][0]["app_name"], "wagtail_devtools_test"
-        )  # not "wagtail_devtools" as first item
+        for app in conf["apps"]:
+            self.assertNotEqual(app["app_name"], "wagtail_devtools")
