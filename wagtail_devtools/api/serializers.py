@@ -1,238 +1,61 @@
 from django.apps import apps
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from wagtail.contrib.settings.registry import registry as settings_registry
-from wagtail.documents import get_document_model
-from wagtail.images import get_image_model
+from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.models.collections import Collection
 from wagtail.snippets.models import get_snippet_models
 
-from wagtail_devtools.api.conf import (
-    get_registered_modeladmin,
-    wagtail_core_edit_pages_config,
-    wagtail_core_listing_pages_config,
+from wagtail_devtools.api.dataclasses import (
+    Results,
+    ResultsListingItem,
+    ResultsModelItem,
 )
-from wagtail_devtools.api.dataclasses import ResultsListingItem, ResultsModelItem
-from wagtail_devtools.api.helpers import (
-    get_creatable_page_models,
-    get_form_page_models,
-    get_host,
-    get_model_admin_models,
-    init_ret,
-)
+from wagtail_devtools.api.helpers import init_ret
 
 
-def form_types_serializer(request, title):
+def wagtail_core_listing_pages_serializer(request, config, title):
     ret = init_ret(title)
+    results = Results()
 
-    form_models = get_form_page_models()
+    for app in config["apps"]:
+        results.add(ResultsListingItem(request, app).get())
 
-    if len(form_models) > 0:
-        for model in form_models:
-            item = model.objects.first()
-            ret["results"].append(ResultsModelItem(request, item).get())
-    else:
-        ret["results"].append(
-            {
-                "title": "No form pages found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
+    ret["results"] = results.get()
 
     return ret
 
 
-def model_admin_types_serializer(request, title):
+def wagtail_core_apps_serializer(request, config, title, all=False):
     ret = init_ret(title)
 
-    if not get_registered_modeladmin():
-        ret["results"].append(
-            {
-                "title": "No modeladmin models found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
+    # Making the assumption here that any page visible on the frontend will have an editor url
 
-    registered_modeladmin = get_registered_modeladmin()
-    model_admins = get_model_admin_models(registered_modeladmin)
+    results = Results()
 
-    if len(model_admins) == 0:
-        ret["results"].append(
-            {
-                "title": "No modeladmin models found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
-    else:
-        for item in model_admins:
-            ret["results"].append(ResultsModelItem(request, item).get())
+    for app in config["apps"]:
+        models = apps.get_app_config(app["app_name"]).get_models()
+        if not all:
+            for model in models:
+                item = model.objects.first()
+                if isinstance(item, Collection):
+                    item = Collection.objects.first().get_first_child()
+                if AdminURLFinder().get_edit_url(item):
+                    results.add(ResultsModelItem(request, item).get())
+        else:
+            for model in models:
+                items = model.objects.all()
+                if isinstance(items.first(), Collection):
+                    for item in items:
+                        # if AdminURLFinder().get_edit_url(item): # TODO decide if this is required, do some testing on real data
+                        results.add(ResultsModelItem(request, item).get())
+                snippet_models = [model.__name__ for model in get_snippet_models()]
+                if model.__name__ in snippet_models:
+                    for item in items:
+                        # if AdminURLFinder().get_edit_url(item): # TODO decide if this is required, do some testing on real data
+                        results.add(ResultsModelItem(request, item).get())
+                else:
+                    for item in items:
+                        if AdminURLFinder().get_edit_url(item):
+                            results.add(ResultsModelItem(request, item).get())
 
-    return ret
-
-
-def wagtail_core_edit_pages_serializer(request, title):
-    ret = init_ret(title)
-
-    for item in wagtail_core_edit_pages_config():
-        model = apps.get_model(item.split(".")[0], item.split(".")[1])
-
-        if first := model.objects.first():
-            if isinstance(first, Collection):
-                first = Collection.objects.first().get_first_child()
-            elif isinstance(first, get_document_model()):
-                first = get_document_model().objects.first()
-            elif isinstance(first, get_image_model()):
-                first = get_image_model().objects.first()
-            elif isinstance(first, get_user_model()):
-                first = get_user_model().objects.first()
-            else:
-                first = model.objects.first()
-
-            if first:
-                ret["results"].append(ResultsModelItem(request, first).get())
-            else:
-                ret["results"].append(
-                    {
-                        "title": "No pages found",
-                        "app_name": None,
-                        "class_name": None,
-                        "editor_url": None,
-                        "url": None,
-                    }
-                )
-
-    return ret
-
-
-def wagtail_core_listing_pages_serializer(request, title):
-    ret = init_ret(title)
-
-    for page in wagtail_core_listing_pages_config():
-        editor_url = f"{get_host(request)}{reverse(page)}"
-
-        ret["results"].append(ResultsListingItem(request, page, editor_url).get())
-
-    return ret
-
-
-def page_model_types_serializer(request, title):
-    ret = init_ret(title)
-
-    page_models = get_creatable_page_models()
-
-    if len(page_models) == 0:
-        ret["results"].append(
-            {
-                "title": "No page models found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
-    else:
-        for page_model in page_models:
-            pages = page_model.objects.live()
-            if pages:
-                if item := pages.first():
-                    ret["results"].append(ResultsModelItem(request, item).get())
-
-    return ret
-
-
-def settings_types_serializer(request, title):
-    ret = init_ret(title)
-
-    generic_settings_model = None
-    site_settings_model = None
-
-    if "wagtail.contrib.settings" not in settings.INSTALLED_APPS:
-        ret["results"].append(
-            {
-                "title": "wagtail.contrib.settings not in INSTALLED_APPS",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
-
-    for cls in settings_registry:
-        if cls.__mro__[1].__name__ == "BaseGenericSetting":
-            generic_settings_model = cls
-        if cls.__mro__[1].__name__ == "BaseSiteSetting":
-            site_settings_model = cls
-
-    registered_settings = [
-        settings
-        for settings in [generic_settings_model, site_settings_model]
-        if settings
-    ]
-
-    if len(registered_settings) == 0:
-        ret["results"].append(
-            {
-                "title": "No settings found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
-
-    models = [cls.objects.first() for cls in settings_registry if cls.objects.first()]
-
-    if len(models) == 0:
-        ret["results"].append(
-            {
-                "title": "No settings objects found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
-        return ret
-
-    for item in models:
-        ret["results"].append(ResultsModelItem(request, item).get())
-
-    return ret
-
-
-def snippet_types_serializer(request, title):
-    ret = init_ret(title)
-
-    snippets_types = get_snippet_models()
-
-    if len(snippets_types) > 0:
-        for cls in snippets_types:
-            if item := cls.objects.first():
-                ret["results"].append(ResultsModelItem(request, item).get())
-    else:
-        ret["results"].append(
-            {
-                "title": "No snippets found",
-                "app_name": None,
-                "class_name": None,
-                "editor_url": None,
-                "url": None,
-            }
-        )
+    ret["results"] = results.get()
 
     return ret

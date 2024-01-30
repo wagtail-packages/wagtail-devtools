@@ -1,6 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from wagtail_devtools.api.helpers import get_admin_edit_url
+from django.conf import settings
+from django.urls import reverse
+
+from wagtail_devtools.api.helpers import get_admin_edit_url, get_host
 
 
 @dataclass
@@ -17,17 +20,10 @@ class ResultsModelItem:
 
     @property
     def _title(self):
-        return (
-            self.item.title
-            if hasattr(self.item, "title")
-            else self.item.name
-            if hasattr(self.item, "name")
-            else self.item.hostname
-            if hasattr(self.item, "hostname")
-            else self.item.username
-            if hasattr(self.item, "username")
-            else self.item.__str__()
-        )
+        for key in default_field_identifier():
+            if hasattr(self.item, key):
+                return getattr(self.item, key)
+        return "Title Field not found"
 
     @property
     def _app_name(self):
@@ -56,36 +52,46 @@ class ResultsModelItem:
 
 
 @dataclass
+class Results:
+    items: list = field(default_factory=list)
+
+    def is_duplicate(self, item):
+        # avoid having duplicate results
+        for i in self.items:
+            if i.get("editor_url") == item.get("editor_url"):
+                return True
+        return False
+
+    def add(self, item):
+        if not self.is_duplicate(item):
+            self.items.append(item)
+
+    def get(self):
+        return self.items
+
+
+@dataclass
 class ResultsListingItem:
     request: object
-    page: object
-    editor_url: str
+    app: dict
 
     def __post_init__(self):
-        self.title = self._generate_title
+        self.title = self.app["title"]
         self.app_name = None
         self.class_name = None
         self.url = None
 
-    @property
-    def _generate_title(self):
-        splits = self.page.split("_")
-        splits = " ".join(splits)
-        splits = splits.split(":")
-        splits = " ".join(splits)
-        splits = splits.replace("wagtail", "")
-        splits = splits.lower()  # just in case
-
-        def upper_words(s):
-            return " ".join(w.capitalize() for w in s.split(" "))
-
-        return upper_words(splits)
-
     def get(self):
         return {
             "title": self.title,
-            "app_name": self.app_name,
+            "app_name": self.app["app_name"],
             "class_name": self.class_name,
-            "editor_url": self.editor_url,
+            "editor_url": f'{get_host(self.request)}{reverse(self.app["listing_name"])}',
             "url": self.url,
         }
+
+
+def default_field_identifier():
+    if hasattr(settings, "DEVTOOLS_FIELD_IDENTIFIER"):
+        return settings.DEVTOOLS_FIELD_IDENTIFIER
+    return ["title", "name", "username", "hostname"]

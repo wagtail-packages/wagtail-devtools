@@ -1,10 +1,9 @@
 from urllib.parse import urlparse
 
-from django.apps import apps
 from django.conf import settings
 from django.utils.encoding import force_str
 from wagtail.admin.admin_url_finder import AdminURLFinder
-from wagtail.models import Site, get_page_models
+from wagtail.models import Site
 
 
 def get_admin_edit_url(host, obj):
@@ -32,19 +31,3 @@ def get_host(request=None):
 
 def init_ret(title):
     return {"meta": {"title": title}, "results": []}
-
-
-def get_creatable_page_models():
-    return [model for model in get_page_models() if model.is_creatable]
-
-
-def get_form_page_models():
-    models = []
-    for model in get_page_models():
-        if "AbstractEmailForm" in [cls.__name__ for cls in model.__mro__]:
-            models.append(apps.get_model(model._meta.app_label, model.__name__))
-    return models
-
-
-def get_model_admin_models(model_admin_types):
-    return [apps.get_model(item).objects.first() for item in model_admin_types]

@@ -1,81 +1,278 @@
-from django.conf import settings
-from django.test import SimpleTestCase, override_settings
+from io import StringIO
+from unittest.mock import patch
+
+from django.core.management import call_command
+from django.test import SimpleTestCase, TestCase, override_settings
 
 from wagtail_devtools.api.conf import (
-    get_registered_modeladmin,
-    wagtail_core_edit_pages_config,
-    wagtail_core_listing_pages_config,
+    get_wagtail_core_edit_pages_config,
+    get_wagtail_core_listing_pages_config,
 )
 
 
-class TestApiConf(SimpleTestCase):
-    """Test the API conf."""
+class TestListingConf(SimpleTestCase):
+    """Tests for the listing pages config."""
 
-    @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=[])
-    def test_model_admin_types(self):
-        # simulate the absence of the setting
-        del settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
-        self.assertEqual(get_registered_modeladmin(), [])
-
-    @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=[])
-    def test_get_model_admin_types_empty(self):
-        # There's no default value for this setting
-        self.assertEqual(get_registered_modeladmin(), [])
-
-    @override_settings(WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES=["test"])
-    def test_get_model_admin_types_with_value(self):
-        self.assertEqual(get_registered_modeladmin(), ["test"])
-
-    @override_settings(WAGTAIL_DEVTOOLS_EDIT_PAGES=[])
-    def test_wagtail_core_edit_pages_config(self):
-        # simulate the absence of the setting
-        del settings.WAGTAIL_DEVTOOLS_EDIT_PAGES
-        self.assertIn("auth.User", wagtail_core_edit_pages_config())
-        self.assertIn("auth.Group", wagtail_core_edit_pages_config())
-        self.assertIn("wagtailcore.Collection", wagtail_core_edit_pages_config())
-        self.assertIn("wagtailcore.Site", wagtail_core_edit_pages_config())
-        self.assertIn("wagtailcore.Task", wagtail_core_edit_pages_config())
-        self.assertIn("wagtailcore.Workflow", wagtail_core_edit_pages_config())
-        self.assertIn("wagtaildocs.Document", wagtail_core_edit_pages_config())
-        self.assertIn("wagtailimages.Image", wagtail_core_edit_pages_config())
-        self.assertIn("wagtailredirects.Redirect", wagtail_core_edit_pages_config())
-
-    @override_settings(WAGTAIL_DEVTOOLS_EDIT_PAGES=["test.Model"])
-    def test_wagtail_core_edit_pages_config_with_value(self):
-        self.assertEqual(
-            wagtail_core_edit_pages_config(),
-            ["test.Model"],
-        )
-
-    @override_settings(WAGTAIL_DEVTOOLS_LISTING_PAGES=[])
     def test_wagtail_core_listing_pages_config(self):
-        # simulate the absence of the setting
-        del settings.WAGTAIL_DEVTOOLS_LISTING_PAGES
-        self.assertEqual(
-            wagtail_core_listing_pages_config(),
-            [
-                "wagtailadmin_collections:index",
-                "wagtailadmin_explore_root",
-                "wagtailadmin_home",
-                "wagtailadmin_pages:search",
-                "wagtailadmin_reports:aging_pages",
-                "wagtailadmin_reports:locked_pages",
-                "wagtailadmin_reports:site_history",
-                "wagtailadmin_workflows:index",
-                "wagtailadmin_workflows:task_index",
-                "wagtaildocs:index",
-                "wagtailimages:index",
-                "wagtailredirects:index",
-                "wagtailsites:index",
-                "wagtailsnippets:index",
-                "wagtailusers_groups:index",
-                "wagtailusers_users:index",
-            ],
-        )
+        """Test the default config for wagtail core listing pages.
+        This really about what goes in must come out."""
 
-    @override_settings(WAGTAIL_DEVTOOLS_LISTING_PAGES=["test:index"])
-    def test_wagtail_core_listing_pages_config_with_value(self):
-        self.assertEqual(
-            wagtail_core_listing_pages_config(),
-            ["test:index"],
+        conf = get_wagtail_core_listing_pages_config()
+        self.assertEqual(conf["title"], "Wagtail core listing pages")
+        self.assertIsInstance(conf["apps"], list)
+
+        expected_apps = [
+            {
+                "title": "Search promotions",
+                "app_name": "wagtailsearchpromotions",
+                "listing_name": "wagtailsearchpromotions:index",
+            },
+            {
+                "title": "Forms",
+                "app_name": "wagtailforms",
+                "listing_name": "wagtailforms:index",
+            },
+            {
+                "title": "Redirects",
+                "app_name": "wagtailredirects",
+                "listing_name": "wagtailredirects:index",
+            },
+            {
+                "title": "Users",
+                "app_name": "wagtailusers",
+                "listing_name": "wagtailusers_users:index",
+            },
+            {
+                "title": "Snippets",
+                "app_name": "wagtailsnippets",
+                "listing_name": "wagtailsnippets:index",
+            },
+            {
+                "title": "Documents",
+                "app_name": "wagtaildocs",
+                "listing_name": "wagtaildocs:index",
+            },
+            {
+                "title": "Images",
+                "app_name": "wagtailimages",
+                "listing_name": "wagtailimages:index",
+            },
+            {
+                "title": "Search",
+                "app_name": "wagtailsearch",
+                "listing_name": "wagtailadmin_pages:search",
+            },
+            {
+                "title": "Styleguide",
+                "app_name": "wagtailstyleguide",
+                "listing_name": "wagtailstyleguide",
+            },
+            {
+                "title": "Sites",
+                "app_name": "wagtailsites",
+                "listing_name": "wagtailsites:index",
+            },
+            {
+                "title": "Dashboard",
+                "app_name": None,
+                "listing_name": "wagtailadmin_home",
+            },
+            {
+                "title": "Collections",
+                "app_name": None,
+                "listing_name": "wagtailadmin_collections:index",
+            },
+            {"title": "Login", "app_name": None, "listing_name": "wagtailadmin_login"},
+            {
+                "title": "Password reset",
+                "app_name": None,
+                "listing_name": "wagtailadmin_password_reset",
+            },
+            {
+                "title": "Reports Locked Pages",
+                "app_name": None,
+                "listing_name": "wagtailadmin_reports:locked_pages",
+            },
+            {
+                "title": "Reports Aging Pages",
+                "app_name": None,
+                "listing_name": "wagtailadmin_reports:aging_pages",
+            },
+            {
+                "title": "Reports Site History",
+                "app_name": None,
+                "listing_name": "wagtailadmin_reports:site_history",
+            },
+            {
+                "title": "Reports Workflow",
+                "app_name": None,
+                "listing_name": "wagtailadmin_reports:workflow",
+            },
+            {
+                "title": "Reports Workflow Tasks",
+                "app_name": None,
+                "listing_name": "wagtailadmin_reports:workflow_tasks",
+            },
+            {
+                "title": "Reports Workflows",
+                "app_name": None,
+                "listing_name": "wagtailadmin_workflows:index",
+            },
+            {
+                "title": "Groups",
+                "app_name": None,
+                "listing_name": "wagtailusers_groups:index",
+            },
+            {
+                "title": "Example Calendar (admin view)",
+                "app_name": None,
+                "listing_name": "calendar",
+            },
+            {
+                "title": "Example Calendar (admin view - month)",
+                "app_name": None,
+                "listing_name": "calendar-month",
+            },
+        ]
+
+        self.assertEqual(conf["apps"], expected_apps)
+
+    @patch("wagtail_devtools.api.conf.LISTING_PAGES_CONFIG")
+    def test_wagtail_core_listing_pages_config_missing_list_name(self, mock_config):
+        mock_config.append(
+            {
+                "title": "Example Calendar (admin view - month)",
+                "app_name": None,
+                "listing_name": None,
+            }
         )
+        conf = get_wagtail_core_listing_pages_config()
+        self.assertIsInstance(conf["apps"], list)
+        self.assertEqual(len(conf["apps"]), 0)
+
+    @override_settings(DEVTOOLS_LISTING_EXCLUDE=["wagtailsearchpromotions:index"])
+    def test_wagtail_core_listing_pages_config_exclude_one(self):
+        """Test the default config for wagtail core listing pages.
+        This tests the exclude functionality."""
+
+        conf = get_wagtail_core_listing_pages_config()
+        self.assertEqual(
+            conf["apps"][0]["title"], "Forms"
+        )  # not "Search promotions" as first item
+
+    @override_settings(
+        DEVTOOLS_LISTING_EXCLUDE=["wagtailsearchpromotions:index", "wagtailforms:index"]
+    )
+    def test_wagtail_core_listing_pages_config_exclude_multiple(self):
+        """Test the default config for wagtail core listing pages.
+        This tests the exclude functionality with multiple exclude items."""
+
+        conf = get_wagtail_core_listing_pages_config()
+        self.assertEqual(
+            conf["apps"][0]["title"], "Redirects"
+        )  # not "Search promotions" as first item
+
+
+class TestEditConf(TestCase):
+    """Tests for the edit pages config."""
+
+    def setUpTestData():
+        with StringIO() as _:
+            # Don't want to see the output of the command
+            call_command("build_fixtures", "--clear", stdout=_)
+
+    def test_get_wagtail_core_edit_pages_config(self):
+        """Test the default config for wagtail core edit pages.
+        Loading all the possible apps we know about that are in the test_app."""
+
+        conf = get_wagtail_core_edit_pages_config()
+        self.assertEqual(conf["title"], "Wagtail core edit pages")
+        self.assertIsInstance(conf["apps"], list)
+        # for app in conf["apps"]:
+        #     self.assertIsInstance(app["models"], list)
+        #     keys = app.keys()
+        #     self.assertIn("app_name", keys)
+        #     self.assertIn("models", keys)
+        #     self.assertIsInstance(app["models"], list)
+
+        #     # check known models in the test_app
+        #     if app["app_name"] == "wagtail_devtools_test":
+        #         self.assertEqual(
+        #             app,
+        #             {
+        #                 "app_name": "wagtail_devtools_test",
+        #                 "models": [
+        #                     "HomePage",
+        #                     "SecondHomePage",
+        #                     "StandardPageOne",
+        #                     "StandardPageTwo",
+        #                     "StandardPageThree",
+        #                     "FormFieldOne",
+        #                     "FormPageOne",
+        #                     "FormFieldTwo",
+        #                     "FormPageTwo",
+        #                     "TestSnippetOne",
+        #                     "TestSnippetTwo",
+        #                     "TestSnippetThree",
+        #                     "TestModelAdminOne",
+        #                     "TestModelAdminTwo",
+        #                     "TestModelAdminThree",
+        #                     "GenericSettingOne",
+        #                     "GenericSettingTwo",
+        #                     "GenericSettingThree",
+        #                     "SiteSettingOne",
+        #                     "SiteSettingTwo",
+        #                     "SiteSettingThree",
+        #                     "FrontendPage500",
+        #                     "FrontendPage404",
+        #                     "FrontendPage302",
+        #                     "FrontendPage200",
+        #                 ],
+        #             },
+        #         )
+
+        #     # check known models in the wagtailcore app
+        #     if app["app_name"] == "wagtailcore":
+        #         self.assertEqual(
+        #             app,
+        #             {
+        #                 "app_name": "wagtailcore",
+        #                 "models": [
+        #                     "Locale",
+        #                     "Site",
+        #                     "ModelLogEntry",
+        #                     "CollectionViewRestriction_groups",
+        #                     "CollectionViewRestriction",
+        #                     "Collection",
+        #                     "GroupCollectionPermission",
+        #                     "ReferenceIndex",
+        #                     "Page",
+        #                     "Revision",
+        #                     "GroupPagePermission",
+        #                     "PageViewRestriction_groups",
+        #                     "PageViewRestriction",
+        #                     "WorkflowPage",
+        #                     "WorkflowContentType",
+        #                     "WorkflowTask",
+        #                     "Task",
+        #                     "Workflow",
+        #                     "GroupApprovalTask_groups",
+        #                     "GroupApprovalTask",
+        #                     "WorkflowState",
+        #                     "TaskState",
+        #                     "PageLogEntry",
+        #                     "Comment",
+        #                     "CommentReply",
+        #                     "PageSubscription",
+        #                 ],
+        #             },
+        #         )
+
+    @override_settings(DEVTOOLS_APPS_EXCLUDE=["wagtail_devtools"])
+    def test_wagtail_core_edit_pages_config_exclude_one(self):
+        """Test the default config for wagtail core edit pages.
+        This tests the exclude functionality."""
+
+        conf = get_wagtail_core_edit_pages_config()
+        for app in conf["apps"]:
+            self.assertNotEqual(app["app_name"], "wagtail_devtools")

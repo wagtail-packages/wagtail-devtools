@@ -1,51 +1,168 @@
+from django.apps import apps
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 
-def get_user_model_string():
-    return f"{get_user_model()._meta.app_label}.{get_user_model()._meta.model_name.capitalize()}"
+LISTING_PAGES_CONFIG = [
+    {
+        "title": "Search promotions",
+        "app_name": "wagtailsearchpromotions",
+        "listing_name": "wagtailsearchpromotions:index",
+    },
+    {
+        "title": "Forms",
+        "app_name": "wagtailforms",
+        "listing_name": "wagtailforms:index",
+    },
+    {
+        "title": "Redirects",
+        "app_name": "wagtailredirects",
+        "listing_name": "wagtailredirects:index",
+    },
+    {
+        "title": "Users",
+        "app_name": "wagtailusers",
+        "listing_name": "wagtailusers_users:index",
+    },
+    {
+        "title": "Snippets",
+        "app_name": "wagtailsnippets",
+        "listing_name": "wagtailsnippets:index",
+    },
+    {
+        "title": "Documents",
+        "app_name": "wagtaildocs",
+        "listing_name": "wagtaildocs:index",
+    },
+    {
+        "title": "Images",
+        "app_name": "wagtailimages",
+        "listing_name": "wagtailimages:index",
+    },
+    {
+        "title": "Search",
+        "app_name": "wagtailsearch",
+        "listing_name": "wagtailadmin_pages:search",
+    },
+    {
+        "title": "Styleguide",
+        "app_name": "wagtailstyleguide",
+        "listing_name": "wagtailstyleguide",
+    },
+    {
+        "title": "Sites",
+        "app_name": "wagtailsites",
+        "listing_name": "wagtailsites:index",
+    },
+    {
+        "title": "Dashboard",
+        "app_name": None,
+        "listing_name": "wagtailadmin_home",
+    },
+    {
+        "title": "Collections",
+        "app_name": None,
+        "listing_name": "wagtailadmin_collections:index",
+    },
+    {
+        "title": "Login",
+        "app_name": None,
+        "listing_name": "wagtailadmin_login",
+    },
+    {
+        "title": "Password reset",
+        "app_name": None,
+        "listing_name": "wagtailadmin_password_reset",
+    },
+    {
+        "title": "Reports Locked Pages",
+        "app_name": None,
+        "listing_name": "wagtailadmin_reports:locked_pages",
+    },
+    {
+        "title": "Reports Aging Pages",
+        "app_name": None,
+        "listing_name": "wagtailadmin_reports:aging_pages",
+    },
+    {
+        "title": "Reports Site History",
+        "app_name": None,
+        "listing_name": "wagtailadmin_reports:site_history",
+    },
+    {
+        "title": "Reports Workflow",
+        "app_name": None,
+        "listing_name": "wagtailadmin_reports:workflow",
+    },
+    {
+        "title": "Reports Workflow Tasks",
+        "app_name": None,
+        "listing_name": "wagtailadmin_reports:workflow_tasks",
+    },
+    {
+        "title": "Reports Workflows",
+        "app_name": None,
+        "listing_name": "wagtailadmin_workflows:index",
+    },
+    {
+        "title": "Groups",
+        "app_name": None,
+        "listing_name": "wagtailusers_groups:index",
+    },
+    {
+        "title": "Example Calendar (admin view)",
+        "app_name": None,
+        "listing_name": "calendar",
+    },
+    {
+        "title": "Example Calendar (admin view - month)",
+        "app_name": None,
+        "listing_name": "calendar-month",
+    },
+]
 
 
-def get_registered_modeladmin():
-    if hasattr(settings, "WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES"):
-        return settings.WAGTAIL_DEVTOOLS_MODEL_ADMIN_TYPES
-    return []
+def get_listing_pages_config():
+    return LISTING_PAGES_CONFIG
 
 
-def wagtail_core_edit_pages_config():
-    if hasattr(settings, "WAGTAIL_DEVTOOLS_EDIT_PAGES"):
-        return settings.WAGTAIL_DEVTOOLS_EDIT_PAGES
-    return [
-        get_user_model_string(),  # Could use the value from settings.AUTH_USER_MODEL
-        "auth.Group",
-        "wagtailcore.Collection",
-        "wagtailcore.Site",
-        "wagtailcore.Task",
-        "wagtailcore.Workflow",
-        "wagtaildocs.Document",
-        "wagtailimages.Image",
-        "wagtailredirects.Redirect",
-    ]
+def get_wagtail_core_listing_pages_config():
+    configuration = {
+        "title": "Wagtail core listing pages",
+        "apps": [],
+    }
+
+    for item in get_listing_pages_config():
+        # if not item["listing_name"]: # TODO decide if this is required, do some testing on real data
+        #     continue
+        if hasattr(settings, "DEVTOOLS_LISTING_EXCLUDE"):
+            if item["listing_name"] in settings.DEVTOOLS_LISTING_EXCLUDE:
+                continue
+        configuration["apps"].append(
+            {
+                "title": item["title"],
+                "app_name": item["app_name"],
+                "listing_name": item["listing_name"],
+            }
+        )
+
+    return configuration
 
 
-def wagtail_core_listing_pages_config():
-    if hasattr(settings, "WAGTAIL_DEVTOOLS_LISTING_PAGES"):
-        return settings.WAGTAIL_DEVTOOLS_LISTING_PAGES
-    return [
-        "wagtailadmin_collections:index",
-        "wagtailadmin_explore_root",
-        "wagtailadmin_home",
-        "wagtailadmin_pages:search",
-        "wagtailadmin_reports:aging_pages",
-        "wagtailadmin_reports:locked_pages",
-        "wagtailadmin_reports:site_history",
-        "wagtailadmin_workflows:index",
-        "wagtailadmin_workflows:task_index",
-        "wagtaildocs:index",
-        "wagtailimages:index",
-        "wagtailredirects:index",
-        "wagtailsites:index",
-        "wagtailsnippets:index",
-        "wagtailusers_groups:index",
-        "wagtailusers_users:index",
-    ]
+def get_wagtail_core_edit_pages_config():
+    configuration = {
+        "title": "Wagtail core edit pages",
+        "apps": [],
+    }
+
+    for a in apps.get_app_configs():
+        if hasattr(settings, "DEVTOOLS_APPS_EXCLUDE"):
+            if a.name in settings.DEVTOOLS_APPS_EXCLUDE:
+                continue
+        configuration["apps"].append(
+            {
+                "app_name": a.label,
+                "models": [apps.get_model(a.label, m).__name__ for m in a.models],
+            }
+        )
+
+    return configuration
