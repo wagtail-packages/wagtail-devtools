@@ -14,11 +14,14 @@ A set of developer tools in the form of management commands.
 
 ### API
 
-There is an api now available at `/wagtail-devtools-api/` which will list all available commands.
+There is an api available at `/wagtail-devtools-api/` which will list all available endpoints.
+
+- List all editor listing pages
+- List all editor edit pages
 
 ### Admin Responses
 
-The `admin_responses` command will make a requests to the admin interface using get requests for a range of models. It will write a response result to the console.
+The `admin_responses` command will use the API endpoints above to create a report of error and success pages in the console.
 
 - [Documentation](docs/admin_responses.md)
 
