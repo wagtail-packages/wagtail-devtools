@@ -41,7 +41,7 @@ class TestApiViews(TestCase):
         response = wagtail_core_listing_pages(self.request)
         data = json.loads(response.content)["results"]
 
-        self.assertEqual(len(data), 23)
+        self.assertEqual(len(data), 21)
         self.assertEqual(data[0]["title"], "Search promotions")
         self.assertEqual(data[0]["app_name"], "wagtailsearchpromotions")
         self.assertEqual(data[0]["class_name"], None)
