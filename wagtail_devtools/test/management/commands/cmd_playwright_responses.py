@@ -16,17 +16,32 @@ User = get_user_model()
 
 
 class PlaywrightContext:
-    def __init__(self, live_server_url):
+    def __init__(self, live_server_url, slow_mo, browser=False, viewport=None):
         self.live_server_url = live_server_url
+        self.slow_mo = slow_mo
+        self.viewport = viewport
+        self.headless = self.set_headless(browser)
+        self.viewport = self.set_viewport(viewport)
+
+    def set_viewport(self, viewport):
+        if not viewport:
+            return {"width": 1024, "height": 768}
+        width, height = viewport.split("x")
+        return {"width": int(width), "height": int(height)}
+
+    def set_headless(self, browser):
+        return not browser
 
     def __enter__(self, *args, **kwargs):
         os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
         self.playwright = sync_playwright().start()
         self.browser = self.playwright.chromium.launch(
-            headless=False,
-            slow_mo=300,
+            headless=self.headless,
+            slow_mo=self.slow_mo,
         )
-        self.context = self.browser.new_context()
+        self.context = self.browser.new_context(
+            viewport=self.viewport if self.viewport else None,
+        )
         self.page = self.context.new_page()
 
         username = "superuser"
@@ -46,22 +61,43 @@ class PlaywrightContext:
 
 
 class Command(BaseCommand):
-    help = "Test all the pages in wagtail admin"
+    help = "Runs playwright tests on the wagtail admin and frontend pages."
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--url", type=str, help="The url to test", default="http://localhost:8000"
+            "--url",
+            type=str,
+            help="The url to test (default=http://localhost:8000)",
+            default="http://localhost:8000",
         )
         parser.add_argument(
             "--all",
             action="store_true",
-            help="Test all the pages in wagtail admin",
+            help="Test all the pages in wagtail admin and frontend (slow)",
+        )
+        parser.add_argument(
+            "--slow",
+            type=int,
+            help="Slow down the test by the given amount of milliseconds",
+            default=0,
+        )
+        parser.add_argument(
+            "--browser",
+            action="store_true",
+            help="Show the browser window",
+        )
+        parser.add_argument(
+            "--viewport",
+            type=str,
+            help="Set the viewport size (e.g. 1024x768)",
         )
 
     def handle(self, *args, **options):
         url = options["url"] or "http://localhost:8000"
 
-        with PlaywrightContext(url) as listing_pages:
+        with PlaywrightContext(
+            url, options["slow"], options["browser"], options["viewport"]
+        ) as listing_pages:
             listing_config = get_listing_pages_config()
             for app in listing_config:
                 list_url = f"{url}{reverse(app['listing_name'])}"
@@ -124,7 +160,9 @@ class Command(BaseCommand):
                     if AdminURLFinder().get_edit_url(item):
                         results.append(f"{url}{AdminURLFinder().get_edit_url(item)}")
 
-        with PlaywrightContext(url) as page:
+        with PlaywrightContext(
+            url, options["slow"], options["browser"], options["viewport"]
+        ) as page:
             for result in results:
                 response = page.goto(result)
                 if response.status == 200:
