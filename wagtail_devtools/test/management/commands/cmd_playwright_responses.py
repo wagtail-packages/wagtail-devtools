@@ -94,7 +94,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         url = options["url"] or "http://localhost:8000"
-        playwright_urls = []  # list of tuples (url, name)
+        playwright_urls = []  # list of tuples (url, name, response status code)
+        summary_report = {
+            "200": [],
+            "302": [],
+            "404": [],
+            "500": [],
+        }
 
         with PlaywrightContext(
             url, options["slow"], options["browser"], options["viewport"]
@@ -162,6 +168,14 @@ class Command(BaseCommand):
             for url in playwright_urls:
                 response = page.goto(url[0])
                 if response.status == 200:
+                    summary_report["200"].append(url)
+                elif response.status == 302:
+                    summary_report["302"].append(url)
+                elif response.status == 404:
+                    summary_report["404"].append(url)
+                elif response.status == 500:
+                    summary_report["500"].append(url)
+                if response.status == 200:
                     self.stdout.write(
                         self.style.SUCCESS(f"{url[1]} {url[0]} is working")
                     )
@@ -171,3 +185,9 @@ class Command(BaseCommand):
                             f"{url[1]} {url[0]} is not working {response.status}"
                         )
                     )
+
+        self.stdout.write(self.style.SUCCESS("Summary report:"))
+        self.stdout.write(self.style.SUCCESS(f"200: {len(summary_report['200'])}"))
+        self.stdout.write(self.style.WARNING(f"302: {len(summary_report['302'])}"))
+        self.stdout.write(self.style.WARNING(f"404: {len(summary_report['404'])}"))
+        self.stdout.write(self.style.ERROR(f"500: {len(summary_report['500'])}"))
