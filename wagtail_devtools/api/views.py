@@ -38,7 +38,6 @@ def api_view(request):
     for site in sites:
         site_absolute_url = site.root_url
         request_absolute_url = get_host(request)
-        print(site_absolute_url, request_absolute_url)
 
         if site_absolute_url != request_absolute_url:
             ret["api-views"].append(
