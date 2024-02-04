@@ -7,7 +7,6 @@ from django.core.management.base import BaseCommand
 from django.urls import reverse
 from playwright.sync_api import sync_playwright
 from wagtail.admin.admin_url_finder import AdminURLFinder
-from wagtail.models import Collection
 from wagtail.snippets.models import get_snippet_models
 
 from wagtail_devtools.api.conf import get_listing_pages_config
@@ -92,33 +91,38 @@ class Command(BaseCommand):
 
         for app in configuration["apps"]:
             models = apps.get_app_config(app["app_name"]).get_models()
-            if not options["all"]:
-                for model in models:
-                    item = model.objects.first()
-                    if isinstance(item, Collection):
-                        item = Collection.objects.first().get_first_child()
+            for model in models:
+                is_collection = model.__name__ == "Collection"
+                is_snippet = model.__name__ in [
+                    model.__name__ for model in get_snippet_models()
+                ]
+
+                if is_collection:
+                    items = (
+                        # don't include the root collection
+                        [model.objects.first().get_first_child()]
+                        if not options["all"]
+                        else model.objects.all().exclude(depth=1)
+                    )
+
+                if is_snippet:
+                    items = (
+                        [model.objects.first()]
+                        if not options["all"]
+                        else model.objects.all()
+                    )
+
+                if not is_collection and not is_snippet:
+                    # must be some other model that doesn't need special handling
+                    items = (
+                        [model.objects.first()]
+                        if not options["all"]
+                        else model.objects.all()
+                    )
+
+                for item in items:
                     if AdminURLFinder().get_edit_url(item):
                         results.append(f"{url}{AdminURLFinder().get_edit_url(item)}")
-            else:
-                for model in models:
-                    items = model.objects.all()
-                    if isinstance(items.first(), Collection):
-                        for item in items:
-                            results.append(
-                                f"{url}{AdminURLFinder().get_edit_url(item)}"
-                            )
-                    snippet_models = [model.__name__ for model in get_snippet_models()]
-                    if model.__name__ in snippet_models:
-                        for item in items:
-                            results.append(
-                                f"{url}{AdminURLFinder().get_edit_url(item)}"
-                            )
-                    else:
-                        for item in items:
-                            if AdminURLFinder().get_edit_url(item):
-                                results.append(
-                                    f"{url}{AdminURLFinder().get_edit_url(item)}"
-                                )
 
         with PlaywrightContext(url) as page:
             for result in results:
