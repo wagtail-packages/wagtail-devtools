@@ -90,11 +90,11 @@ class TestWagtailCoreAppsSerializer(TestCase):
         config = get_wagtail_core_edit_pages_config()
         request = RequestFactory().get("/")
         ret = wagtail_core_apps_serializer(request, config, "title", all=True)
-        self.assertEqual(len(ret["results"]), 8)
+        self.assertEqual(len(ret["results"]), 7)
 
     def test_wagtail_core_apps_serializer_with_collection(self):
         # create a collection
-        root_collection = Collection.objects.get(depth=1)
+        root_collection = Collection.objects.first()
         root_collection.add_child(name="Test Collection")
         collection = Collection.objects.get(name="Test Collection")
         collection_edit_url = get_admin_edit_url("http://localhost:8000", collection)
@@ -109,10 +109,10 @@ class TestWagtailCoreAppsSerializer(TestCase):
         request = RequestFactory().get("/")
         ret = wagtail_core_apps_serializer(request, config, "title", all=True)
 
-        self.assertEqual(ret["results"][4]["title"], "Test Collection")
-        self.assertEqual(ret["results"][4]["app_name"], "wagtailcore")
-        self.assertEqual(ret["results"][4]["class_name"], "Collection")
-        self.assertEqual(ret["results"][4]["editor_url"], collection_edit_url)
+        self.assertEqual(ret["results"][3]["title"], "Test Collection")
+        self.assertEqual(ret["results"][3]["app_name"], "wagtailcore")
+        self.assertEqual(ret["results"][3]["class_name"], "Collection")
+        self.assertEqual(ret["results"][3]["editor_url"], collection_edit_url)
 
         self.assertEqual(ret["results"][1]["title"], "test snippet")
         self.assertEqual(ret["results"][1]["app_name"], "wagtail_devtools_test")
