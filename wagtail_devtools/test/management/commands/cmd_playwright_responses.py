@@ -164,6 +164,8 @@ class Command(BaseCommand):
                             playwright_urls.append(
                                 (f"{url}{AdminURLFinder().get_edit_url(item)}", item)
                             )
+                            if hasattr(item, "get_url") and item.get_url():
+                                playwright_urls.append((item.get_url(), item))
 
             for url in playwright_urls:
                 response = page.goto(url[0])
@@ -176,14 +178,22 @@ class Command(BaseCommand):
                 elif response.status == 500:
                     summary_report["500"].append(url)
                 if response.status == 200:
+                    self.stdout.write(self.style.SUCCESS(f"{url[1]} {url[0]} OK"))
+                elif response.status == 302:
                     self.stdout.write(
-                        self.style.SUCCESS(f"{url[1]} {url[0]} is working")
+                        self.style.WARNING(
+                            f"{url[1]} {url[0]} redirect {response.status}"
+                        )
                     )
-                else:
+                elif response.status == 404:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"{url[1]} {url[0]} is not working {response.status}"
+                            f"{url[1]} {url[0]} NOT FOUND possibly has a draft version {response.status}"
                         )
+                    )
+                elif response.status == 500:
+                    self.stdout.write(
+                        self.style.ERROR(f"{url[1]} {url[0]} ERROR {response.status}")
                     )
 
         self.stdout.write(self.style.SUCCESS("Summary report:"))
