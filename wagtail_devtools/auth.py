@@ -21,11 +21,13 @@ class LoginHandler:
         response = self.session.post(self.login_url, data=user)
         if response.status_code == 200:
             self._is_authenticated = True
+            print("Authenticated 🔓")
         return self
 
     def logout(self):
         self._is_authenticated = False
         self.session = requests.Session()
+        print("Logged out 🔒")
         return self
 
     def get_response(self, url):
