@@ -99,6 +99,7 @@ def responses_api_view(request):
         list_url = f"{url}{reverse(app['listing_name'])}"
         results.append(
             {
+                "group": "CoreListingPage",
                 "name": f"{app['title']} ({app['listing_name']})",
                 "url": list_url,
             }
@@ -147,6 +148,7 @@ def responses_api_view(request):
                 if AdminURLFinder().get_edit_url(item):
                     results.append(
                         {
+                            "group": "CoreEditPage",
                             "name": f"{model.__name__} ({app['app_name']})",
                             "url": f"{url}{AdminURLFinder().get_edit_url(item)}",
                         }
@@ -154,9 +156,12 @@ def responses_api_view(request):
                     if hasattr(item, "get_url") and item.get_url():
                         results.append(
                             {
+                                "group": "SitePage",
                                 "name": f"{model.__name__} ({app['app_name']})",
                                 "url": item.get_url(),
                             }
                         )
 
-    return JsonResponse(results, safe=False)
+        sorted_results = sorted(results, key=lambda x: x["group"])
+
+    return JsonResponse(sorted_results, safe=False)
