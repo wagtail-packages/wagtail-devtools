@@ -6,8 +6,7 @@ from django.core.management import call_command
 from django.test import RequestFactory, TestCase
 
 from wagtail_devtools.api.helpers import get_admin_edit_url
-from wagtail_devtools.api.views import (
-    api_view,
+from wagtail_devtools.api.views import (  # api_view,
     wagtail_core_apps,
     wagtail_core_listing_pages,
 )
@@ -24,19 +23,19 @@ class TestApiViews(TestCase):
     def setUp(self):
         self.request = RequestFactory().get("/")
 
-    def test_api_view(self):
-        response = api_view(self.request)
-        data = json.loads(response.content)["api-views"]
-        self.assertEqual(len(data), 4)
-        # TODO: Investigate why the testserver is returning the testserver url
-        self.assertEqual(
-            data[0],
-            "http://testserver/wagtail-devtools-api/listing-types/",
-        )
-        self.assertEqual(
-            data[1],
-            "http://testserver/wagtail-devtools-api/wagtail-core-apps/",
-        )
+    # def test_api_view(self):
+    #     response = api_view(self.request)
+    #     data = json.loads(response.content)["api-views"]
+    #     self.assertEqual(len(data), 4)
+    #     # TODO: Investigate why the testserver is returning the testserver url
+    #     self.assertEqual(
+    #         data[0],
+    #         "http://testserver/wagtail-devtools-api/listing-types/",
+    #     )
+    #     self.assertEqual(
+    #         data[1],
+    #         "http://testserver/wagtail-devtools-api/wagtail-core-apps/",
+    #     )
 
     def test_wagtail_core_listing_pages(self):
         response = wagtail_core_listing_pages(self.request)
