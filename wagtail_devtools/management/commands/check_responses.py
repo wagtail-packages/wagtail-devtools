@@ -30,6 +30,11 @@ class Command(BaseCommand):
             help="The url to test (default=http://localhost:8000)",
             default="http://localhost:8000",
         )
+        parser.add_argument(
+            "--expanded",
+            action="store_true",
+            help="Show expanded output.",
+        )
 
     def handle(self, *args, **options):
         login_handler = LoginHandler(options["url"])
@@ -54,25 +59,31 @@ class Command(BaseCommand):
         for item in response.json():
             response = login_handler.get_response(item["url"])
             if response.status_code == 200:
-                self.stdout.write(self.style.SUCCESS(f"{item['name']} - {item['url']}"))
+                if options["expanded"]:
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"{item['name']} - {item['url']} ({response.status_code})"
+                        )
+                    )
                 resp_200.append(item["url"])
             elif response.status_code == 404:
-                self.stdout.write(self.style.WARNING(f"{item['name']} - {item['url']}"))
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"{item['name']} - {item['url']} ({response.status_code})"
+                    )
+                )
                 resp_404.append(item["url"])
             elif response.status_code == 500:
-                self.stdout.write(self.style.ERROR(f"{item['name']} - {item['url']}"))
+                self.stdout.write(
+                    self.style.ERROR(
+                        f"{item['name']} - {item['url']} ({response.status_code})"
+                    )
+                )
                 resp_500.append(item["url"])
             elif response.status_code == 302:
-                self.stdout.write(self.style.WARNING(f"{item['name']} - {item['url']}"))
+                self.stdout.write(
+                    f"{item['name']} - {item['url']} ({response.status_code})"
+                )
                 resp_302.append(item["url"])
 
-        # print("200 responses:")
-        # print(resp_200)
-        # print("404 responses:")
-        # print(resp_404)
-        # print("500 responses:")
-        # print(resp_500)
-        # print("302 responses:")
-        # print(resp_302)
         login_handler.logout()
-        print("Done")
