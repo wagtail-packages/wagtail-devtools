@@ -9,8 +9,7 @@ from wagtail.contrib.redirects.models import Redirect
 from wagtail.contrib.search_promotions.models import Query, SearchPromotion
 from wagtail.documents.models import Document as WagtailDocument
 from wagtail.images.models import Image as WagtailImage
-from wagtail.models import Page, Site
-from wagtail.models.collections import Collection
+from wagtail.models import Collection, Page, Site
 
 from wagtail_devtools.test.models import (
     FormFieldOne,

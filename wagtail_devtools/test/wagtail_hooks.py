@@ -1,7 +1,13 @@
 from django.urls import path, reverse
+from wagtail import VERSION as WAGTAIL_VERSION
 from wagtail import hooks
 from wagtail.admin.menu import Menu, MenuItem, SubmenuMenuItem
-from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+
+
+if WAGTAIL_VERSION < (6, 0):
+    from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+else:
+    from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
 
 from wagtail_devtools.test.views import example_calendar, example_calendar_month
 

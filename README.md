@@ -6,9 +6,9 @@ A set of developer tools in the form of management commands.
 
 ## Supported versions
 
-- Python 3.8+
-- Django 3.2+
-- Wagtail 4.1+
+- Python 3.9+
+- Django 4.2+
+- Wagtail 5.2+
 
 ## Features
 

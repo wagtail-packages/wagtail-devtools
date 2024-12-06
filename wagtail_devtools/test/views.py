@@ -4,8 +4,14 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.utils import timezone
+from wagtail import VERSION as WAGTAIL_VERSION
 from wagtail.models import Page
-from wagtail.search.models import Query
+
+
+if WAGTAIL_VERSION < (6, 0):
+    from wagtail.search.models import Query
+else:
+    from wagtail.contrib.search_promotions.models import Query
 
 
 def search(request):

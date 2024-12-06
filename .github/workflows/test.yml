@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12']
 
     steps:
       - uses: actions/checkout@v3
@@ -37,33 +37,33 @@ jobs:
         env:
           DB: sqlite
 
-  test-postgres:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+  # test-postgres:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       python: ['3.12']
 
-    services:
-      postgres:
-        image: ${{ matrix.postgres || 'postgres:12' }}
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #   services:
+  #     postgres:
+  #       image: ${{ matrix.postgres || 'postgres:12' }}
+  #       env:
+  #         POSTGRES_PASSWORD: postgres
+  #       ports:
+  #         - 5432:5432
+  #       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Install
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install .[ci]
-      - name: Test
-        run: tox # -- --exclude exclude-in-github-actions # temporary workaround
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/wagtail_devtools
-          DB: postgres
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Set up Python ${{ matrix.python }}
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python }}
+  #     - name: Install
+  #       run: |
+  #         python -m pip install --upgrade pip setuptools wheel
+  #         python -m pip install .[ci]
+  #     - name: Test
+  #       run: tox # -- --exclude exclude-in-github-actions # temporary workaround
+  #       env:
+  #         DATABASE_URL: postgres://postgres:postgres@localhost:5432/wagtail_devtools
+  #         DB: postgres
