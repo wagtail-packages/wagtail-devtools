@@ -103,9 +103,7 @@ PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
 # https://docs.djangoproject.com/en/stable/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///test_wagtail_devtools.db", options={"pool": True}
-    ),
+    "default": dj_database_url.config(default="sqlite:///test_wagtail_devtools.db"),
 }
 
 
