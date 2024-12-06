@@ -12,8 +12,7 @@ from wagtail.contrib.search_promotions.models import SearchPromotion
 from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
-from wagtail.models import Page, Site
-from wagtail.models.collections import Collection
+from wagtail.models import Collection, Page, Site
 from wagtail.snippets.models import get_snippet_models
 
 

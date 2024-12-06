@@ -1,6 +1,6 @@
 from django.apps import apps
 from wagtail.admin.admin_url_finder import AdminURLFinder
-from wagtail.models.collections import Collection
+from wagtail.models import Collection
 from wagtail.snippets.models import get_snippet_models
 
 from wagtail_devtools.api.dataclasses import (

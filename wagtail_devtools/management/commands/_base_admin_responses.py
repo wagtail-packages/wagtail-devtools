@@ -4,14 +4,20 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
+from wagtail import VERSION as WAGTAIL_VERSION
 from wagtail.admin.admin_url_finder import AdminURLFinder
 from wagtail.admin.utils import get_admin_base_url
-from wagtail.contrib.modeladmin.helpers import AdminURLHelper
+
+
+if WAGTAIL_VERSION < (6, 0):
+    from wagtail.contrib.modeladmin.helpers import AdminURLHelper
+else:
+    from wagtail_modeladmin.helpers import AdminURLHelper
+
 from wagtail.contrib.settings.registry import registry as settings_registry
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
-from wagtail.models import get_page_models
-from wagtail.models.collections import Collection
+from wagtail.models import Collection, get_page_models
 from wagtail.snippets.models import get_snippet_models
 
 
