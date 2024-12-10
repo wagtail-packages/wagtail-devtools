@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.urls import reverse
+from wagtail.models import Site
 
 from wagtail_devtools.api.helpers import get_admin_edit_url, get_host
 
@@ -39,6 +41,17 @@ class ResultsModelItem:
 
     @property
     def _url(self):
+        current_site = Site.find_for_request(self.request)
+        hostname = current_site.hostname if current_site else None
+
+        url_parsed = urlparse(
+            self.item.get_url() if hasattr(self.item, "get_url") else None
+        )
+        netloc = url_parsed.netloc if url_parsed else None
+
+        if netloc and not netloc.startswith(hostname):
+            return None
+
         return self.item.get_url() if hasattr(self.item, "get_url") else None
 
     def get(self):

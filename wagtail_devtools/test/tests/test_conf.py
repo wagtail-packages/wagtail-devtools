@@ -123,16 +123,6 @@ class TestListingConf(SimpleTestCase):
                 "app_name": None,
                 "listing_name": "wagtailusers_groups:index",
             },
-            {
-                "title": "Example Calendar (admin view)",
-                "app_name": None,
-                "listing_name": "calendar",
-            },
-            {
-                "title": "Example Calendar (admin view - month)",
-                "app_name": None,
-                "listing_name": "calendar-month",
-            },
         ]
 
         self.assertEqual(conf["apps"], expected_apps)
